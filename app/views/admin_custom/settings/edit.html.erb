@@ -1,0 +1,39 @@
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--secondary); margin: 0;">⚙️ CRO Settings</h1>
+  <p style="color: var(--text-muted); margin-top: 0.25rem;">Configure global WhatsApp ordering, landing banners, and pixel IDs.</p>
+</div>
+
+<%= form_tag admin_custom_settings_path, method: :patch do %>
+  <div class="card" style="padding: 2.5rem; background-color: white; margin-bottom: 2rem; max-width: 650px;">
+    <h3 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Global Parameters</h3>
+
+    <div class="form-group">
+      <label class="form-label" for="whatsapp_number">WhatsApp Ordering Number</label>
+      <input type="text" name="whatsapp_number" id="whatsapp_number" class="form-control" value="<%= @whatsapp_number %>" placeholder="e.g., 919876543210 (Include country code, no + or spaces)">
+      <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 0.25rem;">Used to route "Order on WhatsApp" button actions. Must contain only digits, e.g. 91xxxxxxxxxx.</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="landing_page_banner">Meta Ad Landing Banner Banner (Optional)</label>
+      <input type="text" name="landing_page_banner" id="landing_page_banner" class="form-control" value="<%= @landing_page_banner %>" placeholder="e.g., 🔥 Exclusive Deal: Get 10% Off and Free Shipping Today!">
+      <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 0.25rem;">Sticky promotional notification bar displayed at the very top of product landing pages for Meta ad traffic.</span>
+    </div>
+
+    <h3 style="font-size: 1.15rem; font-weight: 600; margin-top: 2.5rem; margin-bottom: 1.5rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Conversion Tracking Integration</h3>
+
+    <div class="form-group">
+      <label class="form-label" for="meta_pixel_id">Meta Pixel ID (Optional)</label>
+      <input type="text" name="meta_pixel_id" id="meta_pixel_id" class="form-control" value="<%= @meta_pixel_id %>" placeholder="e.g., 123456789012345">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="google_analytics_id">Google Analytics Tracking ID (Optional)</label>
+      <input type="text" name="google_analytics_id" id="google_analytics_id" class="form-control" value="<%= @google_analytics_id %>" placeholder="e.g., G-XXXXXXXXXX">
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 1rem;">
+    <button type="submit" class="btn btn-primary">Save Settings</button>
+    <a href="/admin_custom" class="btn btn-outline">Cancel</a>
+  </div>
+<% end %>

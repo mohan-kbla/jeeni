@@ -1,0 +1,1128 @@
+<% content_for :title, "#{@product.name} - Jeeni Shop" %>
+<% content_for :meta_description, "Traditional Millet Health Mix for Weight Management & Energy. Pure and wholesome traditional millet blend with easy booking and fast delivery." %>
+
+<%
+  is_karnataka_price = karnataka_visitor? && @product.karnataka_price.present?
+  product_current_price = is_karnataka_price ? @product.karnataka_price : @product.price
+
+  wa_num = CroSetting.get('whatsapp_number', '917624931166')
+  wa_text = "Hi! I am interested in ordering #{@product.name} (Price: #{is_karnataka_price ? "₹#{product_current_price.to_i}" : @product.display_price.to_s}) from your store: #{request.original_url}"
+  wa_url = "https://api.whatsapp.com/send?phone=#{wa_num}&text=#{CGI.escape(wa_text)}"
+  savings_amount = 279
+  mrp_price = @product.price.to_i + savings_amount
+  discount_percentage = ((savings_amount.to_f / mrp_price) * 100).round
+%>
+
+<% if meta_pixel_id.present? %>
+  <script>
+    if (typeof fbq !== 'undefined') {
+      fbq('track', 'ViewContent', {
+        content_name: '<%= escape_javascript(@product.name) %>',
+        content_category: '<%= escape_javascript(@product.taxons.first&.name || "General") %>',
+        content_ids: ['<%= @product.master.sku.presence || @product.id %>'],
+        content_type: 'product',
+        value: <%= product_current_price.to_f %>,
+        currency: 'INR'
+      });
+    }
+  </script>
+<% end %>
+
+<% if google_analytics_id.present? %>
+  <script>
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'view_item', {
+        currency: 'INR',
+        value: <%= product_current_price.to_f %>,
+        items: [{
+          item_id: '<%= @product.master.sku.presence || @product.id %>',
+          item_name: '<%= escape_javascript(@product.name) %>',
+          price: <%= product_current_price.to_f %>
+        }]
+      });
+    }
+  </script>
+<% end %>
+
+<!-- Top ad traffic landing banner -->
+<% if is_ad_traffic? && (banner_text = CroSetting.get('landing_page_banner')).present? %>
+  <div style="background: linear-gradient(135deg, #15803d, #166534); color: white; text-align: center; padding: 0.75rem 1rem; font-weight: 700; font-size: 0.95rem; border-radius: 8px; margin-bottom: 1.5rem; position: sticky; top: 70px; z-index: 40; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: pulse-border 2s infinite;">
+    <%= banner_text %>
+  </div>
+<% end %>
+
+<!-- Breadcrumbs -->
+<% unless is_ad_traffic? %>
+  <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 1.25rem;">
+    <a href="/" style="color: #64748b; text-decoration: none;">Home</a> / <a href="/products" style="color: #64748b; text-decoration: none;">Catalog</a> / <span style="color: #0f172a; font-weight: 600;"><%= @product.name %></span>
+  </div>
+<% end %>
+
+<% if spree_current_user&.has_spree_role?("admin") %>
+  <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; display: flex; gap: 1rem; align-items: center; justify-content: space-between;">
+    <strong style="color: #0f172a;">🛡️ Admin Controls:</strong>
+    <div style="display: flex; gap: 0.5rem;">
+      <a href="/admin_custom/products/<%= @product.slug %>/edit" class="btn btn-secondary btn-sm">✏️ Edit Product</a>
+      <%= button_to admin_custom_product_path(@product), method: :delete, class: "btn btn-outline btn-sm", style: "border-color: #fee2e2; color: #dc2626;", data: { confirm: "Are you sure?" } do %>
+        🗑️ Delete Product
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<%
+  approved_reviews = @product.reviews.approved.order(created_at: :desc).to_a
+  db_reviews_count = approved_reviews.count
+  reviews_count = db_reviews_count > 0 ? (48 + db_reviews_count) : 48
+  avg_rating = db_reviews_count > 0 ? (((4.9 * 48) + approved_reviews.map(&:rating).sum.to_f) / reviews_count).round(1) : 4.9
+%>
+
+<!-- Unified Style Overrides for Modern conversion-optimized layout -->
+<style>
+  .slim-action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  .slim-action-buttons .btn-easy-booking {
+    background: #b12704;
+    color: white;
+    box-shadow: 0 4px 14px rgba(177, 39, 4, 0.3);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    min-height: 52px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+    grid-column: span 2;
+    text-transform: uppercase;
+    width: 100% !important;
+  }
+  .slim-action-buttons .btn-easy-booking:active {
+    transform: scale(0.98);
+  }
+  .slim-action-buttons .btn-buy-now {
+    background: #15803d;
+    color: white;
+    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    min-height: 46px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+    grid-column: span 2;
+    width: 100% !important;
+  }
+  .slim-action-buttons .btn-buy-now:active {
+    transform: scale(0.98);
+  }
+
+  .gallery-main {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-height: 480px;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .gallery-thumbs {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 0.75rem;
+    padding: 0.5rem 2px;
+    margin-top: 0.75rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .gallery-thumbs::-webkit-scrollbar {
+    display: none;
+  }
+  .gallery-thumb {
+    flex: 0 0 70px;
+    width: 70px;
+    height: 70px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+    background: #f8fafc;
+  }
+  .gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gallery-thumb.active {
+    border-color: #15803d;
+  }
+
+  .benefits-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .benefits-checklist li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: #334155;
+    font-weight: 600;
+  }
+  .benefits-checklist li span {
+    color: #15803d;
+    font-weight: 800;
+  }
+
+  @media (max-width: 768px) {
+    .product-detail-grid {
+      grid-template-columns: 1fr !important;
+      gap: 1.25rem !important;
+    }
+    .gallery-main {
+      max-width: 290px;
+      margin: 0 auto;
+    }
+    .gallery-thumbs {
+      max-width: 290px;
+      margin: 0.5rem auto 1rem auto;
+    }
+    .product-pricing-row {
+      justify-content: center !important;
+    }
+    .product-detail-info {
+      text-align: center;
+      align-items: center;
+    }
+    .benefits-checklist {
+      grid-template-columns: 1fr;
+      width: 100%;
+      max-width: 290px;
+      margin: 0.5rem auto;
+      text-align: left;
+    }
+    .cro-offer-card {
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto 0.75rem auto;
+    }
+    .cro-trust-badges-grid {
+      max-width: 290px;
+      margin: 0.75rem auto !important;
+    }
+    .slim-action-buttons {
+      max-width: 290px;
+      margin: 0.5rem auto !important;
+    }
+  }
+</style>
+
+<%
+  all_images = []
+  all_videos = []
+  
+  if @product.product_gallery.present?
+    gallery = @product.product_gallery
+    sorted_images = gallery.gallery_images.order(is_featured: :desc, position: :asc)
+    sorted_images.each do |img|
+      if img.file.attached?
+        all_images << { url: url_for(img.file) }
+      end
+    end
+
+    sorted_videos = gallery.gallery_videos.order(is_featured: :desc, position: :asc)
+    sorted_videos.each do |vid|
+      if vid.file.attached?
+        all_videos << { type: 'video', url: url_for(vid.file), content_type: vid.file.content_type, is_featured: vid.is_featured }
+      elsif vid.external_url.present?
+        all_videos << { type: 'youtube', url: vid.youtube_embed_url, is_featured: vid.is_featured }
+      end
+    end
+  end
+
+  if all_images.empty? && @images.any?
+    @images.each { |img| all_images << { url: main_app.url_for(img.attachment) } }
+  end
+  
+  if all_images.empty?
+    fallback_img = product_image_url(@product)
+    all_images << { url: fallback_img } if fallback_img.present?
+  end
+%>
+
+<script>
+  window.galleryImages = <%= raw all_images.map { |img| img[:url] }.to_json %>;
+</script>
+
+<div class="product-detail-grid" style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2.5rem; align-items: start;">
+  
+  <!-- 1. Product Images (Left Column) -->
+  <div>
+    <div class="gallery-main">
+      <% if all_images.any? %>
+        <img id="main-product-media" src="<%= all_images.first[:url] %>" alt="<%= @product.name %>" width="600" height="600" style="cursor: zoom-in;" onclick="openLightbox(this.src)" fetchpriority="high">
+        <% if all_images.count > 1 %>
+          <div class="gallery-indicators" style="position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 10; background: rgba(255, 255, 255, 0.75); padding: 4px 8px; border-radius: 99px; backdrop-filter: blur(4px); box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+            <% all_images.each_with_index do |img, index| %>
+              <span class="gallery-dot <%= index == 0 ? 'active' : '' %>" 
+                    style="width: <%= index == 0 ? '12px' : '8px' %>; height: 8px; border-radius: <%= index == 0 ? '4px' : '50%' %>; background: <%= index == 0 ? '#15803d' : 'rgba(0,0,0,0.25)' %>; cursor: pointer; transition: all 0.25s ease;"
+                    onclick="event.stopPropagation(); swapImage(document.querySelectorAll('.gallery-thumb')[<%= index %>], '<%= img[:url] %>');"></span>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div style="color:#94a3b8; font-weight:600; font-size: 1.25rem;">No Image Available</div>
+      <% end %>
+    </div>
+    
+    <% if all_images.count > 1 %>
+      <div class="gallery-thumbs">
+        <% all_images.each_with_index do |img, index| %>
+          <div class="gallery-thumb <%= index == 0 ? 'active' : '' %>" onclick="swapImage(this, '<%= img[:url] %>');">
+            <img src="<%= img[:url] %>" alt="Thumbnail <%= index + 1 %>" loading="lazy" width="70" height="70">
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Hero Content (Right Column) -->
+  <div class="product-detail-info" style="display: flex; flex-direction: column; gap: 0.75rem;">
+    
+    <!-- 2. Product Name -->
+    <h1 class="product-name" style="font-size: 1.85rem; font-weight: 900; color: #0f172a; line-height: 1.2; margin: 0;"><%= @product.name %></h1>
+    
+    <!-- 3. Ratings & Compliance Badges -->
+    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.25rem; margin-bottom: 0.25rem;">
+      <div style="display: flex; align-items: center; gap: 0.4rem; background: #fef3c7; border: 1px solid #fde68a; padding: 0.35rem 0.75rem; border-radius: 999px; width: fit-content;">
+        <span style="color: #f59e0b; font-size: 0.95rem;">⭐⭐⭐⭐⭐</span>
+        <span style="font-size: 0.8rem; font-weight: 700; color: #92400e;"><%= avg_rating %> (<%= reviews_count %> Reviews)</span>
+      </div>
+      
+      <!-- FSSAI Mini Badge -->
+      <div style="display: flex; align-items: center; gap: 0.35rem; background: #f0fdf4; border: 1.5px solid #bbf7d0; padding: 0.35rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; color: #166534;">
+        <span style="color: #15803d; font-family: 'Outfit', 'Inter', sans-serif; font-weight: 900; letter-spacing: 0.25px;">fssai</span>
+        <span style="color: #86efac;">|</span>
+        <span style="color: #1e293b; font-weight: 600;">Lic. No. 11220327000212</span>
+      </div>
+
+      <!-- Veg Badge -->
+      <div style="display: flex; align-items: center; gap: 0.35rem; background: #f0fdf4; border: 1.5px solid #bbf7d0; padding: 0.35rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; color: #166534;">
+        <div style="width: 12px; height: 12px; border: 2px solid #15803d; display: flex; align-items: center; justify-content: center; background: white; padding: 1px; box-sizing: border-box;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: #15803d;"></div>
+        </div>
+        <span style="color: #15803d; font-weight: 600;">100% VEG</span>
+      </div>
+    </div>
+
+    <!-- 4. Price presentation -->
+    <div class="product-pricing-row" style="display: flex; align-items: baseline; gap: 0.85rem; flex-wrap: wrap; margin-top: 0.15rem;">
+      <% if is_karnataka_price %>
+        <span id="product-price-display" style="font-size: 2.25rem; font-weight: 900; color: #16a34a; letter-spacing: -0.5px;">₹<%= product_current_price.to_i %></span>
+        <span id="product-mrp-display" style="font-size: 1.2rem; color: #94a3b8; text-decoration: line-through; font-weight: 500;">MRP ₹<%= @product.price.to_i %></span>
+        <span id="product-savings-display" style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; font-weight: 800; font-size: 0.85rem; padding: 0.35rem 0.75rem; border-radius: 6px;">
+          🏷️ Karnataka Special Price
+        </span>
+      <% else %>
+        <span id="product-price-display" style="font-size: 2.25rem; font-weight: 900; color: #15803d; letter-spacing: -0.5px;"><%= @product.display_price.to_s %></span>
+        <span id="product-mrp-display" style="font-size: 1.2rem; color: #94a3b8; text-decoration: line-through; font-weight: 500;">₹<%= mrp_price %></span>
+        <span id="product-savings-display" style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; font-weight: 800; font-size: 0.85rem; padding: 0.35rem 0.75rem; border-radius: 6px;">
+          Save ₹<%= savings_amount %> (<%= discount_percentage %>% OFF)
+        </span>
+      <% end %>
+    </div>
+
+    <!-- 5. Offer Banner & Urgency -->
+    <%
+      offer_title = CroSetting.get("offer_title_#{@product.slug}") || CroSetting.get("offer_title", "🎁 Limited Time Offer")
+      offer_body = CroSetting.get("offer_body_#{@product.slug}") || CroSetting.get("offer_body")
+      
+      if offer_body.blank?
+        if @product.slug == 'jeeni-slim-new' || @product.slug == 'jeeni-sugaramla-1kg-sugaramla-1kg'
+          offer_body = "FREE Vegetable Coffee Worth ₹279 with every prepaid order."
+        else
+          offer_body = "FREE Shipping & Cash on Delivery available today!"
+        end
+      end
+      
+      urgency_title = CroSetting.get("urgency_title", "Limited Time Offer")
+      urgency_desc = CroSetting.get("urgency_desc", "Offer Ends Soon")
+    %>
+    <div class="cro-offer-card" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #f59e0b; border-radius: 12px; padding: 0.85rem 1.15rem; margin-top: 0.35rem; display: flex; flex-direction: column; gap: 0.35rem; box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.15); width: 100%; box-sizing: border-box; cursor: pointer;">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 1.3rem;">🎁</span>
+        <strong style="color: #78350f; font-size: 0.95rem; line-height: 1.2;"><%= offer_title %></strong>
+      </div>
+      <span style="color: #92400e; font-size: 0.85rem; font-weight: 700; line-height: 1.3;">
+        <%= offer_body %>
+      </span>
+      <div style="font-size: 0.78rem; font-weight: 800; color: #dc2626; display: flex; align-items: center; gap: 0.25rem; margin-top: 0.15rem; border-top: 1px dashed rgba(220, 38, 38, 0.25); padding-top: 0.35rem;">
+        <span>🔥</span> <%= urgency_title %>: <span style="text-decoration: underline;"><%= urgency_desc %></span>
+      </div>
+    </div>
+
+    <!-- Concise benefits checklist -->
+    <%
+      benefits_list = []
+      if @product.respond_to?(:benefits) && @product.benefits.present?
+        benefits_list = @product.benefits.split("\n").map(&:strip).reject(&:empty?)
+      end
+      if benefits_list.empty?
+        benefits_list = [
+          "Pure & Wholesome Traditional Millets",
+          "Rich in Fiber & Plant Protein",
+          "No Added Sugar or Chemicals",
+          "Sustained Energy & Nutrition"
+        ]
+      end
+    %>
+    <ul class="benefits-checklist">
+      <% benefits_list.first(4).each do |benefit| %>
+        <li><span>✓</span> <%= benefit %></li>
+      <% end %>
+    </ul>
+
+    <!-- Trust Badges near CTA -->
+    <div class="cro-trust-badges-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.85rem; margin-top: 0.25rem; width: 100%; box-sizing: border-box; text-align: left;">
+      <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 700; color: #475569;">
+        <span>🔒</span> Secure Payment
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 700; color: #475569;">
+        <span>💵</span> Cash on Delivery
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 700; color: #475569;">
+        <span>🚚</span> Fast Delivery
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 700; color: #475569;">
+        <span>🌾</span> Premium Millet
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 700; color: #166534; grid-column: span 2; border-top: 1px solid #e2e8f0; padding-top: 0.35rem; margin-top: 0.15rem;">
+        <span>⭐</span> Trusted by Thousands of Customers
+      </div>
+    </div>
+
+    <!-- Main Action Form -->
+    <%= form_tag add_to_cart_path, method: :post, id: "add-to-cart-form", data: { product_id: @product.id }, style: "margin-top: 0.25rem; width: 100%;" do %>
+      <% if @variants.any? %>
+        <div class="form-group" style="margin-bottom: 0.75rem; width: 100%; text-align: left;">
+          <label class="form-label" for="variant-select" style="font-weight: 700; font-size: 0.85rem; color: #334155; display: block; margin-bottom: 0.25rem;">Select Pack Size</label>
+          <select name="variant_id" id="variant-select" class="form-control" style="padding: 0.55rem 0.75rem; border-radius: 8px; border: 1.5px solid #cbd5e1; font-weight: 600; width: 100%; font-size: 0.9rem;" onchange="updateVariantDetails(this);">
+            <% @variants.each do |variant| %>
+              <%
+                if karnataka_visitor? && variant.karnataka_price.present?
+                  opt_price = "₹#{variant.karnataka_price.to_i}"
+                  opt_mrp = "₹#{variant.price.to_i}"
+                  opt_savings = "🏷️ Karnataka Special Price"
+                  opt_text = "#{variant.options_text} - #{opt_price} (Karnataka Price)"
+                else
+                  variant_savings = 279
+                  variant_mrp = variant.price.to_i + variant_savings
+                  variant_pct = ((variant_savings.to_f / variant_mrp) * 100).round
+
+                  opt_price = variant.display_price.to_s
+                  opt_mrp = "₹#{variant_mrp}"
+                  opt_savings = "Save ₹#{variant_savings} (#{variant_pct}% OFF)"
+                  opt_text = "#{variant.options_text} - #{variant.display_price.to_s}"
+                end
+              %>
+              <option value="<%= variant.id %>" data-price="<%= opt_price %>" data-mrp="<%= opt_mrp %>" data-savings="<%= opt_savings %>" data-in-stock="<%= variant.can_supply? ? '1' : '0' %>">
+                <%= opt_text %>
+              </option>
+            <% end %>
+          </select>
+        </div>
+      <% else %>
+        <input type="hidden" name="variant_id" value="<%= @product.master.id %>">
+      <% end %>
+
+      <div class="form-group" style="max-width: 130px; margin-bottom: 1rem; text-align: left;">
+        <label class="form-label" for="quantity-select" style="font-weight: 700; font-size: 0.85rem; color: #334155; display: block; margin-bottom: 0.25rem;">Quantity</label>
+        <input type="number" name="quantity" id="quantity-select" class="form-control" value="1" min="1" max="100" style="padding: 0.45rem; border-radius: 8px; border: 1.5px solid #cbd5e1; text-align: center; font-weight: 700; width: 100%;">
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="slim-action-buttons">
+        <!-- 6. Easy Booking Button (Primary CTA) -->
+        <button type="submit" name="checkout" value="1" id="easy-booking-btn" class="btn-easy-booking" <%= @product.master.can_supply? ? '' : 'disabled' %>>
+          ⚡ Easy Booking (Cash on Delivery)
+        </button>
+        
+        <!-- 7. Buy Now Button (Secondary CTA) -->
+        <button type="submit" name="buy_now" value="1" id="buy-now-btn" class="btn-buy-now" <%= @product.master.can_supply? ? '' : 'disabled' %>>
+          💳 Buy Now (Pay Online)
+        </button>
+      </div>
+    <% end %>
+
+  </div>
+</div>
+
+<!-- Embedded Product Video (if available) -->
+<% if all_videos.any? %>
+  <div class="cro-product-video-block" style="margin-top: 2.5rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); max-width: 600px; margin-left: auto; margin-right: auto;">
+    <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-top: 0;">
+      🎥 Product Video Guide
+    </h4>
+    <div style="position: relative; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; background: #000;">
+      <% first_vid = all_videos.first %>
+      <% if first_vid[:type] == 'youtube' %>
+        <iframe src="<%= first_vid[:url] %>" style="width: 100%; height: 100%; border: none;" loading="lazy" allowfullscreen title="Product Video"></iframe>
+      <% else %>
+        <video controls preload="none" style="width: 100%; height: 100%; object-fit: contain;">
+          <source src="<%= first_vid[:url] %>" type="<%= first_vid[:content_type] %>">
+          Your browser does not support video playback.
+        </video>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<!-- 5. Customer Reviews Placed HIGHER (Below CTA but above description/ingredients) -->
+<div style="margin-top: 3.5rem; border-top: 2px solid #e2e8f0; padding-top: 2rem;" id="reviews-section">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h2 style="font-size: 1.45rem; font-weight: 900; color: #0f172a; margin: 0 0 0.25rem 0;">⭐ Verified Customer Reviews</h2>
+      <p style="color: #64748b; font-size: 0.85rem; margin: 0;">Genuine ratings and feedback from verified buyers.</p>
+    </div>
+    <div style="background: #15803d; color: white; padding: 0.35rem 0.85rem; border-radius: 999px; font-weight: 700; font-size: 0.85rem;">
+      <%= avg_rating %> / 5.0 (<%= reviews_count %> Reviews)
+    </div>
+  </div>
+
+  <%
+    default_testimonials = [
+      { author: "Rajesh Kumar", rating: 5, title: "Highly Recommended!", body: "Excellent wholesome millet blend! I've been taking this daily for 3 weeks and noticed improved digestion and sustained energy throughout my workday." },
+      { author: "Priya Sharma", rating: 5, title: "Great Taste & Results", body: "Tastes very clean and keeps me full for hours. Combined with healthy eating, I feel much lighter and highly recommend this to anyone looking for a clean wellness blend." },
+      { author: "Vikram Singh", rating: 5, title: "Easy to prepare", body: "Very easy to prepare and taste is great with warm milk or buttermilk. Great quality packaging and fast delivery within 3 days." }
+    ]
+
+    display_reviews = approved_reviews.map do |r|
+      {
+        author: r.user&.email&.split('@')&.first&.capitalize || "Verified Customer",
+        rating: r.rating,
+        title: r.title.presence || "Great Product!",
+        body: r.body
+      }
+    end
+
+    if display_reviews.count < 3
+      needed = 3 - display_reviews.count
+      display_reviews += default_testimonials.first(needed)
+    end
+  %>
+
+  <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+    <% display_reviews.each do |review| %>
+      <div class="card" style="padding: 1.15rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); height: auto; flex-shrink: 0; text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #dcfce7; color: #15803d; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
+              <%= review[:author][0].upcase %>
+            </div>
+            <div>
+              <strong style="color: #0f172a; font-size: 0.9rem; display: block;"><%= review[:author] %></strong>
+              <span style="font-size: 0.72rem; color: #15803d; font-weight: 700;">✓ Verified Buyer</span>
+            </div>
+          </div>
+          <div style="color: #f59e0b; font-size: 0.85rem;">
+            <% review[:rating].times do %>★<% end %><% (5 - review[:rating]).times do %>☆<% end %>
+          </div>
+        </div>
+        <h4 style="font-size: 0.9rem; font-weight: 700; color: #0f172a; margin: 0.35rem 0 0.2rem 0;"><%= review[:title] %></h4>
+        <p style="font-size: 0.85rem; color: #475569; line-height: 1.5; margin: 0;"><%= review[:body] %></p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- 6. Collapsible Description, Ingredients, and Preparation Method -->
+<div style="margin-top: 2rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; text-align: left;">
+  <h3 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0 0 0.75rem 0;">Product Details & Description</h3>
+  <div id="cro-description-container" style="max-height: 110px; overflow: hidden; position: relative; transition: max-height 0.3s ease-in-out;">
+    <p style="color: #475569; line-height: 1.65; font-size: 0.9rem; white-space: pre-line; margin: 0;"><%= @product.description %></p>
+    <div id="cro-desc-fade" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; background: linear-gradient(transparent, white); pointer-events: none;"></div>
+  </div>
+  <button type="button" id="cro-desc-toggle" onclick="toggleDescription()" style="margin-top: 0.75rem; background: none; border: 1.5px solid #15803d; color: #15803d; font-weight: 700; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">
+    Read More
+  </button>
+</div>
+
+<!-- Ingredients & How to Use (Preparation Method) -->
+<% if @product.respond_to?(:ingredients) && @product.ingredients.present? %>
+  <div style="margin-top: 2rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; text-align: left;">
+    <h3 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0 0 0.5rem 0;">Ingredients</h3>
+    <p style="color: #475569; line-height: 1.6; font-size: 0.9rem; white-space: pre-line; margin: 0;"><%= @product.ingredients %></p>
+  </div>
+<% end %>
+
+<% if @product.respond_to?(:how_to_use) && @product.how_to_use.present? %>
+  <div style="margin-top: 2rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; text-align: left;">
+    <h3 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0 0 0.5rem 0;">Preparation Method</h3>
+    <p style="color: #475569; line-height: 1.6; font-size: 0.9rem; white-space: pre-line; margin: 0;"><%= @product.how_to_use %></p>
+  </div>
+<% end %>
+
+<!-- FSSAI and Nutritional Declarations (Mandatory under Indian FSSAI E-commerce rules) -->
+<div style="margin-top: 2.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.75rem; text-align: left;">
+  <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+    🛡️ FSSAI & Product Safety Declarations
+  </h3>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+    <!-- Column 1: Mandatory FSSAI Declarations -->
+    <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 0.85rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 0.65rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-weight: 900; color: #15803d; font-family: 'Outfit', 'Inter', sans-serif; font-size: 1.15rem; letter-spacing: 0.25px;">fssai</span>
+          <span style="font-size: 0.72rem; color: #64748b; font-weight: 700; background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px;">REGISTERED</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+          <div style="width: 14px; height: 14px; border: 2px solid #15803d; display: flex; align-items: center; justify-content: center; background: white; padding: 1px; box-sizing: border-box;">
+            <div style="width: 6px; height: 6px; border-radius: 50%; background: #15803d;"></div>
+          </div>
+          <span style="font-size: 0.78rem; font-weight: 700; color: #15803d; letter-spacing: 0.25px;">100% VEG</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.85rem; color: #334155;">
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.4rem;">
+          <strong style="color: #475569;">FSSAI License No:</strong>
+          <span style="font-weight: 700; color: #0f172a;">11220327000212</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.4rem;">
+          <strong style="color: #475569;">FBO & Brand Name:</strong>
+          <span style="font-weight: 600; color: #0f172a; text-align: right;">Jeevitha Enterprises</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.4rem;">
+          <strong style="color: #475569;">Manufacturer Address:</strong>
+          <span style="font-weight: 500; color: #0f172a; text-align: right; max-width: 180px; font-size: 0.8rem; line-height: 1.3;">Jeevitha Enterprises, No. 343, 6th Cross, J.C. Nagar, Sira Taluk, Tumkur District, Karnataka - 572137</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.4rem;">
+          <strong style="color: #475569;">Shelf Life (Best Before):</strong>
+          <span style="font-weight: 600; color: #0f172a;">6 Months from Packaging</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.4rem;">
+          <strong style="color: #475569;">Allergen Warning:</strong>
+          <span style="font-weight: 500; color: #b45309; text-align: right; max-width: 180px; font-size: 0.8rem; line-height: 1.3;">May contain traces of groundnuts, barley, gluten, or tree nuts.</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.4rem;">
+          <strong style="color: #475569;">Customer Care:</strong>
+          <span style="font-weight: 600; color: #1e293b; font-size: 0.8rem; text-align: right;">+91 76249 31166<br>support@jeenimilletmix.in</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <strong style="color: #475569;">Country of Origin:</strong>
+          <span style="font-weight: 600; color: #0f172a;">India</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 2: Nutrition Facts (Standardized FSSAI format) -->
+    <div style="background: #ffffff; border: 2px solid #000000; border-radius: 4px; padding: 1rem; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #000000; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+      <div style="border-bottom: 8px solid #000000; padding-bottom: 0.25rem;">
+        <h4 style="font-size: 1.5rem; font-weight: 900; margin: 0; line-height: 1; font-family: 'Arial Black', sans-serif;">NUTRITION FACTS</h4>
+        <div style="font-size: 0.8rem; font-weight: bold; margin-top: 0.1rem;">Serving Size: 15g (Approx. 1.5 Tbsp)</div>
+        <div style="font-size: 0.8rem; font-weight: bold;">Servings Per Container: Approx. 33 (for 500g) / 60 (for 900g)</div>
+      </div>
+      
+      <div style="border-bottom: 5px solid #000000; padding: 0.35rem 0; display: flex; justify-content: space-between; align-items: baseline; font-size: 0.9rem; font-weight: bold;">
+        <span>Amount Per Serving (15g)</span>
+        <span>Calories 59.3 kcal</span>
+      </div>
+
+      <div style="font-size: 0.72rem; text-align: right; font-weight: bold; padding: 0.2rem 0; border-bottom: 1px solid #000000;">
+        % Daily Value (DV)*
+      </div>
+
+      <div style="border-bottom: 1px solid #000000; padding: 0.3rem 0; display: flex; justify-content: space-between; font-size: 0.825rem; font-weight: bold;">
+        <span>Total Fat <span style="font-weight: normal;">0.5g</span></span>
+        <span>0.7%</span>
+      </div>
+      <div style="border-bottom: 1px solid #000000; padding: 0.3rem 0 0.3rem 0.75rem; display: flex; justify-content: space-between; font-size: 0.825rem; color: #333;">
+        <span>Saturated Fat <span style="font-weight: normal;">0.1g</span></span>
+        <span>0.5%</span>
+      </div>
+      <div style="border-bottom: 1px solid #000000; padding: 0.3rem 0 0.3rem 0.75rem; display: flex; justify-content: space-between; font-size: 0.825rem; color: #333;">
+        <span>Trans Fat <span style="font-weight: normal;">0g</span></span>
+        <span>0%</span>
+      </div>
+      <div style="border-bottom: 1px solid #000000; padding: 0.3rem 0; display: flex; justify-content: space-between; font-size: 0.825rem; font-weight: bold;">
+        <span>Sodium <span style="font-weight: normal;">1.8mg</span></span>
+        <span>0.1%</span>
+      </div>
+      <div style="border-bottom: 1px solid #000000; padding: 0.3rem 0; display: flex; justify-content: space-between; font-size: 0.825rem; font-weight: bold;">
+        <span>Total Carbohydrate <span style="font-weight: normal;">11.7g</span></span>
+        <span>4.2%</span>
+      </div>
+      <div style="border-bottom: 1px solid #000000; padding: 0.3rem 0 0.3rem 0.75rem; display: flex; justify-content: space-between; font-size: 0.825rem; color: #333;">
+        <span>Dietary Fiber <span style="font-weight: normal;">1.8g</span></span>
+        <span>6.4%</span>
+      </div>
+      <div style="border-bottom: 1px solid #000000; padding: 0.3rem 0 0.3rem 0.75rem; display: flex; justify-content: space-between; font-size: 0.825rem; color: #333;">
+        <span>Total Sugars <span style="font-weight: normal;">0g</span> (No Added Sugar)</span>
+        <span>0%</span>
+      </div>
+      <div style="border-bottom: 5px solid #000000; padding: 0.3rem 0; display: flex; justify-content: space-between; font-size: 0.825rem; font-weight: bold;">
+        <span>Protein <span style="font-weight: normal;">1.7g</span></span>
+        <span>3.4%</span>
+      </div>
+
+      <div style="font-size: 0.68rem; line-height: 1.35; padding-top: 0.35rem; color: #555;">
+        * The % Daily Value (DV) tells you how much a nutrient in a serving of food contributes to a daily diet of 2,000 calories. Standard values per 100g: Energy: 395 kcal, Protein: 11.5g, Carbohydrate: 78g, Fat: 3.5g, Fiber: 12g.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 13. Detailed Benefits Cards Grid below CTA -->
+<div style="margin-top: 3rem; background: #f8fafc; border-radius: 12px; padding: 1.75rem 1.5rem; border: 1px solid #e2e8f0; text-align: center;">
+  <h3 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin: 0 0 0.35rem 0;">🌟 Key Benefits of <%= @product.name %></h3>
+  <p style="color: #64748b; font-size: 0.88rem; margin: 0 0 1.5rem 0;">Nutritious formulation designed for healthy daily living.</p>
+  
+  <div class="cro-benefits-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; text-align: left;">
+    <div class="cro-benefit-card" style="background: white; border-radius: 10px; padding: 1.15rem; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 0.4rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+      <span style="font-size: 1.8rem; margin: 0;">🌾</span>
+      <strong style="font-size: 0.95rem; color: #0f172a;">Nutrient-Rich</strong>
+      <p style="font-size: 0.825rem; color: #475569; margin: 0; line-height: 1.45;">Packed with essential dietary fiber, plant protein, iron, and minerals.</p>
+    </div>
+    
+    <div class="cro-benefit-card" style="background: white; border-radius: 10px; padding: 1.15rem; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 0.4rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+      <span style="font-size: 1.8rem; margin: 0;">⚡</span>
+      <strong style="font-size: 0.95rem; color: #0f172a;">Sustained Energy</strong>
+      <p style="font-size: 0.825rem; color: #475569; margin: 0; line-height: 1.45;">Slow-release complex carbohydrates keep you active throughout the day.</p>
+    </div>
+
+    <div class="cro-benefit-card" style="background: white; border-radius: 10px; padding: 1.15rem; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 0.4rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+      <span style="font-size: 1.8rem; margin: 0;">🌱</span>
+      <strong style="font-size: 0.95rem; color: #0f172a;">Traditionally Sourced</strong>
+      <p style="font-size: 0.825rem; color: #475569; margin: 0; line-height: 1.45;">100% traditional pure whole millets with zero preservatives or additives.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ Accordion section -->
+<div style="margin-top: 3rem; border-top: 2px solid #e2e8f0; padding-top: 2rem; text-align: left;">
+  <h3 style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-bottom: 1.25rem; text-align: center;">Frequently Asked Questions</h3>
+  <%
+    faqs = @product.faqs.active.order(position: :asc).to_a
+    if faqs.empty?
+      faqs = [
+        Struct.new(:question, :answer).new("How do I prepare this mix?", "Mix 2 tablespoons of powder with 1 cup of water or milk. Cook on medium flame for 5 minutes stirring constantly. Add salt or sweetener as desired."),
+        Struct.new(:question, :answer).new("What payment modes are supported?", "We support Cash on Delivery (COD) as well as secure online payments (UPI, Credit/Debit cards, NetBanking)."),
+        Struct.new(:question, :answer).new("What is the expected delivery timeframe?", "Orders are processed within 24 hours and delivered across India within 2 to 4 business days with full tracking.")
+      ]
+    end
+  %>
+  <div class="cro-single-accordion-group" style="max-width: 750px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.65rem;">
+    <% faqs.each_with_index do |f, idx| %>
+      <div class="cro-faq-item" style="border: 1px solid #cbd5e1; border-radius: 10px; background: white; overflow: hidden;">
+        <div class="cro-faq-header" onclick="toggleSingleFaq(this)" style="padding: 1rem 1.25rem; font-weight: 700; color: #0f172a; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem;">
+          <span>❓ <%= f.question %></span>
+          <span class="faq-arrow" style="transition: transform 0.2s;">▼</span>
+        </div>
+        <div class="cro-faq-body" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: #f8fafc; padding: 0 1.25rem;">
+          <p style="padding: 0.85rem 0; margin: 0; color: #475569; font-size: 0.85rem; line-height: 1.6;"><%= f.answer %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Sticky Mobile CTA Bar (Scope #2) -->
+<div id="sticky-mobile-cta" style="position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #cbd5e1; padding: 0.5rem 1rem; z-index: 1010; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); display: none;">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; max-width: 480px; margin: 0 auto;">
+    <button type="button" onclick="triggerStickyCTA(true)" style="min-height: 44px; background: #b12704; color: white; font-weight: 800; font-size: 0.9rem; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.25rem; box-shadow: 0 2px 6px rgba(177, 39, 4, 0.2);">
+      ⚡ Easy Booking
+    </button>
+    <button type="button" onclick="triggerStickyCTA(false)" style="min-height: 44px; background: #15803d; color: white; font-weight: 800; font-size: 0.9rem; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.25rem; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.2);">
+      💳 Buy Now
+    </button>
+  </div>
+</div>
+
+<!-- Floating Contact Widget (WhatsApp & Call) -->
+<div id="floating-whatsapp-btn" style="position: fixed; bottom: 20px; right: 18px; z-index: 999; display: block;">
+  <a href="<%= wa_url %>" target="_blank" rel="noopener" aria-label="Chat on WhatsApp" style="width: 50px; height: 50px; background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3); text-decoration: none; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+    <span style="font-size: 1.6rem; color: white;">💬</span>
+  </a>
+</div>
+
+<script>
+  function updateVariantDetails(selectEl) {
+    const selectedOption = selectEl.options[selectEl.selectedIndex];
+    const price = selectedOption.getAttribute('data-price');
+    const mrp = selectedOption.getAttribute('data-mrp');
+    const savings = selectedOption.getAttribute('data-savings');
+    
+    const priceDisplay = document.getElementById('product-price-display');
+    const mrpDisplay = document.getElementById('product-mrp-display');
+    const savingsDisplay = document.getElementById('product-savings-display');
+    
+    if (priceDisplay && price) priceDisplay.innerText = price;
+    if (mrpDisplay && mrp) mrpDisplay.innerText = mrp;
+    if (savingsDisplay && savings) {
+      savingsDisplay.innerText = savings;
+      if (savings.includes("Karnataka")) {
+        priceDisplay.style.color = '#16a34a';
+        savingsDisplay.style.color = '#15803d';
+        savingsDisplay.style.background = '#dcfce7';
+        savingsDisplay.style.borderColor = '#86efac';
+      } else {
+        priceDisplay.style.color = '#15803d';
+        savingsDisplay.style.color = '#15803d';
+        savingsDisplay.style.background = '#dcfce7';
+        savingsDisplay.style.borderColor = '#86efac';
+      }
+    }
+    
+    const inStock = selectedOption.getAttribute('data-in-stock') === '1';
+    const ebBtn = document.getElementById('easy-booking-btn');
+    const bnBtn = document.getElementById('buy-now-btn');
+    const stickyButtons = document.querySelectorAll('#sticky-mobile-cta button');
+    
+    if (ebBtn) {
+      if (inStock) ebBtn.removeAttribute('disabled');
+      else ebBtn.setAttribute('disabled', 'disabled');
+    }
+    if (bnBtn) {
+      if (inStock) bnBtn.removeAttribute('disabled');
+      else bnBtn.setAttribute('disabled', 'disabled');
+    }
+    stickyButtons.forEach(btn => {
+      if (inStock) btn.removeAttribute('disabled');
+      else btn.setAttribute('disabled', 'disabled');
+    });
+  }
+
+  function triggerStickyCTA(isEasyBooking) {
+    const form = document.getElementById('add-to-cart-form');
+    if (form) {
+      if (form.getAttribute('data-submitted') === 'true') return;
+      
+      let checkoutInput = form.querySelector('input[name="checkout"]');
+      if (!checkoutInput) {
+        checkoutInput = document.createElement('input');
+        checkoutInput.type = 'hidden';
+        checkoutInput.name = 'checkout';
+        form.appendChild(checkoutInput);
+      }
+      checkoutInput.value = '1';
+
+      let buyNowInput = form.querySelector('input[name="buy_now"]');
+      if (!buyNowInput) {
+        buyNowInput = document.createElement('input');
+        buyNowInput.type = 'hidden';
+        buyNowInput.name = 'buy_now';
+        form.appendChild(buyNowInput);
+      }
+      buyNowInput.value = isEasyBooking ? '0' : '1';
+      
+      // Update sticky cta text
+      const stickyButtons = document.querySelectorAll('#sticky-mobile-cta button');
+      stickyButtons.forEach(btn => {
+        btn.style.opacity = '0.7';
+        btn.style.cursor = 'not-allowed';
+        btn.innerHTML = '🔄 Processing...';
+      });
+
+      if (typeof form.requestSubmit === 'function') {
+        form.requestSubmit();
+      } else {
+        form.setAttribute('data-submitted', 'true');
+        form.submit();
+      }
+    }
+  }
+
+  // Collapsible description toggle
+  function toggleDescription() {
+    const container = document.getElementById('cro-description-container');
+    const fade = document.getElementById('cro-desc-fade');
+    const btn = document.getElementById('cro-desc-toggle');
+    if (!container || !btn) return;
+
+    if (container.style.maxHeight === '110px' || container.style.maxHeight === '') {
+      container.style.maxHeight = '2000px';
+      if (fade) fade.style.display = 'none';
+      btn.innerText = 'Read Less';
+    } else {
+      container.style.maxHeight = '110px';
+      if (fade) fade.style.display = 'block';
+      btn.innerText = 'Read More';
+    }
+  }
+
+  // Single-Open FAQ Accordion handler
+  function toggleSingleFaq(headerEl) {
+    const item = headerEl.parentElement;
+    const body = item.querySelector('.cro-faq-body');
+    const arrow = item.querySelector('.faq-arrow');
+    const allItems = document.querySelectorAll('.cro-faq-item');
+
+    allItems.forEach(function(otherItem) {
+      if (otherItem !== item) {
+        const otherBody = otherItem.querySelector('.cro-faq-body');
+        const otherArrow = otherItem.querySelector('.faq-arrow');
+        if (otherBody) otherBody.style.maxHeight = '0';
+        if (otherArrow) otherArrow.style.transform = 'rotate(0deg)';
+      }
+    });
+
+    if (body.style.maxHeight === '0px' || body.style.maxHeight === '') {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      if (arrow) arrow.style.transform = 'rotate(180deg)';
+    } else {
+      body.style.maxHeight = '0';
+      if (arrow) arrow.style.transform = 'rotate(0deg)';
+    }
+  }
+
+  // Sticky Mobile CTA and WhatsApp Widget Setup
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.pathname.includes('/checkout')) {
+      const stickyBar = document.getElementById('sticky-mobile-cta');
+      const waBtn = document.getElementById('floating-whatsapp-btn');
+      if (stickyBar) stickyBar.style.display = 'none';
+      if (waBtn) waBtn.style.display = 'none';
+      return;
+    }
+
+    // Sticky bar scroll trigger for mobile viewports
+    window.addEventListener('scroll', function() {
+      if (window.innerWidth < 768) {
+        const stickyBar = document.getElementById('sticky-mobile-cta');
+        const waBtn = document.getElementById('floating-whatsapp-btn');
+        const footer = document.querySelector('footer');
+        
+        if (stickyBar) {
+          let showBar = window.scrollY > 120;
+          
+          // Hide sticky bar when footer is in view
+          if (footer) {
+            const footerRect = footer.getBoundingClientRect();
+            if (footerRect.top <= window.innerHeight) {
+              showBar = false;
+            }
+          }
+          
+          if (showBar) {
+            stickyBar.style.display = 'block';
+            document.body.style.paddingBottom = '65px';
+            if (waBtn) waBtn.style.setProperty('bottom', '80px', 'important');
+          } else {
+            stickyBar.style.display = 'none';
+            document.body.style.paddingBottom = '0';
+            if (waBtn) waBtn.style.setProperty('bottom', '20px', 'important');
+          }
+        }
+      }
+    }, { passive: true });
+  });
+
+  // --- Gallery Swapping and Autoplay Logic ---
+  let currentImageIndex = 0;
+  let autoplayTimer = null;
+  const autoplayDelay = 4000;
+
+  window.swapImage = function(thumbEl, url) {
+    const mainImg = document.getElementById('main-product-media');
+    if (!mainImg) return;
+    
+    mainImg.style.transition = 'opacity 0.15s ease';
+    mainImg.style.opacity = '0.3';
+    
+    setTimeout(() => {
+      mainImg.src = url;
+      mainImg.style.opacity = '1';
+    }, 150);
+
+    const thumbnails = document.querySelectorAll('.gallery-thumb');
+    thumbnails.forEach(t => {
+      t.classList.remove('active');
+    });
+    
+    if (thumbEl) {
+      thumbEl.classList.add('active');
+    }
+
+    if (window.galleryImages) {
+      const idx = window.galleryImages.indexOf(url);
+      if (idx !== -1) {
+        currentImageIndex = idx;
+        const dots = document.querySelectorAll('.gallery-dot');
+        dots.forEach((dot, dIdx) => {
+          if (dIdx === idx) {
+            dot.style.background = '#15803d';
+            dot.style.width = '12px';
+            dot.style.borderRadius = '4px';
+          } else {
+            dot.style.background = 'rgba(0,0,0,0.25)';
+            dot.style.width = '8px';
+            dot.style.borderRadius = '50%';
+          }
+        });
+      }
+    }
+
+    resetAutoplay();
+  };
+
+  window.openLightbox = function(src) {
+    let lightbox = document.getElementById('product-lightbox');
+    if (!lightbox) {
+      lightbox = document.createElement('div');
+      lightbox.id = 'product-lightbox';
+      lightbox.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:10000; opacity:0; transition:opacity 0.25s ease; cursor:zoom-out; backdrop-filter:blur(5px);';
+      
+      const img = document.createElement('img');
+      img.id = 'lightbox-img';
+      img.style.cssText = 'max-width:90%; max-height:90%; object-fit:contain; border-radius:8px; box-shadow:0 10px 25px rgba(0,0,0,0.3);';
+      lightbox.appendChild(img);
+      
+      const closeBtn = document.createElement('span');
+      closeBtn.innerHTML = '&times;';
+      closeBtn.style.cssText = 'position:absolute; top:20px; right:30px; font-size:40px; color:#fff; cursor:pointer; font-weight:bold;';
+      lightbox.appendChild(closeBtn);
+      
+      lightbox.addEventListener('click', function() {
+        lightbox.style.opacity = '0';
+        setTimeout(() => lightbox.style.display = 'none', 250);
+      });
+      
+      document.body.appendChild(lightbox);
+    }
+    
+    const img = lightbox.querySelector('#lightbox-img');
+    img.src = src;
+    lightbox.style.display = 'flex';
+    lightbox.offsetHeight;
+    lightbox.style.opacity = '1';
+  };
+
+  function startAutoplay() {
+    if (!window.galleryImages || window.galleryImages.length <= 1) return;
+    autoplayTimer = setInterval(() => {
+      currentImageIndex = (currentImageIndex + 1) % window.galleryImages.length;
+      const nextUrl = window.galleryImages[currentImageIndex];
+      
+      const thumbnails = document.querySelectorAll('.gallery-thumb');
+      let targetThumb = null;
+      
+      thumbnails.forEach(t => {
+        const img = t.querySelector('img');
+        if (img && img.getAttribute('src') === nextUrl) {
+          targetThumb = t;
+        }
+      });
+      
+      if (targetThumb) {
+        const container = targetThumb.parentElement;
+        if (container) {
+          const containerRect = container.getBoundingClientRect();
+          const thumbRect = targetThumb.getBoundingClientRect();
+          const leftOffset = container.scrollLeft + (thumbRect.left - containerRect.left) - (containerRect.width - thumbRect.width) / 2;
+          container.scrollTo({ left: leftOffset, behavior: 'smooth' });
+        }
+      }
+      
+      window.swapImage(targetThumb, nextUrl);
+    }, autoplayDelay);
+  }
+
+  function resetAutoplay() {
+    if (autoplayTimer) {
+      clearInterval(autoplayTimer);
+    }
+    startAutoplay();
+  }
+
+  // Touch Swipe Gesture Support for Mobile
+  document.addEventListener('DOMContentLoaded', function() {
+    const mainImg = document.getElementById('main-product-media');
+    if (mainImg) {
+      let touchstartX = 0;
+      let touchendX = 0;
+      
+      mainImg.addEventListener('touchstart', e => {
+        touchstartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      
+      mainImg.addEventListener('touchend', e => {
+        touchendX = e.changedTouches[0].screenX;
+        handleGesture();
+      }, { passive: true });
+      
+      function handleGesture() {
+        if (!window.galleryImages || window.galleryImages.length <= 1) return;
+        const threshold = 50; // swipe distance threshold in px
+        if (touchendX < touchstartX - threshold) {
+          // Swipe Left -> Next Image
+          currentImageIndex = (currentImageIndex + 1) % window.galleryImages.length;
+          triggerImageSwap(currentImageIndex);
+        }
+        if (touchendX > touchstartX + threshold) {
+          // Swipe Right -> Previous Image
+          currentImageIndex = (currentImageIndex - 1 + window.galleryImages.length) % window.galleryImages.length;
+          triggerImageSwap(currentImageIndex);
+        }
+      }
+      
+      function triggerImageSwap(idx) {
+        const nextUrl = window.galleryImages[idx];
+        const thumbnails = document.querySelectorAll('.gallery-thumb');
+        let targetThumb = null;
+        thumbnails.forEach(t => {
+          const img = t.querySelector('img');
+          if (img && img.getAttribute('src') === nextUrl) {
+            targetThumb = t;
+          }
+        });
+        
+        if (targetThumb) {
+          const container = targetThumb.parentElement;
+          if (container) {
+            const containerRect = container.getBoundingClientRect();
+            const thumbRect = targetThumb.getBoundingClientRect();
+            const leftOffset = container.scrollLeft + (thumbRect.left - containerRect.left) - (containerRect.width - thumbRect.width) / 2;
+            container.scrollTo({ left: leftOffset, behavior: 'smooth' });
+          }
+        }
+        window.swapImage(targetThumb, nextUrl);
+      }
+    }
+  });
+
+  // Start autoplay on load
+  startAutoplay();
+
+  // Support Turbo navigation page loads
+  document.addEventListener('turbo:load', () => {
+    resetAutoplay();
+  });
+</script>

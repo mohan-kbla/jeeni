@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- SEO Meta Tags -->
+    <title><%= content_for?(:title) ? yield(:title) : "Premium Shop | E-commerce Store" %></title>
+    <meta name="description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : "Discover premium quality products at the best prices on our responsive e-commerce web application." %>">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) : "Premium Shop | E-commerce Store" %>">
+    <meta property="og:description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : "Discover premium quality products at the best prices on our responsive e-commerce web application." %>">
+    <meta property="og:type" content="website">
+    
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <!-- Meta Pixel Code -->
+    <% if meta_pixel_id.present? %>
+      <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '<%= meta_pixel_id %>');
+        
+        // Track PageView on initial load and subsequent Turbo page loads
+        document.addEventListener('turbo:load', function() {
+          if (typeof fbq !== 'undefined') {
+            fbq('track', 'PageView');
+          }
+        });
+      </script>
+      <noscript>
+        <img height="1" width="1" style="display:none"
+             src="https://www.facebook.com/tr?id=<%= meta_pixel_id %>&ev=PageView&noscript=1" />
+      </noscript>
+    <% end %>
+    <!-- End Meta Pixel Code -->
+
+    <!-- Google Analytics Tracking Code -->
+    <% if google_analytics_id.present? %>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=<%= google_analytics_id %>"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '<%= google_analytics_id %>');
+        
+        document.addEventListener('turbo:load', function() {
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'page_view', {
+              page_location: window.location.href,
+              page_path: window.location.pathname
+            });
+          }
+        });
+      </script>
+    <% end %>
+    <!-- End Google Analytics Code -->
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar" style="background-color: var(--secondary); border-bottom: 2px solid rgba(255, 255, 255, 0.1); position: sticky; top: 0; z-index: 50;">
+      <div class="container navbar-container">
+        <a href="/" class="navbar-logo" style="display: flex; align-items: center;">
+          <img src="/Jeeni-12.png" alt="Jeeni Millet Mix" style="max-height: 48px; width: auto; object-fit: contain; background: rgba(255, 255, 255, 0.95); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm);">
+        </a>
+
+        <!-- Mobile Top Bar Actions -->
+        <div class="mobile-top-actions" style="display: none; align-items: center; gap: 0.5rem; margin-left: auto; margin-right: 0.75rem;">
+          <button onclick="openLocationModal();" style="background: none; border: none; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15);" title="Check Pincode">
+            📍
+          </button>
+          <a href="/cart" style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15); color: white; text-decoration: none;">
+            🛒
+            <% if current_order && current_order.item_count > 0 %>
+              <span style="position: absolute; top: -4px; right: -4px; background: #e11d48; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; font-weight: bold;"><%= current_order.item_count %></span>
+            <% end %>
+          </a>
+        </div>
+
+        <!-- Hamburger Toggler -->
+        <button class="navbar-toggler" aria-label="Toggle navigation" onclick="document.getElementById('navbarMenu').classList.toggle('active'); this.classList.toggle('open');">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <!-- Navbar Menu -->
+        <div class="navbar-menu" id="navbarMenu">
+          <% unless is_ad_traffic? %>
+            <ul class="navbar-links">
+              <li><a href="/" class="navbar-link <%= current_page?(main_app.root_path) ? 'active' : '' %>" style="color: <%= current_page?(main_app.root_path) ? 'var(--accent)' : '#ffffff' %>;">Home</a></li>
+              <li><a href="/products" class="navbar-link <%= current_page?(main_app.products_path) ? 'active' : '' %>" style="color: <%= current_page?(main_app.products_path) ? 'var(--accent)' : '#ffffff' %>;">Shop</a></li>
+              <li><a href="/blogs" class="navbar-link <%= current_page?(main_app.blogs_path) ? 'active' : '' %>" style="color: <%= current_page?(main_app.blogs_path) ? 'var(--accent)' : '#ffffff' %>;">Our Story</a></li>
+              <li><a href="/track-order" class="navbar-link <%= current_page?('/track-order') ? 'active' : '' %>" style="color: <%= current_page?('/track-order') ? 'var(--accent)' : '#ffffff' %>;">Track Order</a></li>
+            </ul>
+
+
+
+            <!-- Search Bar -->
+            <div class="navbar-search">
+              <form action="/products" method="get" style="display: flex; align-items: center; background: white; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; padding: 0.25rem 0.5rem; box-shadow: var(--shadow-sm);">
+                <input type="text" name="keywords" placeholder="Search Jeeni products..." style="border: none; outline: none; padding: 0.5rem 1rem; width: 100%; font-size: 0.875rem;" value="<%= params[:keywords] %>">
+                <button type="submit" style="background: var(--primary); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition);">
+                  🔍
+                </button>
+              </form>
+            </div>
+          <% end %>
+          
+          <div class="navbar-actions">
+            <!-- Location Selector -->
+            <button onclick="openLocationModal();" style="background: none; border: none; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.85rem; font-weight: 600; padding: 0.4rem 0.75rem; border-radius: 999px; background: rgba(255,255,255,0.1); margin-right: 0.5rem; transition: var(--transition);" id="nav-location-btn">
+              <% if karnataka_visitor? %>
+                <span style="color: #4ade80;">📍 Karnataka Active</span>
+              <% else %>
+                <span>📍 Check Pincode</span>
+              <% end %>
+            </button>
+
+            <!-- Cart Link with Badge -->
+            <a href="/cart" class="btn btn-primary btn-sm" style="position: relative; display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 999px;">
+              🛒 Cart
+              <% if current_order && current_order.item_count > 0 %>
+                <span class="badge badge-success" style="background: white; color: var(--primary); padding: 0.15rem 0.4rem; font-size: 0.65rem; margin-left: 0.15rem;"><%= current_order.item_count %></span>
+              <% end %>
+            </a>
+            
+            <!-- Authentication links -->
+            <% if spree_current_user %>
+              <% if spree_current_user.has_spree_role?("admin") %>
+                <a href="/admin_custom" class="btn btn-secondary btn-sm" style="border-radius: 999px;">Admin</a>
+              <% end %>
+              <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                <% user_display_name = spree_current_user.first_name.presence || spree_current_user.email.to_s.split('@').first.to_s.split(/[\._]/).first.to_s.capitalize %>
+                <a href="/account" class="navbar-link" style="color: #ffffff;">👤 <%= user_display_name %></a>
+                <%= link_to "Logout", main_app.spree_logout_path, data: { turbo_method: :delete }, style: "font-size: 0.75rem; color: var(--danger); text-decoration: underline;" %>
+              </div>
+            <% else %>
+              <a href="/login" class="btn btn-outline btn-sm" style="border-radius: 999px; color: #ffffff; border-color: rgba(255, 255, 255, 0.4);">Login</a>
+              <a href="/signup" class="btn btn-primary btn-sm" style="border-radius: 999px; color: #ffffff;">Register</a>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main style="padding: 2rem 0; min-height: calc(100vh - 350px);">
+      <div class="container">
+        <!-- Flash messages -->
+        <% flash.each do |key, value| %>
+          <% next if key.to_s.start_with?("meta_pixel_") %>
+          <div class="alert alert-<%= key %>">
+            <span><%= value %></span>
+            <button onclick="this.parentElement.remove();" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: inherit; font-weight: bold;">&times;</button>
+          </div>
+        <% end %>
+
+        <%= yield %>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <% unless is_ad_traffic? %>
+          <div class="footer-grid">
+            <div>
+              <div style="margin-bottom: 1.25rem; display: inline-block; background: rgba(255, 255, 255, 0.95); padding: 0.6rem 1.25rem; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); border: 1px solid rgba(255, 255, 255, 0.15);">
+                <img src="/Jeeni-12.png" alt="Jeeni Millet Mix" style="max-height: 38px; width: auto; display: block; object-fit: contain;">
+              </div>
+              <p style="font-size: 0.875rem; line-height: 1.6;">Jeeni Millet Mix e-commerce app is built with Ruby on Rails, MariaDB, and Spree Commerce. Inspired by traditional food practices, our mixes contain 25+ selected millets, grains, and nuts for family health.</p>
+            </div>
+            <div>
+              <h4 class="footer-heading">Shop</h4>
+              <ul class="footer-links">
+                <li><a href="/products">All Products</a></li>
+                <li><a href="/products?featured=1">Featured Products</a></li>
+                <li><a href="/cart">Shopping Cart</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="footer-heading">Company</h4>
+              <ul class="footer-links">
+                <li><a href="/blogs">Our Blog</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/contact-us">Contact Us</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="footer-heading">Support</h4>
+              <ul class="footer-links">
+                <li><a href="/track-order">Track Order</a></li>
+                <li><a href="/faq">FAQs</a></li>
+                <li><a href="/privacy">Privacy Policy</a></li>
+                <li><a href="/terms">Terms of Service</a></li>
+              </ul>
+            </div>
+
+          </div>
+        <% end %>
+        <div class="footer-bottom" style="display: flex; flex-direction: column; gap: 0.75rem; align-items: center; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; margin-top: 1.5rem;">
+          <!-- FSSAI License Badge -->
+          <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.08); padding: 0.45rem 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15); margin-bottom: 0.25rem;">
+            <span style="font-weight: 900; color: #10b981; font-size: 0.95rem; font-family: 'Outfit', 'Inter', sans-serif; letter-spacing: 0.5px;">fssai</span>
+            <span style="color: rgba(255,255,255,0.3); font-size: 0.95rem;">|</span>
+            <span style="font-size: 0.825rem; color: rgba(255,255,255,0.9); font-weight: 600;">License No. 11220327000212</span>
+            <span style="color: rgba(255,255,255,0.3); font-size: 0.95rem;">|</span>
+            <span style="font-size: 0.825rem; color: #10b981; font-weight: 600; display: flex; align-items: center; gap: 0.25rem;">
+              <span style="width: 8px; height: 8px; border: 1.5px solid #10b981; display: flex; align-items: center; justify-content: center; background: white; padding: 1px; box-sizing: border-box;">
+                <span style="width: 4px; height: 4px; border-radius: 50%; background: #10b981; display: block;"></span>
+              </span>
+              100% Vegetarian
+            </span>
+          </div>
+          <p style="font-size: 0.9rem; color: rgba(255,255,255,0.85); font-weight: 500; margin: 0; display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
+            <span>☎️ Customer Support Helpline:</span>
+            <a href="tel:+917624931166" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: var(--transition);">&plus;91 76249 31166</a>
+            <span style="color: rgba(255,255,255,0.3);">/</span>
+            <a href="tel:+917406661438" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: var(--transition);">&plus;91 74066 61438</a>
+            <span style="color: rgba(255,255,255,0.3);">|</span>
+            <span>Sira, Tumkur, Karnataka</span>
+            <span style="color: rgba(255,255,255,0.3);">|</span>
+            <span style="color: #10b981; font-weight: 600;">Wholesome Traditional Millet Mixes</span>
+          </p>
+          <p style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin: 0;">&copy; <%= Time.current.year %> Jeevitha Enterprises. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Meta Pixel Body Events -->
+    <% if meta_pixel_id.present? %>
+      <% if flash[:meta_pixel_add_to_cart].present? %>
+        <script>
+          if (typeof fbq !== 'undefined') {
+            fbq('track', 'AddToCart', <%= raw flash[:meta_pixel_add_to_cart].to_json %>);
+          }
+        </script>
+      <% end %>
+    <% end %>
+    <!-- End Meta Pixel Body Events -->
+
+    <!-- Commented out old WhatsApp button to avoid overlap with new WATI widget
+    <%
+      wa_num = CroSetting.get('whatsapp_number', '917624931166')
+      wa_url = "https://wa.me/#{wa_num}?text=Hi,%20I'm%20interested%20in%20Jeeni%20Millet%20Mix.%20Please%20guide%20me%20with%20booking."
+    %>
+    <a href="<%= wa_url %>" class="floating-whatsapp" target="_blank" aria-label="Chat on WhatsApp" id="floating-whatsapp-btn">💬</a>
+    -->
+
+    <!-- Global Accordion script -->
+    <script>
+      function toggleCroAccordion(titleElement) {
+        if (!titleElement) return;
+        const accordion = titleElement.parentElement;
+        if (accordion) {
+          accordion.classList.toggle('open');
+        }
+      }
+    </script>
+
+    <!-- Global CRO Event Tracking -->
+    <script>
+      // Define global tracking helper
+      window.trackFunnelEventInternal = function(eventName, productId) {
+        const data = new FormData();
+        data.append('event_name', eventName);
+        if (productId) data.append('product_id', productId);
+        data.append('path', window.location.pathname);
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon('/api/track_event', data);
+        } else {
+          fetch('/api/track_event', {
+            method: 'POST',
+            body: data
+          }).catch(function(){});
+        }
+      };
+
+      document.addEventListener('turbo:load', function() {
+        // Track page views
+        const path = window.location.pathname;
+        let productId = null;
+        
+        // Try to locate product ID on product page
+        if (path.startsWith('/products/')) {
+          const mainForm = document.getElementById('add-to-cart-form') || document.querySelector('form[action*="/cart/add"]');
+          if (mainForm) {
+            productId = mainForm.getAttribute('data-product-id') || mainForm.querySelector('input[name="product_id"]')?.value;
+          }
+          trackCroEvent('Product View', { product_slug: path.split('/').pop() });
+        } else if (path === '/') {
+          trackCroEvent('Homepage View');
+        } else if (path === '/checkout/address') {
+          trackCroEvent('Checkout Started');
+        } else if (path.startsWith('/orders/show') || path.includes('/orders/')) {
+          trackCroEvent('Order Completed');
+        }
+
+        // Track clicks on Easy Booking and Buy Now buttons
+        document.querySelectorAll('button, input[type="submit"], a, .btn-cro-primary, .btn-primary').forEach(function(btn) {
+          const txt = (btn.textContent || btn.value || '').trim().toUpperCase();
+          if (txt.includes('EASY BOOKING') || txt.includes('BOOKING') || txt.includes('BUY NOW')) {
+            btn.addEventListener('click', function() {
+              if (btn.getAttribute('data-tracked') === 'true') return;
+              btn.setAttribute('data-tracked', 'true');
+              setTimeout(function() { btn.removeAttribute('data-tracked'); }, 1000);
+
+              let currentProductId = btn.getAttribute('data-product-id') || productId;
+              if (!currentProductId) {
+                const form = btn.closest('form');
+                if (form) {
+                  currentProductId = form.getAttribute('data-product-id') || form.querySelector('input[name="product_id"]')?.value;
+                }
+              }
+
+              // Distinguish Easy Booking and Buy Now clicks
+              if (txt.includes('BUY NOW')) {
+                trackCroEvent('Buy Now Click', { product_id: currentProductId });
+                window.trackFunnelEventInternal('click_buy_now', currentProductId);
+              } else {
+                trackCroEvent('Easy Booking Click', { product_id: currentProductId });
+                window.trackFunnelEventInternal('click_easy_booking', currentProductId);
+              }
+            });
+          }
+        });
+
+        // Track clicks on Offer Banner
+        document.querySelectorAll('.cro-offer-card, .offer-banner').forEach(function(el) {
+          el.addEventListener('click', function() {
+            trackCroEvent('Offer Banner Click', { product_id: productId });
+            window.trackFunnelEventInternal('click_offer_banner', productId);
+          });
+        });
+
+        // Track CTA Impressions and Review Section Viewed via IntersectionObserver
+        if (typeof IntersectionObserver !== 'undefined') {
+          // 1. Observe CTA Container
+          const ctaTarget = document.getElementById('add-to-cart-form') || document.querySelector('.product-detail-info');
+          if (ctaTarget) {
+            let ctaTracked = false;
+            const ctaObserver = new IntersectionObserver(function(entries) {
+              entries.forEach(function(entry) {
+                if (entry.isIntersecting && !ctaTracked) {
+                  ctaTracked = true;
+                  trackCroEvent('CTA Impression', { product_id: productId });
+                  window.trackFunnelEventInternal('cta_impression', productId);
+                  ctaObserver.unobserve(entry.target);
+                }
+              });
+            }, { threshold: 0.1 });
+            ctaObserver.observe(ctaTarget);
+          }
+
+          // 2. Observe Reviews Section
+          const reviewsTarget = document.getElementById('reviews-section');
+          if (reviewsTarget) {
+            let reviewsTracked = false;
+            const reviewsObserver = new IntersectionObserver(function(entries) {
+              entries.forEach(function(entry) {
+                if (entry.isIntersecting && !reviewsTracked) {
+                  reviewsTracked = true;
+                  trackCroEvent('Review Section Viewed', { product_id: productId });
+                  window.trackFunnelEventInternal('view_reviews_section', productId);
+                  reviewsObserver.unobserve(entry.target);
+                }
+              });
+            }, { threshold: 0.1 });
+            reviewsObserver.observe(reviewsTarget);
+          }
+        }
+
+        // Scroll depth tracking
+        let scrollDepths = { 25: false, 50: false, 75: false, 100: false };
+        function scrollDepthHandler() {
+          const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          if (docHeight <= 0) return;
+          const pct = Math.round((scrollTop / docHeight) * 100);
+          [25, 50, 75, 100].forEach(function(depth) {
+            if (pct >= depth && !scrollDepths[depth]) {
+              scrollDepths[depth] = true;
+              trackCroEvent('Scroll Depth ' + depth + '%', { product_id: productId });
+              window.trackFunnelEventInternal('scroll_depth_' + depth, productId);
+            }
+          });
+        }
+        window.addEventListener('scroll', scrollDepthHandler, { passive: true });
+
+        // Cleanup listener on next navigation to prevent leaks
+        document.addEventListener('turbo:before-visit', function cleanup() {
+          window.removeEventListener('scroll', scrollDepthHandler);
+          document.removeEventListener('turbo:before-visit', cleanup);
+        });
+
+        // Track clicks on WhatsApp elements
+        document.querySelectorAll('a[href*="wa.me"], .btn-whatsapp-chat, #floating-whatsapp-btn').forEach(function(el) {
+          el.addEventListener('click', function() {
+            trackCroEvent('WhatsApp Click');
+          });
+        });
+
+        // Track clicks on Call elements
+        document.querySelectorAll('a[href^="tel:"]').forEach(function(el) {
+          el.addEventListener('click', function() {
+            trackCroEvent('Call Click');
+          });
+        });
+
+        // Prevent double form submissions on add-to-cart actions
+        document.querySelectorAll('form[action*="/cart/add"]').forEach(function(form) {
+          form.addEventListener('submit', function(e) {
+            if (form.getAttribute('data-submitted') === 'true') {
+              e.preventDefault();
+              return false;
+            }
+            form.setAttribute('data-submitted', 'true');
+            
+            const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+            if (submitBtn) {
+              submitBtn.style.opacity = '0.7';
+              submitBtn.style.cursor = 'not-allowed';
+              if (!submitBtn.innerHTML.includes('Processing')) {
+                submitBtn.innerHTML = '🔄 Processing...';
+              }
+            }
+          });
+        });
+      });
+
+      function trackCroEvent(eventName, params) {
+        console.log('[CRO Analytics] Event:', eventName, params);
+        
+        // 1. Send to Google Analytics (gtag)
+        if (typeof gtag !== 'undefined') {
+          gtag('event', eventName.toLowerCase().replace(/ /g, '_'), params || {});
+        }
+        
+        // 2. Send to Meta Pixel (fbq)
+        if (typeof fbq !== 'undefined') {
+          fbq('trackCustom', eventName, params || {});
+        }
+      }
+    </script>
+    <!-- WATI WhatsApp Widget -->
+    <script>
+      var url = 'https://wati-integration-prod-service.clare.ai/v2/watiWidget.js?11685';
+      var s = document.createElement('script');
+      s.type = 'text/javascript';
+      s.async = true;
+      s.src = url;
+      var options = {
+        "enabled":true,
+        "chatButtonSetting":{
+          "backgroundColor":"#00e785",
+          "ctaText":"Chat with us",
+          "borderRadius":"25",
+          "marginLeft": "0",
+          "marginRight": "20",
+          "marginBottom": "20",
+          "ctaIconWATI":false,
+          "position":"right"
+        },
+        "brandSetting":{
+          "brandName":"Jeeni",
+          "brandSubTitle":"undefined",
+          "brandImg":"https://jeenimilletmix.in/Jeeni-12.png",
+          "welcomeText":"💚 JEENI ಕುಟುಂಬಕ್ಕೆ ಸ್ವಾಗತ!",
+          "messageText":"👋 Hi Jeeni! I'm interested in your products. Please guide me. ⭐",
+          "backgroundColor":"#00e785",
+          "ctaText":"Chat with us",
+          "borderRadius":"25",
+          "autoShow":false,
+          "phoneNumber":"916364874917"
+        }
+      };
+      s.onload = function() {
+        CreateWhatsappChatWidget(options);
+      };
+      var x = document.getElementsByTagName('script')[0];
+      x.parentNode.insertBefore(s, x);
+    </script>
+
+    <!-- Location Picker Modal -->
+    <div id="locationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+      <div style="background: #ffffff; padding: 2rem; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); position: relative; font-family: inherit;">
+        <button onclick="closeLocationModal();" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">&times;</button>
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">📍</span>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0;">Check Special Pricing</h3>
+          <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Enter your pincode to unlock Karnataka Special prices!</p>
+        </div>
+        
+        <div id="modal-pincode-error" style="display: none; background: #fef2f2; border: 1px solid #fca5a5; color: #b91c1c; font-size: 0.85rem; padding: 0.6rem; border-radius: 8px; margin-bottom: 1rem; font-weight: 600; text-align: center;"></div>
+        
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <input type="text" id="modal-pincode-input" placeholder="Enter 6-digit Pincode" maxlength="6" inputmode="numeric" style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 1rem; font-weight: 700; text-align: center; color: #0f172a; box-sizing: border-box; outline: none; transition: border-color 0.2s;" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+        </div>
+        
+        <button onclick="submitPincode();" style="width: 100%; padding: 0.75rem; background: #15803d; color: #ffffff; border: none; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: background 0.2s; border-radius: 8px;">Check Location</button>
+        
+        <div style="text-align: center; margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
+          <button onclick="selectKarnatakaState();" style="background: none; border: none; color: #15803d; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline;">Directly set Karnataka State</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openLocationModal() {
+        document.getElementById('locationModal').style.display = 'flex';
+        document.getElementById('modal-pincode-input').focus();
+      }
+
+      function closeLocationModal() {
+        document.getElementById('locationModal').style.display = 'none';
+      }
+
+      function selectKarnatakaState() {
+        setVisitorLocation({ state: 'karnataka' });
+      }
+
+      function submitPincode() {
+        const pin = document.getElementById('modal-pincode-input').value.trim();
+        if (pin.length !== 6) {
+          const err = document.getElementById('modal-pincode-error');
+          err.innerText = 'Pincode must be exactly 6 digits';
+          err.style.display = 'block';
+          return;
+        }
+        setVisitorLocation({ pincode: pin });
+      }
+
+      function setVisitorLocation(data) {
+        const btn = document.querySelector('#locationModal button[onclick*="submitPincode"]');
+        const originalText = btn ? btn.innerText : 'Check Location';
+        if (btn) btn.innerText = 'Checking...';
+        
+        fetch('/api/set_location', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            closeLocationModal();
+            window.location.reload();
+          } else {
+            const err = document.getElementById('modal-pincode-error');
+            err.innerText = res.message || 'Error checking location';
+            err.style.display = 'block';
+            if (btn) btn.innerText = originalText;
+          }
+        })
+        .catch(e => {
+          const err = document.getElementById('modal-pincode-error');
+          err.innerText = 'Connection error';
+          err.style.display = 'block';
+          if (btn) btn.innerText = originalText;
+        });
+      }
+
+      // Auto-detect visitor location on first load if not set
+      <% if !session[:visitor_state].present? && !session[:visitor_pincode].present? %>
+        document.addEventListener("DOMContentLoaded", function() {
+          if (!sessionStorage.getItem('location_detected')) {
+            sessionStorage.setItem('location_detected', 'true');
+            
+            function detectKarnataka(url, fallbackFn) {
+              fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                  const region = data.regionName || data.region || '';
+                  if (region && region.toLowerCase() === 'karnataka') {
+                    setVisitorLocation({ state: 'karnataka' });
+                  } else if (fallbackFn) {
+                    fallbackFn();
+                  }
+                })
+                .catch(e => {
+                  if (fallbackFn) fallbackFn();
+                });
+            }
+            
+            detectKarnataka('https://freeipapi.com/api/json', function() {
+              detectKarnataka('https://ipapi.co/json/');
+            });
+          }
+        });
+      <% end %>
+    </script>
+  </body>
+</html>

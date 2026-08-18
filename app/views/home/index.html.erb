@@ -1,0 +1,530 @@
+<style>
+  /* Remove top padding of the main wrapper on the homepage to prevent a white gap under the navbar */
+  main {
+    padding-top: 0 !important;
+  }
+</style>
+
+<div class="homepage-sections-wrapper">
+  <!-- Top Hero Banner with Clear HD Millet Image -->
+  <div class="home-hero-banner" style="position: relative; width: 100vw; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; height: 320px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-top: 0; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); box-sizing: border-box;">
+    <!-- Background Image with Brightness and Contrast Filters (Full Width Cover, reduced height from 420px to 320px) -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('/millet_banner_wide.png') no-repeat center center/cover; filter: brightness(1.25) contrast(1.05); z-index: 0;"></div>
+  </div>
+
+  <!-- Highlighted Highest Selling Featured Products Section -->
+  <div class="highest-selling-section" style="margin: 1.5rem 0 2rem 0;">
+    <div style="text-align: center; margin-bottom: 1.25rem;">
+      <h2 style="font-size: 1.35rem; font-weight: 900; color: #0f172a; margin: 0; line-height: 1.25;">
+        Customer Favorites & Top Recommended Blends
+      </h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem;" class="grid-mobile-1col">
+      <!-- Product 1: Jeeni Slim Mix -->
+      <% if @slim_product.present? %>
+        <div class="highlight-product-card highlight-product-card-slim">
+          <span class="highlight-badge highlight-badge-slim">
+            ⭐ #1 BEST SELLER
+          </span>
+
+          <div class="highlight-card-body">
+            <a href="/products/<%= @slim_product.slug %>" class="highlight-img-link">
+              <img src="<%= product_image_url(@slim_product) %>" alt="<%= @slim_product.name %>" class="highlight-img">
+            </a>
+            <div class="highlight-info">
+              <div class="highlight-reviews">
+                ⭐⭐⭐⭐⭐ 4.9 (1,240+ Reviews)
+              </div>
+              <h3 class="highlight-title">
+                <a href="/products/<%= @slim_product.slug %>"><%= @slim_product.name %></a>
+              </h3>
+              <div class="highlight-price-row">
+                <% if karnataka_visitor? && @slim_product.karnataka_price.present? %>
+                  <span class="highlight-price" style="color: #16a34a;">₹<%= @slim_product.karnataka_price.to_i %></span>
+                  <span class="highlight-old-price">₹<%= @slim_product.price.to_i %></span>
+                  <span class="highlight-save-badge highlight-save-badge-slim" style="background: #16a34a; color: #ffffff;">KARNATAKA SPECIAL</span>
+                <% else %>
+                  <span class="highlight-price"><%= @slim_product.display_price.to_s %></span>
+                <% end %>
+              </div>
+              <p class="highlight-desc">
+                Traditional Millet Blend for Fitness, Weight Balance & Vitality.
+              </p>
+            </div>
+          </div>
+
+          <div class="highlight-card-footer">
+            <span class="highlight-gift-label highlight-gift-label-slim">
+              🎁 Includes FREE Gift!
+            </span>
+            <a href="/products/<%= @slim_product.slug %>" class="btn highlight-buy-btn highlight-buy-btn-slim">
+              Buy Now ↗
+            </a>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Product 2: Jeeni Sugaramla 1KG -->
+      <% if @sugaramla_product.present? %>
+        <div class="highlight-product-card highlight-product-card-sugaramla">
+          <span class="highlight-badge highlight-badge-sugaramla">
+            🔥 TOP RATED 1KG
+          </span>
+
+          <div class="highlight-card-body">
+            <a href="/products/<%= @sugaramla_product.slug %>" class="highlight-img-link">
+              <img src="<%= product_image_url(@sugaramla_product) %>" alt="<%= @sugaramla_product.name %>" class="highlight-img">
+            </a>
+            <div class="highlight-info">
+              <div class="highlight-reviews">
+                ⭐⭐⭐⭐⭐ 4.95 (980+ Reviews)
+              </div>
+              <h3 class="highlight-title">
+                <a href="/products/<%= @sugaramla_product.slug %>"><%= @sugaramla_product.name %></a>
+              </h3>
+              <div class="highlight-price-row">
+                <% if karnataka_visitor? && @sugaramla_product.karnataka_price.present? %>
+                  <span class="highlight-price" style="color: #16a34a;">₹<%= @sugaramla_product.karnataka_price.to_i %></span>
+                  <span class="highlight-old-price">₹<%= @sugaramla_product.price.to_i %></span>
+                  <span class="highlight-save-badge highlight-save-badge-sugaramla" style="background: #16a34a; color: #ffffff;">KARNATAKA SPECIAL</span>
+                <% else %>
+                  <span class="highlight-price"><%= @sugaramla_product.display_price.to_s %></span>
+                  <span class="highlight-save-badge highlight-save-badge-sugaramla">FAMILY PACK 1KG</span>
+                <% end %>
+              </div>
+              <p class="highlight-desc">
+                Traditional Amla & Herbal Grain Formula for Daily Immunity.
+              </p>
+            </div>
+          </div>
+
+          <div class="highlight-card-footer">
+            <span class="highlight-gift-label highlight-gift-label-sugaramla">
+              🎁 Includes FREE Gift!
+            </span>
+            <a href="/products/<%= @sugaramla_product.slug %>" class="btn highlight-buy-btn highlight-buy-btn-sugaramla">
+              Buy Now ↗
+            </a>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Features Bar (Woodmart Style) -->
+  <div class="features-bar home-section-features" style="margin-bottom: 1.5rem;">
+    <div class="feature-item">
+      <div class="feature-icon-wrapper">
+        <img src="/vg-delivery.svg" class="feature-icon" alt="Free Shipping">
+      </div>
+      <div>
+        <div class="feature-title">Quick Delivery</div>
+        <div class="feature-desc">Prompt shipping all across India</div>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon-wrapper">
+        <img src="/vg-products.svg" class="feature-icon" alt="Wholesome Grains">
+      </div>
+      <div>
+        <div class="feature-title">100% Wholesome Grains</div>
+        <div class="feature-desc">Rich mix of 25+ traditional ingredients</div>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon-wrapper">
+        <img src="/vg-payment.svg" class="feature-icon" alt="Secure Payment">
+      </div>
+      <div>
+        <div class="feature-title">Secure Payments</div>
+        <div class="feature-desc">Cash on Delivery & Online Pay</div>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon-wrapper">
+        <img src="/vg-support.svg" class="feature-icon" alt="Customer Support">
+      </div>
+      <div>
+        <div class="feature-title">Helpline Support</div>
+        <div class="feature-desc">Call us anytime on 76249 31166</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURE 1 & 2: Highly Prominent Limited Time Offer Banner with Visual Gift Image -->
+  <div class="home-limited-offer-card" style="margin: 1.0rem 0 1.5rem 0; background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 1.5px solid #f59e0b; border-radius: 14px; padding: 0.85rem 1.15rem; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12); display: grid; grid-template-columns: minmax(110px, 140px) 1fr auto; gap: 1.0rem; align-items: center; position: relative; overflow: hidden;">
+    
+    <!-- Gift Product Visual Image Box -->
+    <div style="position: relative; text-align: center; background: #ffffff; padding: 0.5rem; border-radius: 10px; border: 1px solid #fcd34d; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+      <span style="position: absolute; top: -7px; left: 50%; transform: translateX(-50%); background: #dc2626; color: white; font-weight: 900; font-size: 0.65rem; padding: 0.15rem 0.55rem; border-radius: 999px; text-transform: uppercase; white-space: nowrap; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);">
+        🎁 FREE GIFT
+      </span>
+      <% gift_img_src = @gift_product.present? ? product_image_url(@gift_product) : "/product_health_mix.png" %>
+      <img src="<%= gift_img_src %>" alt="<%= @gift_product&.name || 'Jeeni Vegetable Coffee Free Gift' %>" style="width: 100%; max-width: 95px; height: 75px; object-fit: contain; margin-top: 0.35rem; display: block; margin-left: auto; margin-right: auto;">
+      <div style="font-weight: 800; font-size: 0.78rem; color: #78350f; margin-top: 0.25rem; line-height: 1.2;">
+        Vegetable Coffee
+      </div>
+      <div style="font-size: 0.7rem; color: #92400e; font-weight: 700; margin-top: 0.1rem;">
+        Worth <span style="text-decoration: line-through; color: #b45309;">₹279</span> <strong style="color: #15803d; font-size: 0.78rem;">FREE!</strong>
+      </div>
+    </div>
+
+    <!-- Offer Copy & Details -->
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.35rem;">
+        <span style="background: #b45309; color: white; font-weight: 900; font-size: 0.68rem; padding: 0.15rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.4px;">🔥 LIMITED TIME OFFER</span>
+        <span style="background: #15803d; color: white; font-weight: 800; font-size: 0.68rem; padding: 0.15rem 0.55rem; border-radius: 999px;">FREE GIFT + FREE DELIVERY</span>
+      </div>
+      <h2 style="font-size: 0.95rem; font-weight: 800; color: #78350f; margin: 0 0 0.35rem 0; line-height: 1.3;">
+        Buy Jeeni Slim or Jeeni Sugaramla 1KG using <span style="color: #b45309; text-decoration: underline;">Online Payment</span> & Get <a href="/products/vegetable-cofpee" target="_blank" style="color: #92400e; text-decoration: underline; font-weight: 900;">Jeeni Vegetable Coffee FREE</a>!
+      </h2>
+      <p style="color: #92400e; font-size: 0.78rem; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+        <span>✅ 100% Free Shipping Included</span>
+        <span>⚡ Applicable on Online Paid Orders</span>
+      </p>
+    </div>
+
+    <!-- Action CTAs -->
+    <div style="display: flex; flex-direction: column; gap: 0.4rem; min-width: 150px;">
+      <a href="/products/jeeni-slim-new" class="btn" style="background: linear-gradient(135deg, #15803d, #166534); color: white; font-weight: 800; padding: 0.45rem 0.95rem; border-radius: 8px; text-decoration: none; font-size: 0.8rem; text-align: center; box-shadow: 0 3px 8px rgba(21,128,61,0.2); transition: transform 0.15s;">
+        ⚡ Claim Offer - Jeeni Slim ↗
+      </a>
+      <a href="/products/jeeni-sugaramla-1kg-sugaramla-1kg" class="btn" style="background: #ffffff; color: #b45309; border: 1.5px solid #b45309; font-weight: 800; padding: 0.4rem 0.85rem; border-radius: 8px; text-decoration: none; font-size: 0.78rem; text-align: center;">
+        ⚡ Claim Offer - Sugaramla ↗
+      </a>
+    </div>
+  </div>
+
+  <!-- FEATURE 5: 4-Step Offer Flow Visual Card -->
+  <div class="offer-flow-container" style="margin-bottom: 3rem; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 1.25rem 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+    <div style="text-align: center; margin-bottom: 1.25rem;">
+      <h3 style="font-size: 0.95rem; font-weight: 800; color: #0f172a; margin: 0;">How to Claim Your Free Vegetable Coffee Gift in 4 Simple Steps</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;" class="grid-mobile-1col">
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1rem; text-align: center;">
+        <div style="background: #15803d; color: white; width: 28px; height: 28px; border-radius: 999px; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem auto;">1</div>
+        <strong style="font-size: 0.9rem; color: #1e293b; display: block;">Select Product</strong>
+        <span style="font-size: 0.8rem; color: #64748b; margin-top: 0.2rem; display: block;">Choose Jeeni Slim or Sugaramla 1KG</span>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1rem; text-align: center;">
+        <div style="background: #15803d; color: white; width: 28px; height: 28px; border-radius: 999px; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem auto;">2</div>
+        <strong style="font-size: 0.9rem; color: #1e293b; display: block;">Online Payment</strong>
+        <span style="font-size: 0.8rem; color: #64748b; margin-top: 0.2rem; display: block;">Select UPI / Card / Netbanking</span>
+      </div>
+      <div style="background: #fefce8; border: 1.5px solid #fde047; border-radius: 12px; padding: 1rem; text-align: center;">
+        <div style="background: #b45309; color: white; width: 28px; height: 28px; border-radius: 999px; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem auto;">3</div>
+        <strong style="font-size: 0.9rem; color: #78350f; display: block;">🎁 Free Gift Added</strong>
+        <span style="font-size: 0.8rem; color: #92400e; margin-top: 0.2rem; display: block;">Vegetable Coffee added at ₹0</span>
+      </div>
+      <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 1rem; text-align: center;">
+        <div style="background: #166534; color: white; width: 28px; height: 28px; border-radius: 999px; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem auto;">4</div>
+        <strong style="font-size: 0.9rem; color: #14532d; display: block;">🚚 FREE Delivery</strong>
+        <span style="font-size: 0.8rem; color: #166534; margin-top: 0.2rem; display: block;">Shipped 100% Free across India</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURE 3: Customer Testimonials & Trust Badges Section (Moved Immediately Below Offer) -->
+  <section class="home-section-testimonials" style="margin-bottom: 4rem; background: #f8fafc; border-radius: 20px; padding: 2.5rem 1.5rem; border: 1px solid #e2e8f0;">
+    <div class="section-title-wrap" style="text-align: center; margin-bottom: 2rem;">
+      <div style="color: #f59e0b; font-size: 1.25rem; margin-bottom: 0.35rem;">⭐⭐⭐⭐⭐</div>
+      <h2 class="section-title-main" style="font-size: 1.75rem; margin-bottom: 0.35rem;">Loved by Over 50,000+ Happy Families</h2>
+      <p class="section-title-sub" style="color: #64748b; font-size: 0.95rem;">Real experiences from verified daily Jeeni millet consumers</p>
+    </div>
+
+    <!-- Testimonials Grid -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;" class="grid-mobile-1col">
+      <div style="background: #ffffff; padding: 1.25rem; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <div style="color: #f59e0b; font-size: 0.9rem;">⭐⭐⭐⭐⭐</div>
+          <span style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.55rem; border-radius: 999px;">Verified Buyer</span>
+        </div>
+        <p style="color: #334155; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem; italic">
+          "Jeeni Slim mix has become a permanent morning habit in our home. Feeling lighter, more energetic, and the taste is fantastic with buttermilk!"
+        </p>
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <div style="width: 38px; height: 38px; background: #15803d; color: white; font-weight: 800; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">RK</div>
+          <div>
+            <strong style="font-size: 0.9rem; color: #0f172a; display: block;">Ramesh Kumar</strong>
+            <span style="font-size: 0.78rem; color: #64748b;">Davangere, Karnataka</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: #ffffff; padding: 1.25rem; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <div style="color: #f59e0b; font-size: 0.9rem;">⭐⭐⭐⭐⭐</div>
+          <span style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.55rem; border-radius: 999px;">Verified Buyer</span>
+        </div>
+        <p style="color: #334155; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem; italic">
+          "Jeeni Sugaramla 1KG is perfect for our daily wellness routine. Extremely fresh, pure and wholesome without added sugar. The free Vegetable Coffee gift was an awesome bonus!"
+        </p>
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <div style="width: 38px; height: 38px; background: #b45309; color: white; font-weight: 800; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">SR</div>
+          <div>
+            <strong style="font-size: 0.9rem; color: #0f172a; display: block;">Sunita Rao</strong>
+            <span style="font-size: 0.78rem; color: #64748b;">Bangalore, Karnataka</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: #ffffff; padding: 1.25rem; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <div style="color: #f59e0b; font-size: 0.9rem;">⭐⭐⭐⭐⭐</div>
+          <span style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.55rem; border-radius: 999px;">Verified Buyer</span>
+        </div>
+        <p style="color: #334155; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem; italic">
+          "Quick delivery and top-notch packaging. The health mix tastes rich and keeps me full till lunch. Highly recommended for busy working professionals."
+        </p>
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <div style="width: 38px; height: 38px; background: #0369a1; color: white; font-weight: 800; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">VP</div>
+          <div>
+            <strong style="font-size: 0.9rem; color: #0f172a; display: block;">Vijay Patil</strong>
+            <span style="font-size: 0.78rem; color: #64748b;">Mysuru, Karnataka</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURE 4: Focused Homepage - Primary Conversion Products Section (Jeeni Slim + Jeeni Sugaramla 1KG) -->
+  <section id="featured-products" class="home-section-primary-products" style="margin-bottom: 4rem;">
+    <div class="section-title-wrap" style="text-align: center; margin-bottom: 2rem;">
+      <span style="background: #fef3c7; color: #b45309; font-weight: 800; font-size: 0.8rem; padding: 0.3rem 0.85rem; border-radius: 999px; text-transform: uppercase;">⭐ PRIMARY OFFER SELECTION</span>
+      <h2 class="section-title-main" style="font-size: 1.85rem; margin-top: 0.5rem; margin-bottom: 0.35rem; color: #0f172a;">Featured Best-Selling Millet Blends</h2>
+      <p class="section-title-sub" style="color: #64748b;">Select our top 2 high-conversion products eligible for the FREE Vegetable Coffee Offer</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; max-width: 900px; margin: 0 auto;" class="grid-mobile-1col">
+      <% if @primary_products.present? && @primary_products.any? %>
+        <% @primary_products.each do |product| %>
+          <% is_slim = product.name.to_s.downcase.include?('slim') || product.slug.to_s.downcase.include?('slim') %>
+          <div class="card" style="border: 2px solid <%= is_slim ? '#15803d' : '#b45309' %>; border-radius: 16px; overflow: hidden; background: #ffffff; box-shadow: 0 6px 16px rgba(0,0,0,0.06); display: flex; flex-direction: column;">
+            <div style="position: relative; background: #f8fafc; height: 260px; overflow: hidden;">
+              <span style="position: absolute; top: 12px; left: 12px; background: <%= is_slim ? '#15803d' : '#b45309' %>; color: white; font-weight: 800; font-size: 0.78rem; padding: 0.3rem 0.75rem; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); z-index: 2;">
+                <%= is_slim ? '⭐ Best Seller' : '⭐ Top Choice' %>
+              </span>
+              <span style="position: absolute; top: 12px; right: 12px; background: #fef3c7; color: #78350f; border: 1px solid #fcd34d; font-weight: 800; font-size: 0.75rem; padding: 0.3rem 0.65rem; border-radius: 999px; z-index: 2;">
+                🎁 Free Gift Eligible
+              </span>
+              <%= render_product_media(product) %>
+            </div>
+            
+            <div class="card-content" style="padding: 1.5rem; display: flex; flex-direction: column; flex: 1;">
+              <span class="cert-badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; width: fit-content;">Traditional Wholesome Millets</span>
+              <h3 class="card-title" style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0.5rem 0;"><a href="/products/<%= product.slug %>"><%= product.name %></a></h3>
+              <p class="card-description" style="color: #475569; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.25rem; flex: 1;"><%= truncate(product.description, length: 110) %></p>
+              
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
+                <div>
+                  <% if karnataka_visitor? && product.karnataka_price.present? %>
+                    <span style="font-size: 0.75rem; color: #16a34a; font-weight: 700; display: block;">🏷️ Karnataka Special Price</span>
+                    <span class="card-price" style="font-size: 1.35rem; font-weight: 900; color: #16a34a;">₹<%= product.karnataka_price.to_i %></span>
+                    <span style="font-size: 0.8rem; color: #94a3b8; text-decoration: line-through; font-weight: 500;">₹<%= product.price.to_i %></span>
+                  <% else %>
+                    <span style="font-size: 0.75rem; color: #64748b; display: block;">Special Offer Price</span>
+                    <span class="card-price" style="font-size: 1.35rem; font-weight: 900; color: #0f172a;"><%= product.display_price.to_s %></span>
+                  <% end %>
+                </div>
+
+                <%= form_tag add_to_cart_path, method: :post, style: "margin: 0; display: inline-block;" do %>
+                  <%= hidden_field_tag :variant_id, product.master.id %>
+                  <%= hidden_field_tag :quantity, 1 %>
+                  <%= hidden_field_tag :checkout, 1 %>
+                  <%= submit_tag "⚡ Easy Booking", class: "btn btn-primary", style: "border-radius: 10px; padding: 0.6rem 1.25rem; font-size: 0.95rem; font-weight: 800; cursor: pointer; border: none; background: linear-gradient(135deg, #15803d, #166534); color: white; box-shadow: 0 4px 10px rgba(21, 128, 61, 0.25);" %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <!-- FEATURE 4 (cont.): Explore More Healthy Products Section -->
+  <section class="home-section-other-products" style="margin-bottom: 4rem;">
+    <div class="section-title-wrap">
+      <h2 class="section-title-main">🌾 Explore More Healthy Millet Products</h2>
+      <p class="section-title-sub">Discover our full range of daily wellness and traditional mixes</p>
+    </div>
+    
+    <div class="grid grid-cols-4">
+      <% if @other_products.present? && @other_products.any? %>
+        <% @other_products.each do |product| %>
+          <div class="card">
+            <div class="card-img-wrapper" style="position: relative; overflow: hidden; background: #f1f5f9; height: 220px;">
+              <%= render_product_media(product) %>
+            </div>
+            <div class="card-content">
+              <span class="cert-badge">Free Delivery</span>
+              <h3 class="card-title"><a href="/products/<%= product.slug %>"><%= product.name %></a></h3>
+              <p class="card-description"><%= truncate(product.description, length: 75) %></p>
+              <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; width: 100%; box-sizing: border-box;">
+                <% if karnataka_visitor? && product.karnataka_price.present? %>
+                  <div style="display: flex; flex-direction: column;">
+                    <span class="card-price" style="flex-shrink: 0; font-weight: 800; color: #16a34a; font-size: 1.1rem; line-height: 1.1;">₹<%= product.karnataka_price.to_i %></span>
+                    <span style="font-size: 0.75rem; color: #94a3b8; text-decoration: line-through; line-height: 1.1;">₹<%= product.price.to_i %></span>
+                  </div>
+                <% else %>
+                  <span class="card-price" style="flex-shrink: 0; font-weight: 800; color: #0f172a;"><%= product.display_price.to_s %></span>
+                <% end %>
+                <%= form_tag add_to_cart_path, method: :post, style: "margin: 0; display: inline-block;" do %>
+                  <%= hidden_field_tag :variant_id, product.master.id %>
+                  <%= hidden_field_tag :quantity, 1 %>
+                  <%= hidden_field_tag :checkout, 1 %>
+                  <%= submit_tag "⚡ Easy Booking", class: "btn btn-primary btn-sm", style: "border-radius: 99px; padding: 0.45rem 1rem; font-size: 0.825rem; font-weight: 800; cursor: pointer; border: none; white-space: nowrap; background: linear-gradient(135deg, #15803d, #166534); color: white;" %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <!-- Quick Know About Jeeni Products Section -->
+  <section class="home-section-quick" style="margin-bottom: 4rem;">
+    <div class="section-title-wrap">
+      <h2 class="section-title-main">Quick Know About Jeeni</h2>
+      <p class="section-title-sub">The ultimate power of traditional millets</p>
+    </div>
+    
+    <div class="health-benefits-container">
+      <div>
+        <img src="/jeeni_millet_collage.png" class="health-benefits-img" alt="Wholesome Millets and dry fruits collage">
+      </div>
+      <div class="health-benefits-content">
+        <h3 style="font-family: var(--font-serif); font-size: 1.75rem; color: var(--secondary); line-height: 1.3;">Why Choose Jeeni Millet Mix?</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.75rem; line-height: 1.6;">
+          Jeeni Products are highly nutritious, gluten-free grains that have been cultivated for thousands of years. They are known for their resilience to harsh climates and their numerous health benefits.
+        </p>
+        
+        <ul class="benefits-list">
+          <li class="benefit-item">
+            <div class="benefit-check">✓</div>
+            <div>
+              <div class="benefit-text-title">Rich in Nutrients</div>
+              <div class="benefit-text-desc">Packed with rich dietary fiber, plant protein, iron, calcium, and essential vitamins.</div>
+            </div>
+          </li>
+          <li class="benefit-item">
+            <div class="benefit-check">✓</div>
+            <div>
+              <div class="benefit-text-title">Gluten-Free & Gut-Friendly</div>
+              <div class="benefit-text-desc">Ideal for people with gluten intolerance, bloating, or chronic digestive issues.</div>
+            </div>
+          </li>
+          <li class="benefit-item">
+            <div class="benefit-check">✓</div>
+            <div>
+              <div class="benefit-text-title">Helps in Weight Management</div>
+              <div class="benefit-text-desc">High fiber content releases energy slowly, keeping you full longer and aiding digestion.</div>
+            </div>
+          </li>
+          <li class="benefit-item">
+            <div class="benefit-check">✓</div>
+            <div>
+              <div class="benefit-text-title">Supports Healthy Glucose Balance</div>
+              <div class="benefit-text-desc">Low glycemic index (GI) supports sugar balance and steady energy levels.</div>
+            </div>
+          </li>
+          <li class="benefit-item">
+            <div class="benefit-check">✓</div>
+            <div>
+              <div class="benefit-text-title">Boosts Immunity & Heart Health</div>
+              <div class="benefit-text-desc">Loaded with wholesome antioxidants and essential fats that help lower cholesterol.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step-by-Step Preparation Method -->
+  <section class="prep-container home-section-prep" style="margin-bottom: 4rem;">
+    <div class="section-title-wrap" style="margin-bottom: 1.5rem;">
+      <h2 class="section-title-main">Easy Preparation Method</h2>
+      <p class="section-title-sub">Cook a healthy warm drink in 10 minutes</p>
+    </div>
+    
+    <div class="prep-grid">
+      <div class="prep-step">
+        <div class="prep-number">1</div>
+        <div class="prep-title">Measure Portion</div>
+        <div class="prep-desc">Add 1½ tablespoons (15g) of Jeeni mix.</div>
+      </div>
+      <div class="prep-step">
+        <div class="prep-number">2</div>
+        <div class="prep-title">Mix with Water</div>
+        <div class="prep-desc">Pour 250ml of clean water and mix well.</div>
+      </div>
+      <div class="prep-step">
+        <div class="prep-number">3</div>
+        <div class="prep-title">Stir to Smooth</div>
+        <div class="prep-desc">Mix thoroughly to completely avoid any lumps.</div>
+      </div>
+      <div class="prep-step">
+        <div class="prep-number">4</div>
+        <div class="prep-title">Cook on Low Flame</div>
+        <div class="prep-desc">Boil for 7–10 minutes while stirring continuously.</div>
+      </div>
+      <div class="prep-step">
+        <div class="prep-number">5</div>
+        <div class="prep-title">Add Flavor & Serve</div>
+        <div class="prep-desc">Add jaggery, salt, or buttermilk as preferred. Serve warm!</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Mobile Responsive Styles helper -->
+<style>
+  @media (max-width: 768px) {
+    .home-limited-offer-card {
+      grid-template-columns: 1fr !important;
+      text-align: center !important;
+      gap: 1rem !important;
+    }
+    .grid-mobile-1col {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+<!-- Auto-rotating Carousel Script -->
+<script>
+  let currentSlide = 0;
+  const totalSlides = 3;
+  let slideInterval = setInterval(nextSlide, 4500);
+
+  function updateCarousel() {
+    const slidesContainer = document.getElementById('hero-slider');
+    if (!slidesContainer) return;
+    slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+    const dots = document.querySelectorAll('.carousel-dot');
+    dots.forEach((dot, index) => {
+      if (index === currentSlide) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }
+
+  function nextSlide() {
+    const slidesContainer = document.getElementById('hero-slider');
+    if (!slidesContainer) return;
+    currentSlide = (currentSlide + 1) % totalSlides;
+    updateCarousel();
+  }
+
+  function goToSlide(index) {
+    const slidesContainer = document.getElementById('hero-slider');
+    if (!slidesContainer) return;
+    clearInterval(slideInterval);
+    currentSlide = index;
+    updateCarousel();
+    slideInterval = setInterval(nextSlide, 4500);
+  }
+</script>

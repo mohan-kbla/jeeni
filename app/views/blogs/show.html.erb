@@ -1,0 +1,89 @@
+<% content_for :title, "#{@blog.title} - Company Blog" %>
+
+<!-- Breadcrumbs -->
+<div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+  <a href="/">Home</a> / <a href="/blogs">Blog</a> / <span style="color: var(--text-main); font-weight: 500;"><%= truncate(@blog.title, length: 30) %></span>
+</div>
+
+<% if spree_current_user&.has_spree_role?("admin") %>
+  <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--radius-md); display: flex; gap: 1rem; align-items: center; justify-content: space-between;">
+    <strong style="color: var(--secondary);">🛡️ Admin Controls:</strong>
+    <div style="display: flex; gap: 0.5rem;">
+      <a href="/admin_custom/blogs/<%= @blog.slug %>/edit" class="btn btn-secondary btn-sm">✏️ Edit Blog</a>
+      <%= button_to admin_custom_blog_path(@blog), method: :delete, class: "btn btn-outline btn-sm", style: "border-color: #fee2e2; color: var(--danger);", data: { confirm: "Are you sure?" } do %>
+        🗑️ Delete Blog
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<article class="blog-post">
+  <div style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--primary); margin-bottom: 0.5rem;"><%= @blog.category %></div>
+  <h1 class="blog-post-title"><%= @blog.title %></h1>
+  
+  <div class="blog-post-meta">
+    <span>📅 Published on <%= @blog.published_at.strftime("%B %d, %Y") %></span>
+    <% if @blog.tag_list.any? %>
+      <span style="margin-left: 1.5rem;">🏷️ Tags:
+        <% @blog.tag_list.each do |tag| %>
+          <a href="/blogs?tag=<%= tag %>" style="font-size: 0.75rem; background: #e2e8f0; color: #475569; padding: 0.15rem 0.4rem; border-radius: var(--radius-sm); margin-right: 0.25rem;"><%= tag %></a>
+        <% end %>
+      </span>
+    <% end %>
+  </div>
+  
+  <div class="blog-post-content">
+    <%= simple_format(@blog.body) %>
+  </div>
+  
+  <div style="border-top: 1px solid var(--border); padding-top: 1.5rem; display: flex; justify-content: flex-start;">
+    <a href="/blogs" class="btn btn-outline btn-sm">&larr; Back to Blog Index</a>
+  </div>
+</article>
+
+<!-- Comments Discussion Section -->
+<section class="comments-section">
+  <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--secondary);">Discussion (<%= @comments.count %> Comments)</h3>
+  
+  <div style="max-width: 700px; margin-bottom: 3rem;">
+    <% if @comments.any? %>
+      <% @comments.each do |comment| %>
+        <div class="comment-card">
+          <div class="comment-header">
+            <span class="comment-author">💬 <%= comment.user.email %></span>
+            <span class="comment-date"><%= comment.created_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+          </div>
+          <div class="comment-body">
+            <%= simple_format(comment.body) %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div style="padding: 2rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md); text-align: center; color: var(--text-muted); margin-bottom: 2rem;">
+        No comments yet. Start the conversation below!
+      </div>
+    <% end %>
+
+    <!-- Submit a comment -->
+    <div class="card" style="padding: 2rem; background-color: white;">
+      <h4 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 1.25rem; color: var(--secondary);">Leave a Comment</h4>
+      
+      <% if spree_current_user %>
+        <%= form_for [@blog, @comment], url: blog_comments_path(@blog), method: :post do |f| %>
+          <div class="form-group">
+            <label class="form-label" for="comment-text-area">Your Comment</label>
+            <%= f.text_area :body, rows: 4, placeholder: "Share your thoughts on this article...", class: "form-control", required: true, id: "comment-text-area" %>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Note: Comments are moderated and must be approved before appearing publicly.</p>
+          </div>
+          <%= f.submit "Post Comment", class: "btn btn-primary", style: "padding: 0.625rem 1.5rem;" %>
+        <% end %>
+      <% else %>
+        <div style="text-align: center; padding: 1rem 0;">
+          <p style="color: var(--text-muted); margin-bottom: 1.25rem;">Please log in to submit a comment.</p>
+          <a href="/login" class="btn btn-primary btn-sm">Login to Comment</a>
+          <a href="/signup" class="btn btn-outline btn-sm">Register Account</a>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

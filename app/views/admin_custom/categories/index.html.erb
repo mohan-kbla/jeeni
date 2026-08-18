@@ -1,0 +1,46 @@
+<% content_for :title, "Category Management - Admin" %>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+  <div>
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Categories Management</h1>
+    <p style="color: var(--text-muted);">Configure top-level taxonomies and navigation categories for your storefront catalog.</p>
+  </div>
+  <div>
+    <a href="/admin_custom/categories/new" class="btn btn-primary">➕ Create Category</a>
+  </div>
+</div>
+
+<% if @taxonomies.any? %>
+  <div class="table-responsive" style="max-width: 600px;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Category Name</th>
+          <th>Subcategories Count</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @taxonomies.each do |tax| %>
+          <tr>
+            <td style="font-weight: 600; color: var(--secondary);"><%= tax.name %></td>
+            <td><%= tax.root.children.count %></td>
+            <td style="display: flex; gap: 0.5rem;">
+              <a href="/admin_custom/categories/<%= tax.id %>/edit" class="btn btn-secondary btn-sm" style="padding: 0.4rem 0.6rem;">✏️ Edit</a>
+              <%= button_to admin_custom_category_path(tax), method: :delete, class: "btn btn-outline btn-sm", style: "border-color: #fee2e2; color: var(--danger); padding: 0.4rem 0.6rem;", data: { confirm: "Deleting this category will remove all associated subcategories. Are you sure?" } do %>
+                🗑️ Delete
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div style="text-align: center; padding: 5rem 2rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md); max-width: 600px;">
+    <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">🏷️</span>
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">No Categories</h3>
+    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">No storefront categories have been defined yet.</p>
+    <a href="/admin_custom/categories/new" class="btn btn-primary">Create Your First Category</a>
+  </div>
+<% end %>

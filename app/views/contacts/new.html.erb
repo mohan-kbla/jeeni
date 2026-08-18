@@ -1,0 +1,212 @@
+<% content_for :title, "Contact Us - Jeeni Millet Mix" %>
+
+<style>
+  :root {
+    --jeeni-green: #2F5A2F;
+    --jeeni-light-green: #4F7D3A;
+    --jeeni-bg: #FAF8F5;
+  }
+
+  body {
+    background-color: var(--jeeni-bg);
+  }
+
+  .contact-hero {
+    background: linear-gradient(135deg, rgba(47, 90, 47, 0.9) 0%, rgba(79, 125, 58, 0.8) 100%), url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1920');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 0;
+    color: white;
+    text-align: center;
+    margin-bottom: 4rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
+  .info-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    height: 100%;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top: 5px solid var(--jeeni-green);
+  }
+
+  .info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  }
+
+  .icon-wrapper {
+    width: 50px;
+    height: 50px;
+    background: rgba(79, 125, 58, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    color: var(--jeeni-light-green);
+    font-size: 1.5rem;
+  }
+
+  .contact-form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 50px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+  }
+
+  .form-control {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #fcfcfc;
+  }
+
+  .form-control:focus {
+    border-color: var(--jeeni-light-green);
+    box-shadow: 0 0 0 4px rgba(79, 125, 58, 0.1);
+    background-color: white;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 8px;
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, var(--jeeni-green) 0%, var(--jeeni-light-green) 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(79, 125, 58, 0.3);
+    color: white;
+  }
+
+  @media (max-width: 576px) {
+    .contact-hero {
+      padding: 50px 0;
+    }
+    .info-card, .contact-form-card {
+      padding: 20px !important;
+    }
+  }
+</style>
+
+<div class="contact-hero">
+  <div class="container">
+    <h1 class="display-4 fw-bold mb-3">Contact Us</h1>
+    <p class="lead fw-light" style="max-width: 600px; margin: 0 auto;">We'd love to hear from you. Get in touch with us for any questions, feedback, or support regarding our products.</p>
+  </div>
+</div>
+
+<div class="container mb-5" style="max-width: 1200px;">
+  <div class="row justify-content-between g-5">
+    
+    <!-- Left Column: Information -->
+    <div class="col-lg-4">
+      <div class="info-card">
+        
+        <div class="mb-5">
+          <div class="icon-wrapper">
+            <i class="bi bi-geo-alt-fill"></i>
+          </div>
+          <h4 class="fw-bold mb-3" style="color: var(--jeeni-green);">Head Office</h4>
+          <p class="text-muted mb-1">Jeevitha Enterprises Yargunte,</p>
+          <p class="text-muted mb-1">Ratnasandra (P), Kasaba Hobli,</p>
+          <p class="text-muted mb-1">Sira (T), Tumkur (D),</p>
+          <p class="text-muted mb-3">Karnataka, India - 572137</p>
+          <a href="https://maps.app.goo.gl/pF6P3AdyFnzEpouE9" target="_blank" class="text-decoration-none fw-bold" style="color: var(--jeeni-light-green);">
+            View on Google Maps &rarr;
+          </a>
+        </div>
+
+        <div class="mb-5">
+          <div class="icon-wrapper">
+            <i class="bi bi-telephone-fill"></i>
+          </div>
+          <h4 class="fw-bold mb-3" style="color: var(--jeeni-green);">Phone</h4>
+          <p class="mb-1">
+            <a href="tel:7624931166" class="text-decoration-none text-muted fw-medium fs-5">7624931166</a>
+          </p>
+          <p class="mb-0">
+            <a href="tel:7406661438" class="text-decoration-none text-muted fw-medium fs-5">7406661438</a>
+          </p>
+        </div>
+
+        <div>
+          <div class="icon-wrapper">
+            <i class="bi bi-envelope-fill"></i>
+          </div>
+          <h4 class="fw-bold mb-3" style="color: var(--jeeni-green);">Email</h4>
+          <p class="mb-0">
+            <a href="mailto:contactus@jeenimilletmix.in" class="text-decoration-none text-muted fw-medium fs-5">
+              contactus@jeenimilletmix.in
+            </a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right Column: Form -->
+    <div class="col-lg-6">
+      <div class="contact-form-card" style="padding: 40px;">
+        <h3 class="fw-bold mb-2" style="color: var(--jeeni-green);">Get in Touch</h3>
+        <p class="text-muted mb-4">Fill out the form below and our team will get back to you within 24 hours.</p>
+        
+        <%= form_with url: contacts_create_path, method: :post, local: true, data: { turbo: false } do |f| %>
+          
+          <div class="mb-3">
+            <%= f.label :name, "Your name", class: "form-label" %>
+            <%= f.text_field :name, class: "form-control", placeholder: "e.g., John Doe", required: true %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :email, "Your email", class: "form-label" %>
+            <%= f.email_field :email, class: "form-control", placeholder: "john@example.com", required: true %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :mobile, "Mobile", class: "form-label" %>
+            <%= f.telephone_field :mobile, class: "form-control", placeholder: "+91 xxxxx xxxxx", required: true %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :message, "Your message (optional)", class: "form-label" %>
+            <%= f.text_area :message, class: "form-control", rows: 4, placeholder: "How can we help you?" %>
+          </div>
+
+          <div class="form-check mb-4 d-flex align-items-start">
+            <%= f.check_box :consent, class: "form-check-input mt-1 me-2", required: true, id: "consent_check", style: "transform: scale(1.1);" %>
+            <%= f.label :consent, class: "form-check-label text-muted", for: "consent_check", style: "font-size: 0.85rem; line-height: 1.4;" do %>
+              I consent to receive RCS, SMS, Email or WhatsApp from Jeevitha Enterprises, and I have reviewed and agree to the Terms & Conditions and Privacy Policy.
+            <% end %>
+          </div>
+
+          <div>
+            <%= f.submit "Send Message", class: "btn-submit", style: "padding: 12px 20px; font-size: 1rem;" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    
+  </div>
+</div>

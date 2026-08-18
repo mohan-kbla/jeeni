@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= content_for?(:title) ? yield(:title) : "Custom Admin Panel" %></title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <div class="admin-layout">
+      <!-- Admin Sidebar -->
+      <aside class="admin-sidebar">
+        <div class="admin-sidebar-title">
+          <span>⚙️ Custom</span>Admin
+        </div>
+        
+        <ul class="admin-sidebar-links">
+          <% if spree_current_user && spree_current_user.respond_to?(:read_only_orders?) && spree_current_user.read_only_orders? %>
+            <li class="admin-sidebar-link <%= controller_name == 'orders' ? 'active' : '' %>">
+              <a href="/admin_custom/orders">🛒 Orders</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'reports' ? 'active' : '' %>">
+              <a href="/admin_custom/reports">📈 Reports</a>
+            </li>
+          <% else %>
+            <li class="admin-sidebar-link <%= current_page?(admin_custom_root_path) ? 'active' : '' %>">
+              <a href="/admin_custom">📊 Dashboard</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'analytics' && action_name == 'index' ? 'active' : '' %>">
+              <a href="/admin_custom/analytics">📈 Website Analytics</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'analytics' && action_name == 'booking_sources' ? 'active' : '' %>">
+              <a href="/admin_custom/analytics/booking_sources">🎯 Booking Sources</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'products' ? 'active' : '' %>">
+              <a href="/admin_custom/products">📦 Products</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'categories' ? 'active' : '' %>">
+              <a href="/admin_custom/categories">🏷️ Categories</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'orders' ? 'active' : '' %>">
+              <a href="/admin_custom/orders">🛒 Orders</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'inventory' ? 'active' : '' %>">
+              <a href="/admin_custom/inventory">📦 Inventory</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'users' ? 'active' : '' %>">
+              <a href="/admin_custom/users">👥 Users</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'blogs' ? 'active' : '' %>">
+              <a href="/admin_custom/blogs">📝 Blogs</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'comments' ? 'active' : '' %>">
+              <a href="/admin_custom/comments">💬 Comments</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'trust_badges' ? 'active' : '' %>">
+              <a href="/admin_custom/trust_badges">🛡️ Trust Badges</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'testimonials' ? 'active' : '' %>">
+              <a href="/admin_custom/testimonials">👥 Testimonials</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'reviews' ? 'active' : '' %>">
+              <a href="/admin_custom/reviews">💬 Review Moderation</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'faqs' ? 'active' : '' %>">
+              <a href="/admin_custom/faqs">❓ FAQs</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'settings' ? 'active' : '' %>">
+              <a href="/admin_custom/settings/edit">⚙️ CRO Settings</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'reports' ? 'active' : '' %>">
+              <a href="/admin_custom/reports">📈 Reports</a>
+            </li>
+            <li class="admin-sidebar-link <%= controller_name == 'payment_methods' ? 'active' : '' %>">
+              <a href="/admin_custom/payment_methods">💳 Payments</a>
+            </li>
+          <% end %>
+          <% unless spree_current_user && spree_current_user.respond_to?(:read_only_orders?) && spree_current_user.read_only_orders? %>
+            <li class="admin-sidebar-link" style="margin-top: 3rem; border-top: 1px solid #334155; padding-top: 1rem;">
+              <a href="/" style="color: #60a5fa;">🏠 Shop Storefront</a>
+            </li>
+          <% end %>
+        </ul>
+      </aside>
+
+      <!-- Admin Main Content -->
+      <main class="admin-content" style="position: relative;">
+        <!-- Topbar for Logout -->
+        <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+          <% if spree_current_user %>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <% if spree_current_user.respond_to?(:read_only_orders?) && spree_current_user.read_only_orders? %>
+                <span class="badge badge-info" style="font-size: 0.75rem;">🔒 Read-Only Staff</span>
+              <% end %>
+              <span style="font-weight: 500; color: var(--secondary);"><%= spree_current_user.email %></span>
+              <%= link_to "Logout", main_app.spree_logout_path, data: { turbo_method: :delete }, class: "btn btn-outline btn-sm", style: "border-color: var(--danger); color: var(--danger);" %>
+            </div>
+          <% end %>
+        </div>
+
+
+        <!-- Flash notifications -->
+        <% flash.each do |key, value| %>
+          <div class="alert alert-<%= key %>">
+            <span><%= value %></span>
+            <button onclick="this.parentElement.remove();" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: inherit; font-weight: bold;">&times;</button>
+          </div>
+        <% end %>
+
+        <%= yield %>
+      </main>
+    </div>
+  </body>
+</html>

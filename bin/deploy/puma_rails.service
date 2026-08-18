@@ -1,0 +1,25 @@
+[Unit]
+Description: Puma HTTP Server for Jeeni Storefront
+After=network.target
+
+[Service]
+# Background system service running Puma in production.
+Type=simple
+User=ec2-user
+WorkingDirectory=/var/www/jeeni_app
+
+# Environment variables to pass to the Rails process.
+# Place your real credentials here or load them via an env file.
+Environment=RAILS_ENV=production
+Environment=PORT=3000
+Environment=TMPDIR=/var/www/jeeni_app/tmp
+EnvironmentFile=/var/www/jeeni_app/.env.production
+
+ExecStartPre=/usr/bin/mkdir -p /var/www/jeeni_app/tmp/pids
+ExecStart=/home/ec2-user/.rbenv/shims/bundle exec puma -C config/puma.rb
+
+Restart=always
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

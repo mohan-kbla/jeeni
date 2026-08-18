@@ -1,0 +1,141 @@
+<% content_for :title, "#{@product.name} - Admin" %>
+
+<!-- Breadcrumbs -->
+<div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+  <a href="/admin_custom">Dashboard</a> / <a href="/admin_custom/products">Products</a> / <span style="color: var(--text-main); font-weight: 500;">Details</span>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+  <div>
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);"><%= @product.name %></h1>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">
+      SKU: <strong style="font-family: monospace; color: var(--text-main);"><%= @product.sku %></strong> | 
+      Price: <strong style="color: var(--primary);"><%= @product.display_price.to_s %></strong>
+    </p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    <a href="/admin_custom/products/<%= @product.slug %>/edit" class="btn btn-secondary">✏️ Edit Details</a>
+    <%= button_to admin_custom_product_path(@product), method: :delete, class: "btn btn-outline", style: "border-color: #fee2e2; color: var(--danger);", data: { confirm: "Are you sure?" } do %>
+      🗑️ Delete Product
+    <% end %>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+  <!-- Left Side: Product Details -->
+  <div style="display: flex; flex-direction: column; gap: 2rem;">
+    <!-- Description Card -->
+    <div class="card" style="padding: 2rem; background-color: white;">
+      <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Description</h3>
+      <p style="color: #475569; line-height: 1.6; font-size: 0.95rem; white-space: pre-line;"><%= @product.description.presence || "No description provided." %></p>
+    </div>
+
+    <!-- Media Card -->
+    <div class="card" style="padding: 2rem; background-color: white;">
+      <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Media</h3>
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <% if @product.product_gallery&.gallery_images&.any? %>
+          <div>
+            <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem;">Images</h4>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <% @product.product_gallery.gallery_images.each do |gi| %>
+                <div style="position: relative;">
+                  <%= image_tag url_for(gi.file), style: "max-width: 150px; border-radius: 8px; border: #{gi.is_featured ? '3px solid var(--primary)' : '1px solid var(--border)'}; object-fit: cover; aspect-ratio: 1;" if gi.file.attached? %>
+                  <% if gi.is_featured %>
+                    <span style="position: absolute; top: 0.25rem; right: 0.25rem; background: var(--primary); color: white; padding: 0.1rem 0.4rem; font-size: 0.6rem; border-radius: 4px;">Featured</span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <% if @product.product_gallery&.gallery_videos&.any? %>
+          <div>
+            <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem;">Videos</h4>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <% @product.product_gallery.gallery_videos.each do |gv| %>
+                <div style="position: relative;">
+                  <% if gv.file.attached? %>
+                    <video controls style="max-width: 300px; border-radius: 8px; border: <%= gv.is_featured ? '3px solid var(--primary)' : '1px solid var(--border)' %>;">
+                      <source src="<%= url_for(gv.file) %>" type="<%= gv.file.content_type %>">
+                      Your browser does not support the video tag.
+                    </video>
+                  <% elsif gv.external_url.present? %>
+                    <iframe src="<%= gv.youtube_embed_url %>" style="max-width: 300px; aspect-ratio: 16/9; border-radius: 8px; border: <%= gv.is_featured ? '3px solid var(--primary)' : '1px solid var(--border)' %>;" allowfullscreen></iframe>
+                  <% end %>
+                  <% if gv.is_featured %>
+                    <span style="position: absolute; top: 0.25rem; right: 0.25rem; background: var(--primary); color: white; padding: 0.1rem 0.4rem; font-size: 0.6rem; border-radius: 4px; z-index: 10;">Featured</span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <% unless @product.product_gallery&.gallery_images&.any? || @product.product_gallery&.gallery_videos&.any? %>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">No media attached.</p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Product Variants -->
+    <div class="card" style="padding: 2rem; background-color: white;">
+      <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Product Variants</h3>
+      <% if @variants.any? %>
+        <div class="table-responsive" style="margin-bottom: 0;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Options</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @variants.each do |v| %>
+                <tr>
+                  <td style="font-family: monospace; font-size: 0.8rem;"><%= v.sku %></td>
+                  <td><%= v.options_text %></td>
+                  <td style="font-weight: 600; color: var(--primary);"><%= v.display_price.to_s %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">No variants found. This is a simple product containing only a master variant.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Right Side: Geographical and Visibility settings -->
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <div class="card" style="padding: 1.5rem; background-color: white;">
+      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;">Meta Information</h3>
+      
+      <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.9rem;">
+        <div>
+          <span style="color: var(--text-muted); display: block; font-size: 0.75rem; text-transform: uppercase;">Location Scope</span>
+          <strong>📍 <%= [@product.district, @product.state].compact.reject(&:empty?).join(', ').presence || 'Not Specified' %></strong>
+        </div>
+        <div>
+          <span style="color: var(--text-muted); display: block; font-size: 0.75rem; text-transform: uppercase;">Category</span>
+          <strong>🏷️ <%= @product.category&.name.presence || 'None' %></strong>
+        </div>
+        <div>
+          <span style="color: var(--text-muted); display: block; font-size: 0.75rem; text-transform: uppercase;">Available On</span>
+          <strong>📅 <%= @product.available_on ? @product.available_on.strftime("%B %d, %Y") : 'Not Available' %></strong>
+        </div>
+        <div>
+          <span style="color: var(--text-muted); display: block; font-size: 0.75rem; text-transform: uppercase;">Featured Product</span>
+          <span class="badge <%= @product.featured? ? 'badge-success' : 'badge-danger' %>"><%= @product.featured? ? 'Yes' : 'No' %></span>
+        </div>
+        <div>
+          <span style="color: var(--text-muted); display: block; font-size: 0.75rem; text-transform: uppercase;">Store Visibility</span>
+          <span class="badge <%= @product.active? ? 'badge-success' : 'badge-danger' %>"><%= @product.active? ? 'Active' : 'Inactive' %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

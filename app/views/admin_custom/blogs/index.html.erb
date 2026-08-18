@@ -1,0 +1,59 @@
+<% content_for :title, "Blog Posts Management - Admin" %>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+  <div>
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Blogs Management</h1>
+    <p style="color: var(--text-muted);">Manage company articles, announcements, and news releases.</p>
+  </div>
+  <div>
+    <a href="/admin_custom/blogs/new" class="btn btn-primary">➕ Create Blog Post</a>
+  </div>
+</div>
+
+<% if @blogs.any? %>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Published Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @blogs.each do |blog| %>
+          <tr>
+            <td style="font-weight: 600; color: var(--secondary);"><%= blog.title %></td>
+            <td><span class="badge badge-info"><%= blog.category %></span></td>
+            <td>
+              <span class="badge <%= blog.published? ? 'badge-success' : 'badge-danger' %>">
+                <%= blog.published? ? 'Published' : 'Draft' %>
+              </span>
+            </td>
+            <td><%= blog.published_at ? blog.published_at.strftime("%b %d, %Y") : '—' %></td>
+            <td style="display: flex; gap: 0.5rem;">
+              <a href="/admin_custom/blogs/<%= blog.slug %>" class="btn btn-outline btn-sm" style="padding: 0.4rem 0.6rem;">👁️ View</a>
+              <a href="/admin_custom/blogs/<%= blog.slug %>/edit" class="btn btn-secondary btn-sm" style="padding: 0.4rem 0.6rem;">✏️ Edit</a>
+              <%= button_to admin_custom_blog_path(blog), method: :delete, class: "btn btn-outline btn-sm", style: "border-color: #fee2e2; color: var(--danger); padding: 0.4rem 0.6rem;", data: { confirm: "Are you sure you want to delete this blog post?" } do %>
+                🗑️ Delete
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <div style="display: flex; justify-content: center; margin-top: 2rem;">
+    <%= paginate @blogs %>
+  </div>
+<% else %>
+  <div style="text-align: center; padding: 5rem 2rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md);">
+    <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">📝</span>
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">No Blog Posts</h3>
+    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">There are no blog posts recorded in the system.</p>
+    <a href="/admin_custom/blogs/new" class="btn btn-primary">Create Your First Post</a>
+  </div>
+<% end %>

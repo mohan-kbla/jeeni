@@ -1,0 +1,92 @@
+<% content_for :title, "#{@blog.title} - Admin" %>
+
+<!-- Breadcrumbs -->
+<div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+  <a href="/admin_custom">Dashboard</a> / <a href="/admin_custom/blogs">Blogs</a> / <span style="color: var(--text-main); font-weight: 500;">Details</span>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+  <div>
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);"><%= @blog.title %></h1>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">
+      Category: <strong style="color: var(--text-main);"><%= @blog.category %></strong> | 
+      Status: 
+      <span class="badge <%= @blog.published? ? 'badge-success' : 'badge-danger' %>">
+        <%= @blog.published? ? 'Published' : 'Draft' %>
+      </span>
+    </p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    <a href="/admin_custom/blogs/<%= @blog.slug %>/edit" class="btn btn-secondary">✏️ Edit Post</a>
+    <%= button_to admin_custom_blog_path(@blog), method: :delete, class: "btn btn-outline", style: "border-color: #fee2e2; color: var(--danger);", data: { confirm: "Are you sure?" } do %>
+      🗑️ Delete
+    <% end %>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+  <!-- Left: Blog Body Content -->
+  <div class="card" style="padding: 2rem; background-color: white;">
+    <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Content Body</h3>
+    <div style="line-height: 1.6; color: #334155; font-size: 0.95rem;">
+      <%= simple_format(@blog.body) %>
+    </div>
+    
+    <% if @blog.tag_list.any? %>
+      <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+        <span style="font-weight: 600; font-size: 0.875rem; color: var(--text-muted); margin-right: 0.5rem;">Tags:</span>
+        <% @blog.tag_list.each do |tag| %>
+          <span style="font-size: 0.8rem; background: #f1f5f9; color: #475569; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); margin-right: 0.25rem;"><%= tag %></span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Right: Nested Comments Moderation -->
+  <div>
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--secondary);">Comments Moderation</h2>
+    
+    <% if @comments.any? %>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <% @comments.each do |comment| %>
+          <div class="card" style="padding: 1rem; background-color: white; font-size: 0.875rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: 500;">
+              <span style="color: var(--secondary);"><%= comment.user.email %></span>
+              <span style="font-size: 0.75rem; color: var(--text-muted);"><%= comment.created_at.strftime("%b %d, %Y") %></span>
+            </div>
+            
+            <p style="color: #475569; margin-bottom: 0.75rem; font-style: italic;"><%= truncate(comment.body, length: 100) %></p>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.5rem;">
+              <div>
+                <% status_class = case comment.status
+                   when 'approved' then 'badge-success'
+                   when 'rejected' then 'badge-danger'
+                   else 'badge-warning'
+                   end %>
+                <span class="badge <%= status_class %>"><%= comment.status.capitalize %></span>
+              </div>
+              
+              <div style="display: flex; gap: 0.25rem;">
+                <% if comment.pending? || comment.rejected? %>
+                  <%= button_to approve_admin_custom_comment_path(comment), method: :patch, class: "btn btn-primary btn-sm", style: "background-color: var(--success); padding: 0.25rem 0.5rem; font-size: 0.7rem;" do %>
+                    ✓ Approve
+                  <% end %>
+                <% end %>
+                <% if comment.pending? || comment.approved? %>
+                  <%= button_to reject_admin_custom_comment_path(comment), method: :patch, class: "btn btn-outline btn-sm", style: "border-color: #fee2e2; color: var(--danger); padding: 0.25rem 0.5rem; font-size: 0.7rem;" do %>
+                    ✕ Reject
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div style="padding: 2rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md); text-align: center; color: var(--text-muted); font-size: 0.875rem;">
+        No comments submitted for this post.
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<%= form_for @testimonial, url: @testimonial.new_record? ? admin_custom_testimonials_path : admin_custom_testimonial_path(@testimonial), method: @testimonial.new_record? ? :post : :patch, html: { multipart: true } do |f| %>
+  <% if @testimonial.errors.any? %>
+    <div class="alert alert-alert">
+      <div>
+        <strong><%= pluralize(@testimonial.errors.count, "error") %> prohibited this testimonial from being saved:</strong>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+          <% @testimonial.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card" style="padding: 2rem; background-color: white; margin-bottom: 2rem; max-width: 600px;">
+    <div class="form-group">
+      <%= f.label :author_name, "Customer Name", class: "form-label" %>
+      <%= f.text_field :author_name, class: "form-control", required: true, placeholder: "e.g., Sarah Jenkins" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :rating, "Star Rating (1 - 5)", class: "form-label" %>
+      <%= f.select :rating, options_for_select((1..5).to_a.reverse, @testimonial.rating), {}, class: "form-control", required: true %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :product_id, "Associated Product (Optional)", class: "form-label" %>
+      <%= f.collection_select :product_id, @products, :id, :name, { include_blank: "Global (Displays on storefront & general pages)" }, { class: "form-control" } %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :content, "Review / Testimonial Text", class: "form-label" %>
+      <%= f.text_area :content, class: "form-control", rows: 4, required: true, placeholder: "Write the customer's success story or testimonial content here" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :video_url, "Video Embed URL (YouTube/Vimeo) (Optional)", class: "form-label" %>
+      <%= f.text_field :video_url, class: "form-control", placeholder: "e.g., https://www.youtube.com/embed/dQw4w9WgXcQ" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :image, "Customer Avatar/Image (Optional)", class: "form-label" %>
+      <%= f.file_field :image, class: "form-control" %>
+      <% if @testimonial.image.attached? %>
+        <div style="margin-top: 10px;">
+          <img src="<%= url_for(@testimonial.image) %>" style="max-height: 80px; border-radius: 50%; aspect-ratio: 1; object-fit: cover;">
+        </div>
+      <% end %>
+    </div>
+
+    <div style="display: flex; gap: 2rem; margin-top: 1.5rem;">
+      <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin: 0;">
+        <%= f.check_box :is_success_story %>
+        <%= f.label :is_success_story, "Feature as Success Story", style: "font-weight: 500; margin: 0; cursor: pointer;" %>
+      </div>
+
+      <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin: 0;">
+        <%= f.check_box :active %>
+        <%= f.label :active, "Active / Visible", style: "font-weight: 500; margin: 0; cursor: pointer;" %>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 1rem;">
+    <%= f.submit "Save Testimonial", class: "btn btn-primary" %>
+    <a href="/admin_custom/testimonials" class="btn btn-outline">Cancel</a>
+  </div>
+<% end %>

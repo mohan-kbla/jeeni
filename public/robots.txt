@@ -1,0 +1,19 @@
+# robots.txt for Antigravity Shop
+User-agent: *
+
+# Block search engines from crawling checkout and private pages
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders
+Disallow: /account
+Disallow: /admin_custom
+Disallow: /login
+Disallow: /signup
+
+# Allow search engines to crawl products, home, and blogs
+Allow: /
+Allow: /products
+Allow: /blogs
+
+# Reference sitemap location
+Sitemap: http://localhost:3000/sitemap.xml.gz

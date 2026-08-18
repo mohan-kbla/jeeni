@@ -1,0 +1,67 @@
+<% content_for :title, "Register Account | Jeeni Millet Mix" %>
+
+<div style="max-width: 500px; margin: 3rem auto; padding: 2.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">Join Jeeni Millet Mix</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">Start your journey to wholesome family health today.</p>
+  </div>
+
+  <%= form_for resource, as: resource_name, url: main_app.spree_register_new_user_path do |f| %>
+    <% if resource.errors.any? %>
+      <div class="alert alert-alert" style="margin-bottom: 1.5rem; border-radius: var(--radius-sm); padding: 0.75rem 1rem; font-size: 0.85rem;">
+        <ul style="margin: 0; padding-left: 1.25rem;">
+          <% resource.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+      <div class="form-group" style="margin-bottom: 0;">
+        <%= f.label :first_name, class: "form-label" do %>
+          First Name <span class="required-indicator">*</span>
+        <% end %>
+        <%= f.text_field :first_name, class: "form-control", placeholder: "John", required: true %>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <%= f.label :last_name, class: "form-label" do %>
+          Last Name <span class="required-indicator">*</span>
+        <% end %>
+        <%= f.text_field :last_name, class: "form-control", placeholder: "Doe", required: true %>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :email, class: "form-label" do %>
+        Email Address <span class="required-indicator">*</span>
+      <% end %>
+      <%= f.email_field :email, class: "form-control", placeholder: "name@example.com", required: true, autocomplete: "email" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :password, class: "form-label" do %>
+        Password <span class="required-indicator">*</span>
+      <% end %>
+      <%= f.password_field :password, class: "form-control", placeholder: "••••••••", required: true, autocomplete: "new-password" %>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Must be at least 6 characters.</p>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :password_confirmation, class: "form-label" do %>
+        Confirm Password <span class="required-indicator">*</span>
+      <% end %>
+      <%= f.password_field :password_confirmation, class: "form-control", placeholder: "••••••••", required: true, autocomplete: "new-password" %>
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <%= f.submit "Create Account", class: "btn btn-primary", style: "width: 100%; padding: 0.75rem; font-size: 1rem; border-radius: var(--radius-md);" %>
+    </div>
+  <% end %>
+
+  <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.9rem;">
+    <span style="color: var(--text-muted);">Already have an account?</span>
+    <a href="/login" style="color: var(--primary); font-weight: 600; margin-left: 0.25rem;">Sign In</a>
+  </div>
+</div>

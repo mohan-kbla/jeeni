@@ -1,0 +1,161 @@
+<% if meta_pixel_id.present? %>
+  <script>
+    if (typeof fbq !== 'undefined') {
+      fbq('track', 'InitiateCheckout', {
+        value: <%= @order.total.to_f %>,
+        currency: 'INR',
+        content_ids: <%= raw @order.line_items.map { |li| li.variant.product.master.sku.presence || li.variant.product.id.to_s }.to_json %>,
+        content_type: 'product',
+        num_items: <%= @order.item_count %>
+      });
+    }
+  </script>
+<% end %>
+
+<!-- Checkout Wizard Stepper -->
+<div class="checkout-steps">
+  <div class="checkout-step active">1. Address</div>
+  <div class="checkout-step">2. Delivery</div>
+  <div class="checkout-step">3. Payment</div>
+  <div class="checkout-step">4. Confirm</div>
+</div>
+
+<div style="max-width: 600px; margin: 0 auto;">
+  <div class="checkout-security-bar" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #e7eedd; border: 1px solid #c5d9ad; color: var(--success); font-weight: 700; font-size: 0.9rem; padding: 0.6rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; text-align: center;">
+    🔒 PCI-DSS Compliant & 256-Bit SSL Secured Checkout
+  </div>
+</div>
+
+<div class="page-header-flex" style="max-width: 600px; margin: 0 auto 1.5rem auto;">
+  <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary);">Delivery Address</h2>
+</div>
+
+<% unless spree_current_user %>
+  <div style="max-width: 600px; margin: 0 auto 2rem auto; background-color: var(--bg-main); border: 1px solid var(--border); padding: 1.25rem; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; box-shadow: var(--shadow-sm);">
+    <div style="flex: 1; min-width: 250px;">
+      <span style="font-weight: 700; color: var(--secondary); font-size: 1rem; display: block; margin-bottom: 0.25rem;">✨ Checking out as Guest</span>
+      <span style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">Guest Checkout is active by default. No account required! If you have an account, sign in to retrieve your saved addresses.</span>
+    </div>
+    <a href="/login" class="btn btn-outline" style="padding: 0.5rem 1.5rem; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 600; text-decoration: none;">Sign In</a>
+  </div>
+<% end %>
+
+<%= form_for @order, url: update_checkout_path, method: :patch do |f| %>
+  <%= f.hidden_field :use_billing, value: "1", id: "use-billing-checkbox" %>
+  
+  <div style="max-width: 600px; margin: 0 auto;">
+    <div class="card" style="padding: 1.5rem; background-color: white; margin-bottom: 2rem;">
+      <h3 style="font-size: 1.05rem; font-weight: 600; margin-bottom: 1.25rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Delivery Details</h3>
+      
+      <%= f.fields_for :bill_address do |ba| %>
+        <div class="form-group">
+          <label class="form-label" for="bill-full-name">Full Name <span class="required-indicator">*</span></label>
+          <%= ba.text_field :full_name, value: (ba.object.firstname.present? ? "#{ba.object.firstname} #{ba.object.lastname}".strip : ""), class: "form-control", required: true, id: "bill-full-name", placeholder: "Enter your full name" %>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="bill-phone">Mobile Number <span class="required-indicator">*</span></label>
+          <%= ba.text_field :phone, class: "form-control", required: true, id: "bill-phone", placeholder: "10-digit mobile number", maxlength: 10, pattern: "[0-9]{10}", inputmode: "numeric", title: "Mobile number must be exactly 10 digits" %>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="bill-address1">Address <span class="required-indicator">*</span></label>
+          <%= ba.text_field :address1, class: "form-control", required: true, id: "bill-address1", placeholder: "House number and street name" %>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="bill-address2">Landmark (Optional)</label>
+          <%= ba.text_field :address2, class: "form-control", id: "bill-address2" %>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="bill-city">City <span class="required-indicator">*</span></label>
+            <%= ba.text_field :city, class: "form-control", required: true, id: "bill-city" %>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="bill-zipcode">Pincode (Optional)</label>
+            <%= ba.text_field :zipcode, class: "form-control", id: "bill-zipcode", placeholder: "6-digit pincode", maxlength: 6, pattern: "[0-9]{6}", inputmode: "numeric", title: "Pincode must be exactly 6 digits" %>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+          <div class="form-group" style="display: none;">
+            <label class="form-label" for="bill-country">Country <span class="required-indicator">*</span></label>
+            <%= ba.collection_select :country_id, @countries, :id, :name, { selected: @countries.find { |c| c.iso == 'IN' }&.id || Spree::Country.default&.id }, { class: "form-control", id: "bill-country" } %>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="bill-state">State <span class="required-indicator">*</span></label>
+            <%= ba.collection_select :state_id, @states, :id, :name, { include_blank: "Select a State" }, { class: "form-control", required: true, id: "bill-state" } %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- COD Restriction Info Panel -->
+    <div id="cod-restriction-notice" class="alert alert-info" style="display: none; margin-top: 1rem; border-radius: var(--radius-md); font-weight: 500; align-items: center; justify-content: space-between; padding: 1rem 1.5rem;"></div>
+
+    <!-- Submit Buttons -->
+    <div class="checkout-actions" style="justify-content: flex-end; margin-top: 2rem;">
+      <%= f.submit "Save & Continue &rarr;".html_safe, class: "btn btn-primary", style: "padding: 0.75rem 2rem; font-size: 1rem;" %>
+    </div>
+  </div>
+<% end %>
+
+<script>
+  function updateCodRestrictionNotice() {
+    var stateSelect = document.getElementById("bill-state");
+    var noticeDiv = document.getElementById("cod-restriction-notice");
+    
+    if (!noticeDiv || !stateSelect) return;
+    
+    var selectedValue = stateSelect.value;
+    var selectedText = stateSelect.options[stateSelect.selectedIndex] ? stateSelect.options[stateSelect.selectedIndex].text : "";
+    
+    if (selectedValue === "") {
+      noticeDiv.style.display = "none";
+    } else {
+      noticeDiv.style.display = "flex";
+      noticeDiv.className = "alert alert-success";
+      noticeDiv.innerHTML = "<span>✅ <strong>Cash on Delivery (COD)</strong> is available for shipping to " + selectedText + "!</span>";
+    }
+  }
+
+  function setupInputValidators() {
+    var phoneInput = document.getElementById("bill-phone");
+    var zipInput = document.getElementById("bill-zipcode");
+    
+    if (phoneInput) {
+      phoneInput.addEventListener("input", function(e) {
+        this.value = this.value.replace(/[^0-9]/g, "");
+        if (this.value.length > 10) {
+          this.value = this.value.slice(0, 10);
+        }
+      });
+    }
+    
+    if (zipInput) {
+      zipInput.addEventListener("input", function(e) {
+        this.value = this.value.replace(/[^0-9]/g, "");
+        if (this.value.length > 6) {
+          this.value = this.value.slice(0, 6);
+        }
+      });
+    }
+  }
+
+  document.addEventListener("turbo:load", function() {
+    var billStateSelect = document.getElementById("bill-state");
+    if (billStateSelect) {
+      billStateSelect.addEventListener("change", updateCodRestrictionNotice);
+      updateCodRestrictionNotice();
+    }
+    setupInputValidators();
+  });
+
+  // Call immediately in case of non-turbo loads or updates
+  setTimeout(function() {
+    updateCodRestrictionNotice();
+    setupInputValidators();
+  }, 300);
+</script>

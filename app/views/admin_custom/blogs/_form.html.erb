@@ -1,0 +1,57 @@
+<%= form_for [:admin_custom, @blog] do |f| %>
+  <% if @blog.errors.any? %>
+    <div class="alert alert-alert">
+      <div>
+        <strong><%= pluralize(@blog.errors.count, "error") %> prohibited this blog from being saved:</strong>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+          <% @blog.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card" style="padding: 2rem; background-color: white; margin-bottom: 2rem;">
+    <!-- Title -->
+    <div class="form-group">
+      <%= f.label :title, class: "form-label", for: "blog-title" do %>
+        Title <span style="color: var(--danger);">*</span>
+      <% end %>
+      <%= f.text_field :title, class: "form-control", required: true, id: "blog-title", placeholder: "Enter post title" %>
+    </div>
+
+    <!-- Category -->
+    <div class="form-group">
+      <%= f.label :category, class: "form-label", for: "blog-category" do %>
+        Category <span style="color: var(--danger);">*</span>
+      <% end %>
+      <%= f.text_field :category, class: "form-control", required: true, id: "blog-category", placeholder: "e.g., Announcements, Tech, Shipping" %>
+    </div>
+
+    <!-- Tags List -->
+    <div class="form-group">
+      <%= f.label :tag_list, "Tags (comma separated)", class: "form-label", for: "blog-tags" %>
+      <%= f.text_field :tag_list, value: @blog.tag_list.join(', '), class: "form-control", id: "blog-tags", placeholder: "e.g., news, launch, rails" %>
+    </div>
+
+    <!-- Body -->
+    <div class="form-group">
+      <%= f.label :body, class: "form-label", for: "blog-body" do %>
+        Body <span style="color: var(--danger);">*</span>
+      <% end %>
+      <%= f.text_area :body, rows: 12, class: "form-control", required: true, id: "blog-body", placeholder: "Write post body content in HTML or plain text..." %>
+    </div>
+
+    <!-- Published Status -->
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem;">
+      <%= f.check_box :published, id: "blog-published" %>
+      <label for="blog-published" style="font-weight: 500; font-size: 0.9rem; cursor: pointer; color: var(--text-main);">Publish Immediately</label>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 1rem;">
+    <%= f.submit "Save Post", class: "btn btn-primary" %>
+    <a href="/admin_custom/blogs" class="btn btn-outline">Cancel</a>
+  </div>
+<% end %>

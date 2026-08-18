@@ -1,0 +1,64 @@
+<% content_for :title, "Inventory Management - Admin" %>
+
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Stock & Inventory</h1>
+  <p style="color: var(--text-muted);">Monitor warehouse inventory levels, manage stock locations, and adjust count on hand for variants.</p>
+</div>
+
+<% if @stock_items.any? %>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product / Variant</th>
+          <th>SKU</th>
+          <th>Stock Location</th>
+          <th>Current Stock</th>
+          <th>Adjust Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @stock_items.each do |item| %>
+          <tr>
+            <td>
+              <span style="font-weight: 600; color: var(--secondary);"><%= item.variant.product.name %></span>
+              <% if item.variant.options_text.present? %>
+                <span style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;"><%= item.variant.options_text %></span>
+              <% end %>
+            </td>
+            <td style="font-family: monospace; font-size: 0.8rem;"><%= item.variant.sku %></td>
+            <td><%= item.stock_location.name %></td>
+            <td>
+              <% stock_class = if item.count_on_hand <= 0
+                 'badge-danger'
+                 elsif item.count_on_hand <= 5
+                 'badge-warning'
+                 else
+                 'badge-success'
+                 end %>
+              <span class="badge <%= stock_class %>">
+                <%= item.count_on_hand %> <%= item.count_on_hand <= 0 ? 'Out of Stock' : 'on Hand' %>
+              </span>
+            </td>
+            <td>
+              <%= form_tag admin_custom_inventory_path(item), method: :patch, style: "display: flex; align-items: center; gap: 0.5rem;" do %>
+                <%= number_field_tag :count_on_hand, item.count_on_hand, class: "form-control", style: "width: 80px; padding: 0.35rem 0.5rem; font-size: 0.85rem; text-align: center;", min: 0 %>
+                <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">Save</button>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <div style="display: flex; justify-content: center; margin-top: 2rem;">
+    <%= paginate @stock_items %>
+  </div>
+<% else %>
+  <div style="text-align: center; padding: 5rem 2rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md);">
+    <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">📦</span>
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">No Inventory Tracked</h3>
+    <p style="color: var(--text-muted);">Ensure products and variants are created to enable inventory tracking.</p>
+  </div>
+<% end %>

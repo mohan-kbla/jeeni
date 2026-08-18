@@ -1,0 +1,52 @@
+<% content_for :title, "Your Account & Order History - Jeeni Shop" %>
+
+<div style="margin-bottom: 3rem;">
+  <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--secondary);">My Account</h1>
+  <p style="color: var(--text-muted);">Logged in as: <strong style="color: var(--text-main);"><%= spree_current_user.email %></strong></p>
+</div>
+
+<h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--secondary);">Order History</h2>
+
+<% if @orders.any? %>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Order Number</th>
+          <th>Date Placed</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @orders.each do |order| %>
+          <tr>
+            <td style="font-weight: 600; color: var(--secondary);"><%= order.number %></td>
+            <td><%= order.completed_at.strftime("%B %d, %Y at %I:%M %p") %></td>
+            <td>
+              <% status_class = case order.state
+                 when 'complete' then 'badge-success'
+                 when 'canceled' then 'badge-danger'
+                 else 'badge-info'
+                 end %>
+              <span class="badge <%= status_class %>"><%= order.state.capitalize %></span>
+            </td>
+            <td style="font-weight: 600; color: var(--primary);"><%= order.display_total.to_s %></td>
+            <td class="action-buttons-flex">
+              <a href="/orders/<%= order.number %>" class="btn btn-outline btn-sm">View Details</a>
+              <a href="/orders/<%= order.number %>/invoice" target="_blank" class="btn btn-secondary btn-sm">Download Invoice</a>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div style="text-align: center; padding: 4rem 2rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md);">
+    <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">📦</span>
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">No Orders Found</h3>
+    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">You haven't placed any orders yet.</p>
+    <a href="/products" class="btn btn-primary">Start Shopping</a>
+  </div>
+<% end %>

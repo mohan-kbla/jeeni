@@ -1,0 +1,153 @@
+<% content_for :title, "Admin Dashboard - Jeeni Shop" %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartkick@5.0.1/dist/chartkick.js"></script>
+
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Dashboard Overview</h1>
+  <p style="color: var(--text-muted);">Welcome to your custom administration panel. Monitor shop sales, manage products, moderate comments, and view reports.</p>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-4" style="margin-bottom: 3rem;">
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <span class="stat-card-title">Total Revenue</span>
+      <span class="stat-card-value"><%= Spree::Money.new(@total_sales, currency: 'INR').to_s %></span>
+    </div>
+    <div class="stat-card-icon">💰</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <span class="stat-card-title">Completed Orders</span>
+      <span class="stat-card-value"><%= @orders_count %></span>
+    </div>
+    <div class="stat-card-icon">📦</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <span class="stat-card-title">Total Customers</span>
+      <span class="stat-card-value"><%= @users_count %></span>
+    </div>
+    <div class="stat-card-icon">👥</div>
+  </div>
+
+  <div class="stat-card" style="<%= @pending_comments_count > 0 ? 'border-color: var(--warning); background-color: #fffbeb;' : '' %>">
+    <div class="stat-card-info">
+      <span class="stat-card-title">Pending Comments</span>
+      <span class="stat-card-value" style="<%= @pending_comments_count > 0 ? 'color: var(--warning);' : '' %>"><%= @pending_comments_count %></span>
+    </div>
+    <div class="stat-card-icon">💬</div>
+  </div>
+</div>
+
+<!-- Charts Section -->
+<div class="cart-checkout-grid">
+  <div class="card" style="padding: 1.5rem; background-color: white;">
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--secondary);">Sales Trend (Last 7 Days)</h2>
+    <canvas id="salesChart" height="100"></canvas>
+  </div>
+  <div class="card" style="padding: 1.5rem; background-color: white;">
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--secondary);">Order Statuses</h2>
+    <canvas id="ordersChart" height="200"></canvas>
+  </div>
+</div>
+
+<!-- Main Section -->
+<div class="cart-checkout-grid" style="margin-bottom: 3rem;">
+  <div>
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--secondary);">Recent Orders</h2>
+    <% if @recent_orders.any? %>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Order Number</th>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @recent_orders.each do |order| %>
+              <tr>
+                <td style="font-weight: 600; color: var(--secondary);"><%= order.number %></td>
+                <td style="font-size: 0.8rem;"><%= order.completed_at.strftime("%b %d, %Y") %></td>
+                <td>
+                  <% if order.respond_to?(:guest_order?) && (order.guest_order? || order.email.to_s.start_with?("guest_")) %>
+                    <%= order.ship_address&.full_name.presence || order.bill_address&.full_name.presence || 'Guest' %>
+                  <% else %>
+                    <%= order.email %>
+                  <% end %>
+                </td>
+                <td style="font-weight: 600;"><%= order.display_total.to_s %></td>
+                <td><span class="badge badge-success"><%= order.state.capitalize %></span></td>
+                <td><a href="/admin_custom/orders/<%= order.number %>" class="btn btn-outline btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">View</a></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div style="padding: 3rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md); text-align: center; color: var(--text-muted);">
+        No completed orders recorded yet.
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--secondary);">Quick Actions</h2>
+    <div class="card" style="padding: 1.5rem; background-color: white; display: flex; flex-direction: column; gap: 1rem;">
+      <a href="/admin_custom/products/new" class="btn btn-primary" style="display: flex; align-items: center; justify-content: flex-start; text-align: left; gap: 0.5rem; text-decoration: none; width: 100%; box-sizing: border-box;">➕ Create New Product</a>
+      <a href="/admin_custom/blogs/new" class="btn btn-secondary" style="display: flex; align-items: center; justify-content: flex-start; text-align: left; gap: 0.5rem; text-decoration: none; width: 100%; box-sizing: border-box;">📝 Write Blog Post</a>
+      <% if @pending_comments_count > 0 %>
+        <a href="/admin_custom/comments" class="btn btn-outline" style="border-color: var(--warning); color: var(--warning); display: flex; align-items: center; justify-content: flex-start; text-align: left; gap: 0.5rem; background-color: #fffbeb; text-decoration: none; width: 100%; box-sizing: border-box;">⚠️ Moderate Pending Comments (<%= @pending_comments_count %>)</a>
+      <% else %>
+        <a href="/admin_custom/comments" class="btn btn-outline" style="display: flex; align-items: center; justify-content: flex-start; text-align: left; gap: 0.5rem; text-decoration: none; width: 100%; box-sizing: border-box;">💬 Moderate All Comments</a>
+      <% end %>
+      <a href="/admin_custom/reports" class="btn btn-outline" style="display: flex; align-items: center; justify-content: flex-start; text-align: left; gap: 0.5rem; text-decoration: none; width: 100%; box-sizing: border-box;">📈 View Sales & Reports</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Mock Sales Trend Data
+    var ctxSales = document.getElementById('salesChart').getContext('2d');
+    var salesChart = new Chart(ctxSales, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Revenue (₹)',
+          data: [1200, 1900, 3000, 5000, 2400, 3200, 4800],
+          backgroundColor: 'rgba(79, 125, 58, 0.2)',
+          borderColor: 'rgba(79, 125, 58, 1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    // Mock Orders Distribution
+    var ctxOrders = document.getElementById('ordersChart').getContext('2d');
+    var ordersChart = new Chart(ctxOrders, {
+      type: 'doughnut',
+      data: {
+        labels: ['Completed', 'Pending', 'Cancelled'],
+        datasets: [{
+          data: [<%= @orders_count %>, 5, 2], // Using real completed count from controller
+          backgroundColor: ['#5E9F45', '#f59e0b', '#ef4444'],
+          borderWidth: 0
+        }]
+      },
+      options: { responsive: true, cutout: '70%' }
+    });
+  });
+</script>

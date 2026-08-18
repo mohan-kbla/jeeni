@@ -1,0 +1,46 @@
+<!-- Checkout Wizard Stepper -->
+<div class="checkout-steps">
+  <div class="checkout-step completed">1. Address</div>
+  <div class="checkout-step active">2. Delivery</div>
+  <div class="checkout-step">3. Payment</div>
+  <div class="checkout-step">4. Confirm</div>
+</div>
+
+<div style="max-width: 600px; margin: 0 auto;">
+  <div class="checkout-security-bar" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #e7eedd; border: 1px solid #c5d9ad; color: var(--success); font-weight: 700; font-size: 0.9rem; padding: 0.6rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; text-align: center;">
+    🔒 PCI-DSS Compliant & 256-Bit SSL Secured Checkout
+  </div>
+</div>
+
+<h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 2rem; color: var(--secondary); text-align: center;">Select Shipping Method</h2>
+
+<%= form_for @order, url: update_checkout_path, method: :patch do |f| %>
+  <div style="max-width: 600px; margin: 0 auto;">
+    <%= f.fields_for :shipments do |shipment_form| %>
+      <% shipment = shipment_form.object %>
+      <div class="card" style="padding: 1.5rem; margin-bottom: 2rem; background-color: white;">
+        <h3 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 1.25rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+          Shipment from <%= shipment.stock_location.name %>
+        </h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <% shipment.shipping_rates.each_with_index do |rate, index| %>
+            <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); transition: var(--transition);">
+              <%= shipment_form.radio_button :selected_shipping_rate_id, rate.id, id: "rate_#{rate.id}", required: true, checked: (index == 0 || rate.selected?) %>
+              <label for="rate_<%= rate.id %>" style="display: flex; justify-content: space-between; width: 100%; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--text-main);">
+                <span><%= rate.name %></span>
+                <span style="font-weight: 700; color: var(--primary);"><%= rate.display_price.to_s %></span>
+              </label>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Submit Buttons -->
+    <div class="checkout-actions">
+      <a href="/checkout/address" class="btn btn-outline">&larr; Back to Address</a>
+      <%= f.submit "Save & Continue &rarr;".html_safe, class: "btn btn-primary", style: "padding: 0.75rem 2rem; font-size: 1rem;" %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,76 @@
+<% content_for :title, "Comments Moderation - Admin" %>
+
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Comments Moderation</h1>
+  <p style="color: var(--text-muted);">Moderate customer discussions and approve or reject submissions on your blog articles.</p>
+</div>
+
+<!-- Tabs Filters -->
+<div style="display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+  <a href="/admin_custom/comments" class="btn btn-sm <%= params[:status].blank? ? 'btn-secondary' : 'btn-outline' %>">All Comments</a>
+  <a href="/admin_custom/comments?status=pending" class="btn btn-sm <%= params[:status] == 'pending' ? 'btn-secondary' : 'btn-outline' %>">Pending ⚠️</a>
+  <a href="/admin_custom/comments?status=approved" class="btn btn-sm <%= params[:status] == 'approved' ? 'btn-secondary' : 'btn-outline' %>">Approved ✓</a>
+  <a href="/admin_custom/comments?status=rejected" class="btn btn-sm <%= params[:status] == 'rejected' ? 'btn-secondary' : 'btn-outline' %>">Rejected ✕</a>
+</div>
+
+<% if @comments.any? %>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Article</th>
+          <th>Commenter</th>
+          <th>Comment Content</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @comments.each do |comment| %>
+          <tr>
+            <td style="font-weight: 600;">
+              <a href="/admin_custom/blogs/<%= comment.blog.slug %>" style="color: var(--secondary);"><%= truncate(comment.blog.title, length: 25) %></a>
+            </td>
+            <td><%= comment.user.email %></td>
+            <td style="color: #475569; font-style: italic; max-width: 300px;"><%= truncate(comment.body, length: 80) %></td>
+            <td style="font-size: 0.8rem;"><%= comment.created_at.strftime("%b %d, %Y") %></td>
+            <td>
+              <% status_class = case comment.status
+                 when 'approved' then 'badge-success'
+                 when 'rejected' then 'badge-danger'
+                 else 'badge-warning'
+                 end %>
+              <span class="badge <%= status_class %>"><%= comment.status.capitalize %></span>
+            </td>
+            <td style="display: flex; gap: 0.25rem;">
+              <% if comment.pending? || comment.rejected? %>
+                <%= button_to approve_admin_custom_comment_path(comment), method: :patch, class: "btn btn-primary btn-sm", style: "background-color: var(--success); padding: 0.35rem 0.6rem; font-size: 0.75rem;" do %>
+                  Approve
+                <% end %>
+              <% end %>
+              <% if comment.pending? || comment.approved? %>
+                <%= button_to reject_admin_custom_comment_path(comment), method: :patch, class: "btn btn-outline btn-sm", style: "border-color: #fee2e2; color: var(--danger); padding: 0.35rem 0.6rem; font-size: 0.75rem;" do %>
+                  Reject
+                <% end %>
+              <% end %>
+              <%= button_to admin_custom_comment_path(comment), method: :delete, class: "btn btn-outline btn-sm", style: "border-color: var(--border); color: var(--text-muted); padding: 0.35rem 0.6rem; font-size: 0.75rem;", data: { confirm: "Permanently delete this comment?" } do %>
+                🗑️
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <div style="display: flex; justify-content: center; margin-top: 2rem;">
+    <%= paginate @comments %>
+  </div>
+<% else %>
+  <div style="text-align: center; padding: 4rem 2rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md);">
+    <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">💬</span>
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">No Comments</h3>
+    <p style="color: var(--text-muted);">There are no comments matching your status filter.</p>
+  </div>
+<% end %>

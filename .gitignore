@@ -1,0 +1,11 @@
+/tmp/
+/log/
+/.bundle_user/
+/node_modules/
+/storage/
+/*.pem
+/.env
+/jeeni_app.tar.gz
+/.agents/
+/scratch/
+/.git_backup/

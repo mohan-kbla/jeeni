@@ -1,0 +1,429 @@
+<%= form_for [:admin_custom, @product], html: { multipart: true } do |f| %>
+  <% if @product.errors.any? %>
+    <div class="alert alert-alert">
+      <div>
+        <strong><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</strong>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+          <% @product.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card" style="padding: 2rem; background-color: white; margin-bottom: 2rem;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+      <!-- Product Name -->
+      <div class="form-group">
+        <%= f.label :name, class: "form-label", for: "prod-name" do %>
+          Product Name <span style="color: var(--danger);">*</span>
+        <% end %>
+        <%= f.text_field :name, class: "form-control", required: true, id: "prod-name", placeholder: "e.g., Premium Leather Jacket" %>
+      </div>
+
+      <!-- SKU -->
+      <div class="form-group">
+        <%= f.label :sku, class: "form-label", for: "prod-sku" do %>
+          SKU <span style="color: var(--danger);">*</span>
+        <% end %>
+        <%= f.text_field :sku, class: "form-control", required: true, id: "prod-sku", placeholder: "e.g., LEATHER-JKT-001" %>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+      <!-- Price -->
+      <div class="form-group">
+        <label class="form-label" for="prod-price">Default Price (INR) <span style="color: var(--danger);">*</span></label>
+        <%= number_field_tag "product[price]", @product.price.to_f, class: "form-control", required: true, id: "prod-price", step: "any", min: "0" %>
+      </div>
+
+      <!-- Karnataka Price -->
+      <div class="form-group">
+        <label class="form-label" for="prod-karnataka-price">Karnataka Price (INR)</label>
+        <%= number_field_tag "product[karnataka_price]", @product.karnataka_price.to_f > 0 ? @product.karnataka_price.to_f : nil, class: "form-control", id: "prod-karnataka-price", step: "any", min: "0" %>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+      <!-- Category -->
+      <div class="form-group">
+        <%= f.label :category_id, class: "form-label", for: "prod-category" do %>
+          Category <span style="color: var(--danger);">*</span>
+        <% end %>
+        <%= f.collection_select :category_id, Spree::Taxonomy.all.order(:name), :id, :name, { include_blank: "Select a Category..." }, { class: "form-control", required: true, id: "prod-category" } %>
+      </div>
+
+      <!-- Available On -->
+      <div class="form-group">
+        <%= f.label :available_on, class: "form-label", for: "prod-available" %>
+        <%= f.date_field :available_on, value: @product.available_on&.to_date || Time.current.to_date, class: "form-control", id: "prod-available" %>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <%= f.label :description, class: "form-label", for: "prod-desc" %>
+      <%= f.text_area :description, rows: 6, class: "form-control", id: "prod-desc", placeholder: "Describe the product details..." %>
+    </div>
+
+    <h3 style="font-size: 1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;">Geographical Location & Tags</h3>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+      <!-- State -->
+      <div class="form-group">
+        <%= f.label :state, class: "form-label", for: "prod-state" %>
+        <%= f.text_field :state, class: "form-control", id: "prod-state", placeholder: "e.g., California, Karnataka" %>
+      </div>
+
+      <!-- District -->
+      <div class="form-group">
+        <%= f.label :district, class: "form-label", for: "prod-district" %>
+        <%= f.text_field :district, class: "form-control", id: "prod-district", placeholder: "e.g., Los Angeles, Bangalore" %>
+      </div>
+    </div>
+
+    <h3 style="font-size: 1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;">Advanced Media Gallery</h3>
+
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <%= f.fields_for :product_gallery do |gallery_form| %>
+        
+        <!-- Gallery Images Section -->
+        <div class="card" style="padding: 1rem; border: 1px solid var(--border); background: #f8fafc;">
+          <h4 style="font-weight: 600; margin-bottom: 1rem;">Images</h4>
+          
+          <div style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; align-items: stretch;" id="gallery-images-container">
+            <%= gallery_form.fields_for :gallery_images do |gi_form| %>
+              <% gi = gi_form.object %>
+              <div class="gallery-image-card" draggable="true" style="min-width: 150px; background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; text-align: center; position: relative; cursor: grab;">
+                <% if gi.file.attached? %>
+                  <%= image_tag url_for(gi.file), style: "width: 100%; height: 100px; object-fit: cover; border-radius: 4px;" %>
+                <% else %>
+                  <div style="height: 100px; background: #e2e8f0; display: flex; align-items: center; justify-content: center;">New</div>
+                <% end %>
+                
+                <div style="margin-top: 0.5rem; font-size: 0.75rem;">
+                  <%= gi_form.hidden_field :position, class: 'gi-position' %>
+                  
+                  <label style="display: block; margin-bottom: 0.25rem; text-align: left;">
+                    <%= gallery_form.radio_button :featured_image_id, gi.id.to_s, checked: gi.is_featured %> Featured
+                  </label>
+                  
+                  <% if gi.persisted? %>
+                    <label style="color: var(--danger); cursor: pointer; display: block; text-align: left;">
+                      <%= gi_form.check_box :_destroy %> Delete
+                    </label>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+            
+            <!-- Upload New Images -->
+            <div style="min-width: 150px; background: white; border: 2px dashed var(--border); border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;" onclick="document.getElementById('new-images-input').click();">
+               <span style="font-size: 2rem; color: var(--text-muted);">+</span>
+               <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Add Images</p>
+               <%= gallery_form.file_field :new_images, multiple: true, name: "product[product_gallery_attributes][new_images][]", accept: "image/*", id: "new-images-input", style: "display: none;" %>
+            </div>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Drag and drop cards to reorder. Save product to apply changes.</p>
+        </div>
+
+        <!-- Gallery Videos Section -->
+        <div class="card" style="padding: 1rem; border: 1px solid var(--border); background: #f8fafc;">
+          <h4 style="font-weight: 600; margin-bottom: 1rem;">Videos</h4>
+          
+          <div style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; align-items: stretch;" id="gallery-videos-container">
+            <%= gallery_form.fields_for :gallery_videos do |gv_form| %>
+              <% gv = gv_form.object %>
+              <div class="gallery-video-card" draggable="true" style="min-width: 200px; background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; text-align: center; position: relative; cursor: grab;">
+                <% if gv.file.attached? %>
+                  <video style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px;" preload="metadata">
+                    <source src="<%= url_for(gv.file) %>#t=0.1">
+                  </video>
+                <% elsif gv.external_url.present? %>
+                  <div style="height: 100px; background: #fee2e2; color: #ef4444; display: flex; align-items: center; justify-content: center; border-radius: 4px;">YouTube Link</div>
+                <% else %>
+                  <div style="height: 100px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; border-radius: 4px;">New Video</div>
+                <% end %>
+                
+                <div style="margin-top: 0.5rem; font-size: 0.75rem;">
+                  <%= gv_form.hidden_field :position, class: 'gv-position' %>
+                  
+                  <label style="display: block; margin-bottom: 0.25rem; text-align: left;">
+                    <%= gallery_form.radio_button :featured_video_id, gv.id.to_s, checked: gv.is_featured %> Featured
+                  </label>
+                  
+                  <% if gv.persisted? %>
+                    <label style="color: var(--danger); cursor: pointer; display: block; text-align: left;">
+                      <%= gv_form.check_box :_destroy %> Delete
+                    </label>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+            
+            <!-- Upload New Videos -->
+            <div style="min-width: 200px; background: white; border: 2px dashed var(--border); border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;" onclick="document.getElementById('new-videos-input').click();">
+               <span style="font-size: 2rem; color: var(--text-muted);">+</span>
+               <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Add Videos</p>
+               <%= gallery_form.file_field :new_videos, multiple: true, name: "product[product_gallery_attributes][new_videos][]", accept: "video/*", id: "new-videos-input", style: "display: none;" %>
+            </div>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Drag and drop cards to reorder. Save product to apply changes.</p>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+          <%= gallery_form.label :youtube_link, "New YouTube Link (will be added as a Video on save)", class: "form-label" %>
+          <%= gallery_form.text_field :youtube_link, class: "form-control", placeholder: "e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ" %>
+        </div>
+
+      <% end %>
+    </div>
+
+    <div style="display: flex; gap: 2rem; margin-top: 1rem;">
+      <!-- Featured -->
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <%= f.check_box :featured, id: "prod-featured" %>
+        <%= f.label :featured, "Mark as Featured", style: "font-weight: 500; font-size: 0.9rem; cursor: pointer; color: var(--text-main);", for: "prod-featured" %>
+      </div>
+
+      <!-- Active -->
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <%= f.check_box :active, id: "prod-active" %>
+        <%= f.label :active, "Active / Visible in Shop", style: "font-weight: 500; font-size: 0.9rem; cursor: pointer; color: var(--text-main);", for: "prod-active" %>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 1rem;">
+    <div style="display: flex; gap: 1rem;">
+      <%= f.submit "Save Product", class: "btn btn-primary" %>
+      <a href="/admin_custom/products" class="btn btn-outline">Cancel</a>
+    </div>
+    <% if @product.persisted? %>
+      <%= link_to admin_custom_product_path(@product), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to permanently delete this product?" }, class: "btn btn-outline", style: "border-color: #fee2e2; color: var(--danger); text-decoration: none;" do %>
+        🗑️ Delete Product
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
+<!-- Upload Progress Overlay Modal -->
+<div id="upload-progress-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; flex-direction: column; color: white;">
+  <div style="background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 450px; color: #1e293b; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); text-align: center;">
+    <h3 style="margin-bottom: 0.5rem; font-weight: 700; font-size: 1.25rem; color: #0f172a;">Uploading Product Media</h3>
+    <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 1.5rem;">Please keep this page open while we upload your files to the server.</p>
+    
+    <div style="background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 0.75rem; position: relative;">
+      <div id="upload-progress-bar" style="background: #10b981; height: 100%; width: 0%; transition: width 0.1s ease-out; border-radius: 5px;"></div>
+    </div>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 600;">
+      <span id="upload-progress-percent" style="color: #10b981;">0%</span>
+      <span id="upload-progress-status" style="color: #64748b;">Preparing...</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupDragAndDrop(containerId, itemClass, positionClass) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    let draggedItem = null;
+    
+    container.addEventListener('dragstart', (e) => {
+      if (e.target.classList.contains(itemClass)) {
+        draggedItem = e.target;
+        setTimeout(() => e.target.style.opacity = '0.5', 0);
+      }
+    });
+    
+    container.addEventListener('dragend', (e) => {
+      if (e.target.classList.contains(itemClass)) {
+        setTimeout(() => e.target.style.opacity = '1', 0);
+        draggedItem = null;
+        updatePositions();
+      }
+    });
+    
+    container.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const afterElement = getDragAfterElement(container, e.clientX, itemClass);
+      if (draggedItem) {
+        if (afterElement == null) {
+          // append before the "Upload New" button
+          container.insertBefore(draggedItem, container.lastElementChild);
+        } else {
+          container.insertBefore(draggedItem, afterElement);
+        }
+      }
+    });
+    
+    function getDragAfterElement(container, x, itemClass) {
+      const draggableElements = [...container.querySelectorAll(`.${itemClass}:not([style*="opacity: 0.5"])`)];
+      
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = x - box.left - box.width / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+    
+    function updatePositions() {
+      const items = container.querySelectorAll(`.${itemClass}`);
+      items.forEach((item, index) => {
+        const posInput = item.querySelector(`.${positionClass}`);
+        if (posInput) posInput.value = index;
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setupDragAndDrop('gallery-images-container', 'gallery-image-card', 'gi-position');
+    setupDragAndDrop('gallery-videos-container', 'gallery-video-card', 'gv-position');
+
+    // Preview newly selected images
+    const newImagesInput = document.getElementById('new-images-input');
+    const imagesContainer = document.getElementById('gallery-images-container');
+    if (newImagesInput && imagesContainer) {
+      newImagesInput.addEventListener('change', function() {
+        // Remove any previous temporary preview elements
+        imagesContainer.querySelectorAll('.new-image-preview').forEach(el => el.remove());
+
+        // Add new preview elements
+        Array.from(this.files).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const previewCard = document.createElement('div');
+            previewCard.className = 'gallery-image-card new-image-preview';
+            previewCard.style.cssText = 'min-width: 150px; background: #f0fdf4; border: 2px dashed #22c55e; border-radius: 8px; padding: 0.5rem; text-align: center; position: relative;';
+            
+            previewCard.innerHTML = `
+              <img src="${e.target.result}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px;">
+              <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #15803d; font-weight: 600;">
+                Ready to Upload
+              </div>
+              <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;" title="${file.name}">
+                ${file.name}
+              </div>
+            `;
+            // Insert before the last child (the "+ Add Images" button)
+            imagesContainer.insertBefore(previewCard, imagesContainer.lastElementChild);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    }
+
+    // Preview newly selected videos
+    const newVideosInput = document.getElementById('new-videos-input');
+    const videosContainer = document.getElementById('gallery-videos-container');
+    if (newVideosInput && videosContainer) {
+      newVideosInput.addEventListener('change', function() {
+        // Remove any previous temporary preview elements
+        videosContainer.querySelectorAll('.new-video-preview').forEach(el => el.remove());
+
+        // Add new preview elements
+        Array.from(this.files).forEach(file => {
+          const previewCard = document.createElement('div');
+          previewCard.className = 'gallery-video-card new-video-preview';
+          previewCard.style.cssText = 'min-width: 200px; background: #f0fdf4; border: 2px dashed #22c55e; border-radius: 8px; padding: 0.5rem; text-align: center; position: relative;';
+          
+          const objectUrl = URL.createObjectURL(file);
+          
+          previewCard.innerHTML = `
+            <video style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px;" preload="metadata" muted>
+              <source src="${objectUrl}">
+            </video>
+            <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #15803d; font-weight: 600;">
+              Ready to Upload
+            </div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;" title="${file.name}">
+              ${file.name}
+            </div>
+          `;
+          // Insert before the last child (the "+ Add Videos" button)
+          videosContainer.insertBefore(previewCard, videosContainer.lastElementChild);
+        });
+      });
+    }
+
+    // AJAX upload progress interceptor
+    const form = document.querySelector('form.new_product, form.edit_product');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const hasImages = (newImagesInput && newImagesInput.files.length > 0);
+        const hasVideos = (newVideosInput && newVideosInput.files.length > 0);
+
+        if (!hasImages && !hasVideos) {
+          // No media files, let it submit normally
+          return;
+        }
+
+        e.preventDefault();
+
+        // Validate standard fields
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const overlay = document.getElementById('upload-progress-overlay');
+        const progressBar = document.getElementById('upload-progress-bar');
+        const progressPercent = document.getElementById('upload-progress-percent');
+        const progressStatus = document.getElementById('upload-progress-status');
+
+        if (overlay) {
+          overlay.style.display = 'flex';
+        }
+
+        const formData = new FormData(form);
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', function(event) {
+          if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            progressBar.style.width = percent + '%';
+            progressPercent.innerText = percent + '%';
+            if (percent === 100) {
+              progressStatus.innerText = 'Processing on server...';
+            } else {
+              progressStatus.innerText = 'Uploading...';
+            }
+          }
+        });
+
+        xhr.onload = function() {
+          if (xhr.status >= 200 && xhr.status < 400) {
+            const redirectUrl = xhr.responseURL || '/admin_custom/products';
+            window.location.href = redirectUrl;
+          } else {
+            progressStatus.innerText = 'Error occurred!';
+            progressPercent.innerText = 'Failed';
+            progressBar.style.backgroundColor = '#ef4444';
+            alert('Upload failed: ' + xhr.responseText);
+            if (overlay) {
+              overlay.style.display = 'none';
+            }
+          }
+        };
+
+        xhr.onerror = function() {
+          progressStatus.innerText = 'Connection error!';
+          alert('A network error occurred during upload.');
+          if (overlay) {
+            overlay.style.display = 'none';
+          }
+        };
+
+        xhr.open('POST', form.getAttribute('action'), true);
+        xhr.send(formData);
+      });
+    }
+  });
+</script>

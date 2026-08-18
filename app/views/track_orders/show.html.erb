@@ -1,0 +1,411 @@
+<% content_for :title, "Track Your Order | Jeeni Shop" %>
+
+<style>
+  .track-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem 0;
+  }
+
+  .track-card {
+    background: #ffffff;
+    border-radius: var(--radius-lg, 16px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border, #e2e8f0);
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .track-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .track-header h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--secondary, #1e293b);
+    margin-bottom: 0.5rem;
+  }
+
+  .track-header p {
+    color: var(--text-muted, #64748b);
+    font-size: 1rem;
+  }
+
+  .track-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1rem;
+    align-items: flex-end;
+  }
+
+  @media (max-width: 768px) {
+    .track-form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Timeline Styles */
+  .stepper-wrapper {
+    margin-top: 2rem;
+    margin-bottom: 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .stepper-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    z-index: 2;
+  }
+
+  .stepper-item::before {
+    position: absolute;
+    content: "";
+    border-bottom: 3px solid #e2e8f0;
+    width: 100%;
+    top: 20px;
+    left: -50%;
+    z-index: 1;
+  }
+
+  .stepper-item::after {
+    position: absolute;
+    content: "";
+    border-bottom: 3px solid #e2e8f0;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 1;
+  }
+
+  .stepper-item:first-child::before {
+    content: none;
+  }
+
+  .stepper-item:last-child::after {
+    content: none;
+  }
+
+  .stepper-item .step-counter {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 3px solid #cbd5e1;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .stepper-item.completed .step-counter {
+    background-color: var(--success, #10b981);
+    border-color: var(--success, #10b981);
+    color: #ffffff;
+  }
+
+  .stepper-item.completed::after {
+    border-bottom-color: var(--success, #10b981);
+  }
+
+  .stepper-item.active .step-counter {
+    background-color: var(--primary, #e11d48);
+    border-color: var(--primary, #e11d48);
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.2);
+  }
+
+  .stepper-item .step-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted, #64748b);
+    text-align: center;
+  }
+
+  .stepper-item.completed .step-name,
+  .stepper-item.active .step-name {
+    color: var(--secondary, #0f172a);
+    font-weight: 700;
+  }
+
+  @media (max-width: 640px) {
+    .stepper-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5rem;
+      padding-left: 1rem;
+    }
+
+    .stepper-item {
+      flex-direction: row;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .stepper-item::before, .stepper-item::after {
+      display: none;
+    }
+
+    .stepper-item .step-name {
+      text-align: left;
+      font-size: 0.9rem;
+    }
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 0.35rem;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+
+<div class="track-container">
+  <!-- Search Form Card -->
+  <div class="track-card">
+    <div class="track-header">
+      <h1>Track Your Order</h1>
+      <p>Enter your Order Number and Email or Mobile Number to check your current shipment status.</p>
+    </div>
+
+    <% if @info.present? %>
+      <div class="alert alert-info" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+        <span>ℹ️ <%= @info %></span>
+        <button type="button" onclick="this.parentElement.remove();" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: inherit;">&times;</button>
+      </div>
+    <% end %>
+
+    <% if @error.present? %>
+      <div class="alert alert-danger" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+        <span>⚠️ <%= @error %></span>
+        <button type="button" onclick="this.parentElement.remove();" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: inherit;">&times;</button>
+      </div>
+    <% end %>
+
+
+    <form action="/track-order" method="get" id="trackOrderForm">
+      <div class="track-form-grid">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="order_number" style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.35rem; display: block;">Order Number *</label>
+          <input type="text" id="order_number" name="order_number" class="form-control" placeholder="e.g. R123456789" value="<%= @order_number %>" required style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-md, 8px); border: 1px solid var(--border, #cbd5e1); font-size: 0.95rem;">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="verification" style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.35rem; display: block;">Email or Mobile Number *</label>
+          <input type="text" id="verification" name="verification" class="form-control" placeholder="e.g. name@example.com or 9876543210" value="<%= @verification %>" required style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-md, 8px); border: 1px solid var(--border, #cbd5e1); font-size: 0.95rem;">
+        </div>
+
+        <div>
+          <button type="submit" id="trackSubmitBtn" class="btn btn-primary" style="padding: 0.75rem 1.75rem; border-radius: var(--radius-md, 8px); font-weight: 600; width: 100%; height: 100%; min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            🔍 Track Order
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <% if @order %>
+    <!-- Timeline Stepper Card -->
+    <div class="track-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border, #e2e8f0); padding-bottom: 1rem;">
+        <div>
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary, #0f172a); margin: 0;">Order Status Timeline</h2>
+          <span style="font-size: 0.875rem; color: var(--text-muted, #64748b);">Tracking ID: <strong><%= @order.number %></strong></span>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <% state_badge_class = case @order.state
+             when 'complete', 'dispatched', 'delivered' then 'badge-success'
+             when 'canceled' then 'badge-danger'
+             else 'badge-warning'
+             end %>
+          <span class="badge <%= state_badge_class %>" style="font-size: 0.85rem; padding: 0.4rem 0.85rem; border-radius: 999px;">
+            <%= @order.state&.titleize || 'Pending' %>
+          </span>
+        </div>
+      </div>
+
+      <% if @order.state == 'canceled' %>
+        <div style="text-align: center; padding: 2rem 1rem; color: var(--danger, #ef4444); background: #fef2f2; border-radius: var(--radius-md, 8px);">
+          <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">🚫</span>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem;">This order has been Canceled</h3>
+          <p style="font-size: 0.9rem; color: #7f1d1d; margin: 0;">If you have any questions, please reach out to customer support.</p>
+        </div>
+      <% else %>
+        <!-- 6-step progress stepper -->
+        <%
+          steps = [
+            { id: 1, name: "Order Placed" },
+            { id: 2, name: "Confirmed" },
+            { id: 3, name: "Processing" },
+            { id: 4, name: "Dispatched" },
+            { id: 5, name: "Out for Delivery" },
+            { id: 6, name: "Delivered" }
+          ]
+        %>
+        <div class="stepper-wrapper">
+          <% steps.each do |step| %>
+            <%
+              is_completed = @current_step > step[:id]
+              is_active = @current_step == step[:id]
+              item_class = if is_completed
+                             "completed"
+                           elsif is_active
+                             "active"
+                           else
+                             ""
+                           end
+            %>
+            <div class="stepper-item <%= item_class %>">
+              <div class="step-counter">
+                <% if is_completed %>
+                  ✓
+                <% else %>
+                  <%= step[:id] %>
+                <% end %>
+              </div>
+              <div class="step-name"><%= step[:name] %></div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Order Details Summary Card -->
+    <div class="track-card">
+      <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--secondary, #0f172a); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border, #e2e8f0); padding-bottom: 0.75rem;">
+        Order Details
+      </h3>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; background: #f8fafc; padding: 1.25rem; border-radius: var(--radius-md, 8px); border: 1px solid var(--border, #e2e8f0);">
+        <div>
+          <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted, #64748b); font-weight: 600;">Order Number</span>
+          <div style="font-weight: 700; color: var(--secondary, #0f172a); font-size: 1rem;"><%= @order.number %></div>
+        </div>
+
+        <div>
+          <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted, #64748b); font-weight: 600;">Order Date</span>
+          <div style="font-weight: 600; color: var(--secondary, #0f172a); font-size: 0.95rem;">
+            <%= @order.completed_at ? @order.completed_at.strftime("%B %d, %Y") : @order.created_at.strftime("%B %d, %Y") %>
+          </div>
+        </div>
+
+        <div>
+          <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted, #64748b); font-weight: 600;">Customer Name</span>
+          <div style="font-weight: 600; color: var(--secondary, #0f172a); font-size: 0.95rem;">
+            <%= @order.ship_address&.full_name.presence || @order.bill_address&.full_name.presence || @order.email %>
+          </div>
+        </div>
+
+        <div>
+          <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted, #64748b); font-weight: 600;">Payment Status</span>
+          <div>
+            <% pay_class = case @order.payment_state
+               when 'paid' then 'badge-success'
+               when 'failed' then 'badge-danger'
+               else 'badge-warning'
+               end %>
+            <span class="badge <%= pay_class %>" style="font-size: 0.8rem;"><%= @order.payment_state&.titleize || 'Pending' %></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid layout for Products and Shipping Address -->
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;" class="cart-checkout-grid">
+        <!-- Products List -->
+        <div>
+          <h4 style="font-size: 1rem; font-weight: 700; color: var(--secondary, #0f172a); margin-bottom: 1rem;">Products Ordered</h4>
+          <div class="table-responsive">
+            <table class="table" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th>Qty</th>
+                  <th style="text-align: right;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @order.line_items.each do |item| %>
+                  <tr>
+                    <td>
+                      <strong style="color: var(--secondary, #0f172a); display: block;"><%= item.product.name %></strong>
+                      <% if item.variant.options_text.present? %>
+                        <span style="font-size: 0.75rem; color: var(--text-muted, #64748b);"><%= item.variant.options_text %></span>
+                      <% end %>
+                    </td>
+                    <td><%= (item.single_money rescue nil) || "₹#{item.price}" %></td>
+                    <td><%= item.quantity %></td>
+                    <td style="text-align: right; font-weight: 600; color: var(--secondary, #0f172a);"><%= (item.display_amount rescue nil) || "₹#{item.amount}" %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Address & Totals Column -->
+        <div>
+          <div style="background: #f8fafc; border: 1px solid var(--border, #e2e8f0); border-radius: var(--radius-md, 8px); padding: 1.25rem; margin-bottom: 1.5rem;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--secondary, #0f172a); margin-bottom: 0.75rem; border-bottom: 1px solid var(--border, #cbd5e1); padding-bottom: 0.35rem;">
+              📍 Shipping Address
+            </h4>
+            <% if @order.ship_address %>
+              <p style="font-size: 0.875rem; color: #334155; line-height: 1.6; margin: 0;">
+                <strong><%= @order.ship_address.full_name %></strong><br>
+                <%= @order.ship_address.address1 %><br>
+                <% if @order.ship_address.address2.present? %><%= @order.ship_address.address2 %><br><% end %>
+                <%= @order.ship_address.city %>, <%= @order.ship_address.state&.name || @order.ship_address.state_name %> <%= @order.ship_address.zipcode %><br>
+                <%= @order.ship_address.country.name %><br>
+                📞 <%= @order.ship_address.phone %>
+              </p>
+            <% else %>
+              <p style="font-size: 0.85rem; color: var(--text-muted, #64748b);">No shipping address recorded.</p>
+            <% end %>
+          </div>
+
+          <!-- Total Amount Card -->
+          <div style="background: white; border: 2px solid var(--primary, #e11d48); border-radius: var(--radius-md, 8px); padding: 1.25rem; text-align: center;">
+            <span style="font-size: 0.85rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted, #64748b);">Total Amount</span>
+            <div style="font-size: 1.75rem; font-weight: 800; color: var(--primary, #e11d48); margin-top: 0.25rem;">
+              <%= (@order.display_total rescue nil) || "₹#{'%.2f' % @order.total}" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener('turbo:load', function() {
+    const form = document.getElementById('trackOrderForm');
+    const submitBtn = document.getElementById('trackSubmitBtn');
+    if (form && submitBtn) {
+      form.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span> Searching...';
+      });
+    }
+  });
+</script>

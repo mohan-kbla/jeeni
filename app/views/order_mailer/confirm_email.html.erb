@@ -1,0 +1,12 @@
+<h2>Thank you for your order!</h2>
+<p>Hello,</p>
+<p>We've received your order <strong>#<%= @order.number %></strong> and are getting it ready for shipment.</p>
+<p>Order Summary:</p>
+<ul>
+  <% @order.line_items.each do |item| %>
+    <li><%= item.product.name %> x <%= item.quantity %> (<%= item.display_amount.to_s %>)</li>
+  <% end %>
+</ul>
+<p><strong>Total: <%= @order.display_total.to_s %></strong></p>
+<p>You can view your order status and details here: <a href="http://localhost:3000/orders/<%= @order.number %>">Order Details</a></p>
+<p>Thanks for shopping with us!</p>

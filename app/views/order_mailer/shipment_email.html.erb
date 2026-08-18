@@ -1,0 +1,11 @@
+<h2>Your shipment is on the way!</h2>
+<p>Hello,</p>
+<p>Great news! Items from your order <strong>#<%= @order.number %></strong> have been shipped.</p>
+<p>Shipment Details:</p>
+<ul>
+  <% @order.line_items.each do |item| %>
+    <li><%= item.product.name %> x <%= item.quantity %></li>
+  <% end %>
+</ul>
+<p>You can track your order status here: <a href="http://localhost:3000/orders/<%= @order.number %>">Order Details</a></p>
+<p>Thank you for your business!</p>

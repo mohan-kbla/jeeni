@@ -1,0 +1,305 @@
+<% content_for :title, "Booking Sources & Attribution - Admin" %>
+
+<!-- Load Chart.js and Chartkick JS CDNs so Chartkick can render the trend graphs -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartkick@5.0.1/dist/chartkick.js"></script>
+
+<div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Booking Sources & Attribution</h1>
+    <p style="color: var(--text-muted);">Identify traffic origin, UTM campaigns, visitor landing pages, and regional conversion rates.</p>
+  </div>
+  <div style="background: var(--primary-light); padding: 0.5rem 1rem; border-radius: var(--radius-sm); border: 1px solid #fecaca; display: flex; align-items: center; gap: 0.5rem;">
+    <span style="font-weight: 600; color: var(--primary);">Selected Period:</span>
+    <span style="color: var(--text-main); font-weight: 500;"><%= @date_display %></span>
+  </div>
+</div>
+
+<!-- Date Filters Form -->
+<form method="get" action="/admin_custom/analytics/booking_sources" class="filters-form" id="bookingSourcesFiltersForm">
+  <input type="hidden" name="date_filter" id="bookingSourcesDateFilterInput" value="<%= @date_filter %>">
+  
+  <div class="filters-container" style="display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; background: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+    <!-- Left Side: Quick Filters -->
+    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+      <span style="font-weight: 600; color: var(--secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.25rem; margin-right: 0.5rem;">
+        🔍 Quick Filters:
+      </span>
+      <div style="display: flex; gap: 0.35rem; background: var(--bg-card); padding: 0.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border); flex-wrap: wrap;">
+        <a href="#" onclick="setAttributionFilter('today'); return false;" class="btn <%= @date_filter == 'today' ? 'btn-primary' : 'btn-outline' %> btn-sm" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: var(--radius-sm); border: none; font-weight: 500;">Today</a>
+        <a href="#" onclick="setAttributionFilter('yesterday'); return false;" class="btn <%= @date_filter == 'yesterday' ? 'btn-primary' : 'btn-outline' %> btn-sm" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: var(--radius-sm); border: none; font-weight: 500;">Yesterday</a>
+        <a href="#" onclick="setAttributionFilter('last_7_days'); return false;" class="btn <%= @date_filter == 'last_7_days' ? 'btn-primary' : 'btn-outline' %> btn-sm" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: var(--radius-sm); border: none; font-weight: 500;">Last 7 Days</a>
+        <a href="#" onclick="setAttributionFilter('last_30_days'); return false;" class="btn <%= @date_filter == 'last_30_days' ? 'btn-primary' : 'btn-outline' %> btn-sm" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: var(--radius-sm); border: none; font-weight: 500;">Last 30 Days</a>
+        <a href="#" onclick="setAttributionFilter('this_month'); return false;" class="btn <%= @date_filter == 'this_month' ? 'btn-primary' : 'btn-outline' %> btn-sm" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: var(--radius-sm); border: none; font-weight: 500;">This Month</a>
+        <a href="#" onclick="setAttributionFilter('last_month'); return false;" class="btn <%= @date_filter == 'last_month' ? 'btn-primary' : 'btn-outline' %> btn-sm" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: var(--radius-sm); border: none; font-weight: 500;">Last Month</a>
+      </div>
+    </div>
+
+    <!-- Right Side: Custom Date Range Form Controls -->
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <span style="font-weight: 600; color: var(--secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.25rem;">
+        📅 Custom Range:
+      </span>
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">From</span>
+          <input type="date" id="from_date" name="from_date" value="<%= params[:from_date] %>" class="form-control" style="width: auto; padding: 0.35rem 0.5rem; font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border); height: auto; background-color: var(--bg-card);">
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">To</span>
+          <input type="date" id="to_date" name="to_date" value="<%= params[:to_date] %>" class="form-control" style="width: auto; padding: 0.35rem 0.5rem; font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border); height: auto; background-color: var(--bg-card);">
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm" onclick="document.getElementById('bookingSourcesDateFilterInput').value='custom';" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; font-weight: 600; height: auto;">Apply</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  function setAttributionFilter(val) {
+    document.getElementById('bookingSourcesDateFilterInput').value = val;
+    if (val !== 'custom') {
+      document.getElementById('from_date').value = '';
+      document.getElementById('to_date').value = '';
+    }
+    document.getElementById('bookingSourcesFiltersForm').submit();
+  }
+</script>
+
+<!-- KPI Cards Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+  <!-- Total Visitors Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Total Visitors</span>
+      <span style="font-size: 1.5rem;">👥</span>
+    </div>
+    <span style="font-size: 2.25rem; font-weight: 700; color: var(--secondary);"><%= number_with_delimiter(@total_visitors) %></span>
+  </div>
+
+  <!-- Total Bookings Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Total Bookings</span>
+      <span style="font-size: 1.5rem;">🛒</span>
+    </div>
+    <span style="font-size: 2.25rem; font-weight: 700; color: var(--secondary);"><%= number_with_delimiter(@total_bookings) %></span>
+  </div>
+
+  <!-- Conversion Rate Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Conversion Rate</span>
+      <span style="font-size: 1.5rem;">📈</span>
+    </div>
+    <span style="font-size: 2.25rem; font-weight: 700; color: var(--secondary);"><%= @conversion_rate %>%</span>
+  </div>
+
+  <!-- Total Revenue Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Total Revenue</span>
+      <span style="font-size: 1.5rem;">💰</span>
+    </div>
+    <span style="font-size: 2.25rem; font-weight: 700; color: var(--secondary);">₹<%= number_with_precision(@total_revenue, precision: 2, delimiter: ",") %></span>
+  </div>
+</div>
+
+<!-- Primary Charts Row (Booking Sources & Revenue) -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+  <!-- Pie Chart: Booking Sources -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">🍕 Bookings by Attribution Source</h3>
+    <% if @bookings_by_source.any? %>
+      <%= pie_chart @bookings_by_source, donut: true, colors: ["#224229", "#b12704", "#475569", "#60a5fa", "#eab308", "#a855f7", "#ec4899", "#14b8a6", "#f97316", "#8b5cf6"] %>
+    <% else %>
+      <div style="height: 300px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">No booking data available.</div>
+    <% end %>
+  </div>
+
+  <!-- Bar Chart: Revenue by Source -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">📊 Revenue by Attribution Source (INR)</h3>
+    <% if @revenue_by_source.any? %>
+      <%= bar_chart @revenue_by_source, colors: ["#224229"], xtitle: "Revenue (₹)" %>
+    <% else %>
+      <div style="height: 300px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">No revenue data available.</div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Secondary Charts Row (Trend & Campaign Performance) -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+  <!-- Line Chart: Daily Visitors vs Bookings -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">📈 Daily Visitors vs Bookings Trend</h3>
+    <%= line_chart @visitors_vs_bookings, colors: ["#60a5fa", "#b12704"], xtitle: "Date", ytitle: "Count" %>
+  </div>
+
+  <!-- Campaign Performance Chart -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">🎯 Campaign Performance (Bookings Count)</h3>
+    <% if @orders_by_campaign.any? %>
+      <%= column_chart @orders_by_campaign, colors: ["#b12704"], ytitle: "Bookings" %>
+    <% else %>
+      <div style="height: 300px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">No active campaign bookings tracked.</div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Intermediate Distribution Cards Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+  <!-- Orders by Landing Page Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column;">
+    <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">🚪 Orders by Landing Page</h3>
+    <div style="flex-grow: 1; max-height: 250px; overflow-y: auto; font-size: 0.85rem;">
+      <% if @orders_by_landing_page.any? %>
+        <% @orders_by_landing_page.sort_by {|_k, v| -v}.first(10).each do |page, count| %>
+          <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px dotted var(--border);">
+            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 75%; color: var(--text-muted);" title="<%= page %>">
+              <%= page.gsub(%r{https?://[^/]+}, '') %>
+            </span>
+            <strong style="color: var(--secondary);"><%= count %></strong>
+          </div>
+        <% end %>
+      <% else %>
+        <span style="color: var(--text-muted); display: block; text-align: center; margin-top: 2rem;">No landing page data.</span>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Orders by Device Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column;">
+    <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">📱 Orders by Device</h3>
+    <div style="flex-grow: 1; max-height: 250px; overflow-y: auto; font-size: 0.85rem;">
+      <% if @orders_by_device.any? %>
+        <% @orders_by_device.sort_by {|_k, v| -v}.each do |device, count| %>
+          <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px dotted var(--border);">
+            <span style="color: var(--text-muted);"><%= device %></span>
+            <strong style="color: var(--secondary);"><%= count %></strong>
+          </div>
+        <% end %>
+      <% else %>
+        <span style="color: var(--text-muted); display: block; text-align: center; margin-top: 2rem;">No device data.</span>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Orders by State Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column;">
+    <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">🗺️ Orders by State</h3>
+    <div style="flex-grow: 1; max-height: 250px; overflow-y: auto; font-size: 0.85rem;">
+      <% if @orders_by_state.any? %>
+        <% @orders_by_state.sort_by {|_k, v| -v}.first(10).each do |state, count| %>
+          <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px dotted var(--border);">
+            <span style="color: var(--text-muted);"><%= state %></span>
+            <strong style="color: var(--secondary);"><%= count %></strong>
+          </div>
+        <% end %>
+      <% else %>
+        <span style="color: var(--text-muted); display: block; text-align: center; margin-top: 2rem;">No state data.</span>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Orders by City Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column;">
+    <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">🏢 Orders by City</h3>
+    <div style="flex-grow: 1; max-height: 250px; overflow-y: auto; font-size: 0.85rem;">
+      <% if @orders_by_city.any? %>
+        <% @orders_by_city.sort_by {|_k, v| -v}.first(10).each do |city, count| %>
+          <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px dotted var(--border);">
+            <span style="color: var(--text-muted);"><%= city %></span>
+            <strong style="color: var(--secondary);"><%= count %></strong>
+          </div>
+        <% end %>
+      <% else %>
+        <span style="color: var(--text-muted); display: block; text-align: center; margin-top: 2rem;">No city data.</span>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Detailed Bookings Attribution Table -->
+<div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 1.5rem; margin-bottom: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary);">Detailed Bookings Attribution Table</h3>
+    <div style="display: flex; gap: 0.5rem;">
+      <a href="/admin_custom/analytics/booking_sources.xlsx?<%= request.query_parameters.to_query %>" class="btn btn-secondary btn-sm" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+        📥 Export Excel (.xlsx)
+      </a>
+      <a href="/admin_custom/analytics/booking_sources.csv?<%= request.query_parameters.to_query %>" class="btn btn-outline btn-sm" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+        📄 Export CSV (.csv)
+      </a>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table" style="margin-bottom: 0; font-size: 0.875rem;">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Completed At</th>
+          <th>Email</th>
+          <th>Source</th>
+          <th>UTM Source</th>
+          <th>UTM Campaign</th>
+          <th>State / City</th>
+          <th style="text-align: right;">Total Amount</th>
+          <th style="text-align: center;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @detailed_orders.each do |order| %>
+          <tr>
+            <td style="font-weight: 600; color: var(--secondary);"><%= order.number %></td>
+            <td style="white-space: nowrap;"><%= order.completed_at&.strftime("%Y-%m-%d %I:%M %p") %></td>
+            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= order.email %></td>
+            <td>
+              <% badge_color = case order.booking_source
+                 when 'Facebook Ads' then '#fecaca'
+                 when 'Instagram Ads' then '#fbcfe8'
+                 when 'Google Ads' then '#fed7aa'
+                 when 'Organic Google Search' then '#fef08a'
+                 when 'WhatsApp' then '#bbf7d0'
+                 when 'YouTube' then '#fed7aa'
+                 when 'Direct' then '#e2e8f0'
+                 else '#dcfce7'
+                 end %>
+              <% badge_text_color = case order.booking_source
+                 when 'Facebook Ads' then '#991b1b'
+                 when 'Instagram Ads' then '#9d174d'
+                 when 'Google Ads' then '#9a3412'
+                 when 'Organic Google Search' then '#854d0e'
+                 when 'WhatsApp' then '#166534'
+                 when 'YouTube' then '#9a3412'
+                 when 'Direct' then '#475569'
+                 else '#14532d'
+                 end %>
+              <span class="badge" style="background-color: <%= badge_color %>; color: <%= badge_text_color %>; padding: 0.25rem 0.5rem; font-size: 0.75rem; font-weight: 600;">
+                <%= order.booking_source || "Other" %>
+              </span>
+            </td>
+            <td><%= order.utm_source.presence || "-" %></td>
+            <td><%= order.utm_campaign.presence || "-" %></td>
+            <td>
+              <%= [order.attribution_state, order.attribution_city].reject(&:blank?).join(" / ").presence || "-" %>
+            </td>
+            <td style="text-align: right; font-weight: 600; color: var(--primary);">₹<%= number_with_precision(order.total, precision: 2, delimiter: ",") %></td>
+            <td style="text-align: center;">
+              <a href="/admin_custom/orders/<%= order.number %>" class="btn btn-outline btn-xs" style="padding: 0.15rem 0.4rem; font-size: 0.75rem; font-weight: 500;">
+                🔍 View
+              </a>
+            </td>
+          </tr>
+        <% end %>
+        <% if @detailed_orders.empty? %>
+          <tr>
+            <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 3rem;">No booking data found for the selected period.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

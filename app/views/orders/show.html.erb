@@ -1,0 +1,238 @@
+<% content_for :title, "Order #{@order.number} - Jeeni Shop" %>
+
+<% if meta_pixel_id.present? && @track_purchase %>
+  <script>
+    if (typeof fbq !== 'undefined') {
+      fbq('track', 'Purchase', {
+        value: <%= @order.total.to_f %>,
+        currency: 'INR',
+        content_ids: <%= raw @order.line_items.map { |li| li.variant.product.master.sku.presence || li.variant.product.id.to_s }.to_json %>,
+        content_type: 'product'
+      });
+    }
+  </script>
+<% end %>
+
+<% if google_analytics_id.present? && @track_purchase %>
+  <script>
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'purchase', {
+        transaction_id: '<%= @order.number %>',
+        value: <%= @order.total.to_f %>,
+        currency: 'INR',
+        items: <%= raw @order.line_items.map { |li| { item_id: li.variant.sku.presence || li.variant.id.to_s, item_name: li.variant.product.name, price: li.price.to_f, quantity: li.quantity } }.to_json %>
+      });
+    }
+  </script>
+<% end %>
+
+<!-- Breadcrumbs -->
+<div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+  <a href="/">Home</a> / <a href="/account">My Account</a> / <span style="color: var(--text-main); font-weight: 500;">Order <%= @order.number %></span>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+  <div>
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Order Details</h1>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">Placed on <%= @order.completed_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+  </div>
+  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+    <a href="/track-order?order_number=<%= @order.number %>" class="btn btn-primary">🚚 Track Your Order</a>
+    <a href="/orders/<%= @order.number %>/invoice" target="_blank" class="btn btn-secondary">Download PDF Invoice</a>
+  </div>
+
+</div>
+
+<!-- FEATURE 7: Order Confirmation Promotion Badges -->
+<% has_free_gift = @order.line_items.any? { |li| li.price == 0.0 || li.variant&.product&.slug.to_s.include?('vegetable') } %>
+<div class="order-promotions-summary" style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+  <% if has_free_gift %>
+    <span style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 1.5px solid #f59e0b; color: #78350f; font-weight: 800; padding: 0.45rem 0.85rem; border-radius: 8px; font-size: 0.875rem; display: flex; align-items: center; gap: 0.4rem;">
+      🎁 FREE Vegetable Coffee Included
+    </span>
+  <% end %>
+  <span style="background: #f0fdf4; border: 1.5px solid #86efac; color: #14532d; font-weight: 800; padding: 0.45rem 0.85rem; border-radius: 8px; font-size: 0.875rem; display: flex; align-items: center; gap: 0.4rem;">
+    🚚 Free Delivery Applied
+  </span>
+</div>
+
+<!-- Order Status Tracking Stepper -->
+<%
+  order_state = @order.state
+  shipment_state = @order.shipment_state # 'pending', 'ready', 'shipped'
+  
+  # Map Spree states to requested states
+  current_step = 1 # 1: Pending, 2: Processing, 3: Shipped, 4: Delivered, 5: Cancelled (if canceled)
+  
+  if order_state == 'canceled'
+    current_step = 5
+  elsif shipment_state == 'shipped'
+    # Assuming shipped is step 3, delivered is 4
+    current_step = 3
+  elsif order_state == 'complete'
+    current_step = 2 # Processing
+  end
+%>
+
+<div class="card" style="padding: 2rem; margin-bottom: 2.5rem; background-color: white;">
+  <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--secondary); text-align: center;">Order Tracking Status</h3>
+  
+  <% if order_state == 'canceled' %>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; color: var(--danger); font-weight: 700; font-size: 1.25rem;">
+      🚫 This order has been Cancelled
+    </div>
+  <% else %>
+    <div style="display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 800px; margin: 0 auto;">
+      <!-- Connection line -->
+      <div style="position: absolute; top: 15px; left: 5%; right: 5%; height: 4px; background-color: var(--border); z-index: 1;"></div>
+      <div style="position: absolute; top: 15px; left: 5%; width: <%= ((current_step - 1) / 3.0 * 90).to_i %>%; height: 4px; background-color: var(--success); z-index: 2; transition: var(--transition);"></div>
+
+      <!-- Step 1: Pending -->
+      <div style="text-align: center; z-index: 3; position: relative; width: 80px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: <%= current_step >= 1 ? 'var(--success)' : 'var(--border)' %>; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 0.5rem auto;">
+          ✓
+        </div>
+        <span style="font-size: 0.8rem; font-weight: 600; color: <%= current_step >= 1 ? 'var(--secondary)' : 'var(--text-muted)' %>;">Pending</span>
+      </div>
+
+      <!-- Step 2: Processing -->
+      <div style="text-align: center; z-index: 3; position: relative; width: 80px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: <%= current_step >= 2 ? 'var(--success)' : 'var(--border)' %>; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 0.5rem auto;">
+          <%= current_step >= 2 ? '✓' : '2' %>
+        </div>
+        <span style="font-size: 0.8rem; font-weight: 600; color: <%= current_step >= 2 ? 'var(--secondary)' : 'var(--text-muted)' %>;">Processing</span>
+      </div>
+
+      <!-- Step 3: Shipped -->
+      <div style="text-align: center; z-index: 3; position: relative; width: 80px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: <%= current_step >= 3 ? 'var(--success)' : 'var(--border)' %>; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 0.5rem auto;">
+          <%= current_step >= 3 ? '✓' : '3' %>
+        </div>
+        <span style="font-size: 0.8rem; font-weight: 600; color: <%= current_step >= 3 ? 'var(--secondary)' : 'var(--text-muted)' %>;">Shipped</span>
+      </div>
+
+      <!-- Step 4: Delivered -->
+      <div style="text-align: center; z-index: 3; position: relative; width: 80px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: <%= current_step >= 4 ? 'var(--success)' : 'var(--border)' %>; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 0.5rem auto;">
+          <%= current_step >= 4 ? '✓' : '4' %>
+        </div>
+        <span style="font-size: 0.8rem; font-weight: 600; color: <%= current_step >= 4 ? 'var(--secondary)' : 'var(--text-muted)' %>;">Delivered</span>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<div class="cart-checkout-grid">
+  <!-- Left Side: Addresses, Logistics & Line Items -->
+  <div>
+    <!-- Addresses Grid -->
+    <div class="two-column-grid" style="margin-bottom: 2rem;">
+      <!-- Billing Address -->
+      <div class="card" style="padding: 1.5rem; background-color: white; height: auto; transform: none; box-shadow: var(--shadow-sm); transition: none;">
+        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;">Billing Address</h3>
+        <% if @order.bill_address %>
+          <p style="font-size: 0.9rem; color: #334155;">
+            <strong><%= @order.bill_address.full_name %></strong><br>
+            <%= @order.bill_address.address1 %><br>
+            <% if @order.bill_address.address2.present? %><%= @order.bill_address.address2 %><br><% end %>
+            <%= @order.bill_address.city %>, <%= @order.bill_address.state&.name || @order.bill_address.state_name %> <%= @order.bill_address.zipcode %><br>
+            <%= @order.bill_address.country.name %><br>
+            📞 <%= @order.bill_address.phone %>
+          </p>
+        <% end %>
+      </div>
+
+      <!-- Shipping Address -->
+      <div class="card" style="padding: 1.5rem; background-color: white; height: auto; transform: none; box-shadow: var(--shadow-sm); transition: none;">
+        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;">Shipping Address</h3>
+        <% if @order.ship_address %>
+          <p style="font-size: 0.9rem; color: #334155;">
+            <strong><%= @order.ship_address.full_name %></strong><br>
+            <%= @order.ship_address.address1 %><br>
+            <% if @order.ship_address.address2.present? %><%= @order.ship_address.address2 %><br><% end %>
+            <%= @order.ship_address.city %>, <%= @order.ship_address.state&.name || @order.ship_address.state_name %> <%= @order.ship_address.zipcode %><br>
+            <%= @order.ship_address.country.name %><br>
+            📞 <%= @order.ship_address.phone %>
+          </p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Logistics & Payment Details -->
+    <div class="two-column-grid" style="margin-bottom: 2rem;">
+      <div class="card" style="padding: 1.5rem; background-color: white; height: auto; transform: none; box-shadow: var(--shadow-sm); transition: none;">
+        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;">Shipping Method</h3>
+        <p style="font-size: 0.9rem; color: #334155; font-weight: 500; margin-top: 0.25rem;">
+          <%= @order.shipments.first&.shipping_method&.name || "Default Shipping" %>
+        </p>
+      </div>
+
+      <div class="card" style="padding: 1.5rem; background-color: white; height: auto; transform: none; box-shadow: var(--shadow-sm); transition: none;">
+        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;">Payment Method</h3>
+        <p style="font-size: 0.9rem; color: #334155; font-weight: 500; margin-top: 0.25rem;">
+          <%= @order.payments.first&.payment_method&.name || "COD / Check" %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Line Items Table -->
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @order.line_items.each do |item| %>
+            <tr>
+              <td>
+                <span style="font-weight: 600; color: var(--secondary);"><%= item.product.name %></span>
+                <% if item.variant.options_text.present? %>
+                  <span style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;"><%= item.variant.options_text %></span>
+                <% end %>
+              </td>
+              <td><%= item.single_money.to_s %></td>
+              <td><%= item.quantity %></td>
+              <td style="font-weight: 600; color: var(--secondary);"><%= item.display_amount.to_s %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Right Side: Order Totals -->
+  <div>
+    <div class="card" style="padding: 1.5rem; background-color: white; height: auto; transform: none; box-shadow: var(--shadow-sm); transition: none;">
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Order Totals</h3>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.95rem;">
+        <span style="color: var(--text-muted);">Subtotal</span>
+        <span style="font-weight: 500;"><%= @order.display_item_total.to_s %></span>
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.95rem;">
+        <span style="color: var(--text-muted);">Shipping</span>
+        <span style="font-weight: 500;"><%= @order.shipment_total == 0 ? "Free Delivery" : @order.display_shipment_total.to_s %></span>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; font-size: 0.95rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+        <span style="color: var(--text-muted);">Taxes</span>
+        <span style="font-weight: 500;"><%= @order.display_tax_total.to_s %></span>
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.25rem; font-weight: 700; color: var(--secondary);">
+        <span>Total Paid</span>
+        <span style="color: var(--primary);"><%= @order.display_total.to_s %></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="checkout-actions" style="justify-content: flex-start; margin-top: 1rem;">
+  <a href="/account" class="btn btn-outline">&larr; Back to Order History</a>
+</div>

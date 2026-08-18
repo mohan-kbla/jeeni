@@ -1,0 +1,105 @@
+<% content_for :title, "Company Blog - Jeeni Shop" %>
+
+<div style="margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: center;">
+  <div>
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Our Blog</h1>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">Stay updated with our latest news, articles, and product announcements.</p>
+  </div>
+  <% if spree_current_user&.has_spree_role?("admin") %>
+    <div>
+      <a href="/admin_custom/blogs/new" class="btn btn-primary btn-sm">➕ Create New Blog</a>
+    </div>
+  <% end %>
+</div>
+
+<div class="catalog-layout" style="grid-template-columns: 2fr 1fr;">
+  <!-- Blog Posts List -->
+  <div>
+    <% if @blogs.any? %>
+      <% @blogs.each do |blog| %>
+        <article class="blog-post">
+          <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--primary); margin-bottom: 0.5rem;">
+            <%= blog.category %>
+          </div>
+          
+          <h2 class="blog-post-title" style="font-size: 1.75rem; margin-bottom: 0.75rem;">
+            <a href="/blogs/<%= blog.slug %>" style="color: var(--secondary);"><%= blog.title %></a>
+          </h2>
+          
+          <div class="blog-post-meta" style="margin-bottom: 1.5rem; padding-bottom: 0.75rem;">
+            <span>📅 Published on <%= blog.published_at.strftime("%B %d, %Y") %></span>
+            <% if blog.tag_list.any? %>
+              <span style="margin-left: 1rem;">🏷️ Tags: 
+                <% blog.tag_list.each do |tag| %>
+                  <a href="/blogs?tag=<%= tag %>" style="font-size: 0.75rem; background: #e2e8f0; color: #475569; padding: 0.15rem 0.4rem; border-radius: var(--radius-sm); margin-right: 0.25rem;"><%= tag %></a>
+                <% end %>
+              </span>
+            <% end %>
+          </div>
+          
+          <div class="blog-post-content" style="font-size: 1rem; color: #475569; margin-bottom: 1.5rem; line-height: 1.6;">
+            <%= truncate(strip_tags(blog.body), length: 280) %>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="/blogs/<%= blog.slug %>" class="btn btn-primary btn-sm">Read Full Article &rarr;</a>
+            <% if spree_current_user&.has_spree_role?("admin") %>
+              <div style="display: flex; gap: 0.5rem;">
+                <a href="/admin_custom/blogs/<%= blog.slug %>/edit" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">✏️ Edit</a>
+                <%= button_to admin_custom_blog_path(blog), method: :delete, class: "btn btn-outline btn-sm", style: "border-color: #fee2e2; color: var(--danger); font-size: 0.75rem; padding: 0.25rem 0.5rem;", data: { confirm: "Delete this blog?" } do %>
+                  🗑️ Delete
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </article>
+      <% end %>
+
+      <!-- Pagination -->
+      <div style="display: flex; justify-content: center; margin-top: 3rem;">
+        <%= paginate @blogs %>
+      </div>
+    <% else %>
+      <div style="text-align: center; padding: 5rem 2rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md);">
+        <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">📝</span>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">No Articles Found</h3>
+        <p style="color: var(--text-muted);">There are no blog posts matching your selection.</p>
+        <a href="/blogs" class="btn btn-primary" style="margin-top: 1.5rem;">View All Posts</a>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Sidebar Filters -->
+  <aside style="display: flex; flex-direction: column; gap: 2rem;">
+    <!-- Categories Widget -->
+    <div class="card" style="padding: 1.5rem; background-color: white;">
+      <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Categories</h3>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;">
+        <li>
+          <a href="/blogs" style="font-weight: <%= params[:category].blank? ? '600' : '400' %>; color: <%= params[:category].blank? ? 'var(--primary)' : 'var(--text-main)' %>;">All Categories</a>
+        </li>
+        <% @categories.each do |cat| %>
+          <li>
+            <a href="/blogs?category=<%= cat %>" style="font-weight: <%= params[:category] == cat ? '600' : '400' %>; color: <%= params[:category] == cat ? 'var(--primary)' : 'var(--text-main)' %>;"><%= cat %></a>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <!-- Tags Cloud Widget -->
+    <div class="card" style="padding: 1.5rem; background-color: white;">
+      <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Tags Cloud</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <% if @all_tags.any? %>
+          <% @all_tags.each do |tag| %>
+            <a href="/blogs?tag=<%= tag %>" style="font-size: 0.8rem; background-color: <%= params[:tag] == tag ? 'var(--primary)' : '#f1f5f9' %>; color: <%= params[:tag] == tag ? 'white' : '#475569' %>; padding: 0.25rem 0.6rem; border-radius: var(--radius-sm); transition: var(--transition);">
+              <%= tag %>
+            </a>
+          <% end %>
+        <% else %>
+          <span style="color: var(--text-muted); font-size: 0.875rem;">No tags found.</span>
+        <% end %>
+      </div>
+    </div>
+  </aside>
+</div>

@@ -1,0 +1,250 @@
+<% content_for :title, "Website Analytics - Admin" %>
+
+<!-- Load Chart.js and Chartkick JS CDNs so Chartkick can render the trend graphs -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartkick@5.0.1/dist/chartkick.js"></script>
+
+<div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Website Analytics</h1>
+    <p style="color: var(--text-muted);">Track customer sessions, order conversion metrics, revenue trends, and fulfillment statistics.</p>
+  </div>
+  <div style="background: var(--primary-light); padding: 0.5rem 1rem; border-radius: var(--radius-sm); border: 1px solid #fecaca; display: flex; align-items: center; gap: 0.5rem;">
+    <span style="font-weight: 600; color: var(--primary);">Selected Period:</span>
+    <span style="color: var(--text-main); font-weight: 500;"><%= @date_display %></span>
+  </div>
+</div>
+
+<!-- Date Filters Form -->
+<form method="get" action="/admin_custom/analytics" class="filters-form" id="analyticsFiltersForm">
+  <input type="hidden" name="date_filter" id="analyticsDateFilterInput" value="<%= @date_filter %>">
+  
+  <div class="filters-container" style="display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; background: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+    <!-- Left Side: Quick Filters -->
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <span style="font-weight: 600; color: var(--secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.25rem;">
+        🔍 Quick Filters:
+      </span>
+      <div style="display: flex; gap: 0.35rem; background: var(--bg-card); padding: 0.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+        <a href="#" onclick="setAnalyticsFilter('today'); return false;" class="btn <%= @date_filter == 'today' ? 'btn-primary' : 'btn-outline' %> btn-sm" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: var(--radius-sm); border: none; font-weight: 500;">Today</a>
+        <a href="#" onclick="setAnalyticsFilter('yesterday'); return false;" class="btn <%= @date_filter == 'yesterday' ? 'btn-primary' : 'btn-outline' %> btn-sm" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: var(--radius-sm); border: none; font-weight: 500;">Yesterday</a>
+      </div>
+    </div>
+
+    <!-- Right Side: Custom Date Range Form Controls -->
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <span style="font-weight: 600; color: var(--secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.25rem;">
+        📅 Custom Range:
+      </span>
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">From</span>
+          <input type="date" id="from_date" name="from_date" value="<%= params[:from_date] %>" class="form-control" style="width: auto; padding: 0.35rem 0.5rem; font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border); height: auto; background-color: var(--bg-card);">
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">To</span>
+          <input type="date" id="to_date" name="to_date" value="<%= params[:to_date] %>" class="form-control" style="width: auto; padding: 0.35rem 0.5rem; font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border); height: auto; background-color: var(--bg-card);">
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm" onclick="document.getElementById('analyticsDateFilterInput').value='custom';" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; font-weight: 600; height: auto;">Apply</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  function setAnalyticsFilter(val) {
+    document.getElementById('analyticsDateFilterInput').value = val;
+    if (val !== 'custom') {
+      document.getElementById('from_date').value = '';
+      document.getElementById('to_date').value = '';
+    }
+    document.getElementById('analyticsFiltersForm').submit();
+  }
+</script>
+
+<!-- KPI Cards Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+  <!-- Total Visitors Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Total Visitors</span>
+      <span style="font-size: 1.5rem;">👥</span>
+    </div>
+    <span style="font-size: 2.25rem; font-weight: 700; color: var(--secondary);"><%= number_with_delimiter(@total_visitors) %></span>
+  </div>
+
+  <!-- Total Orders Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Total Orders</span>
+      <span style="font-size: 1.5rem;">🛒</span>
+    </div>
+    <span style="font-size: 2.25rem; font-weight: 700; color: var(--secondary);"><%= number_with_delimiter(@total_orders) %></span>
+  </div>
+
+  <!-- Conversion Rate Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Conversion Rate</span>
+      <span style="font-size: 1.5rem;">📈</span>
+    </div>
+    <span style="font-size: 2.25rem; font-weight: 700; color: var(--secondary);"><%= @conversion_rate %>%</span>
+  </div>
+
+  <!-- Total Revenue Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Total Revenue</span>
+      <span style="font-size: 1.5rem;">💰</span>
+    </div>
+    <span style="font-size: 2.25rem; font-weight: 700; color: var(--secondary);">₹<%= number_with_precision(@total_revenue, precision: 2, delimiter: ",") %></span>
+  </div>
+
+  <!-- Average Order Value (AOV) Card -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Avg. Order Value</span>
+      <span style="font-size: 1.5rem;">💎</span>
+    </div>
+    <span style="font-size: 2.25rem; font-weight: 700; color: var(--secondary);">₹<%= number_with_precision(@average_order_value, precision: 2, delimiter: ",") %></span>
+  </div>
+</div>
+
+<!-- Conversion Funnel Analysis Card (Scope #18) -->
+<% if @funnel_counts.present? %>
+  <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 1.75rem; margin-bottom: 3rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+      <div>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary); margin: 0;">🎯 Booking Conversion Funnel</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.25rem 0 0 0;">Step-by-step visitor progression and checkout drop-off analysis.</p>
+      </div>
+      <div style="background: var(--primary-light); color: var(--primary); font-weight: 700; padding: 0.4rem 0.85rem; border-radius: 999px; font-size: 0.85rem;">
+        Overall Funnel Conv: <%= @conversion_rate %>%
+      </div>
+    </div>
+
+    <%
+      funnel_steps = [
+        { key: :visitors, name: "1. Website Visitors", icon: "👥", drop_key: :product_views },
+        { key: :product_views, name: "2. Product Views", icon: "👀", drop_key: :easy_booking_clicks },
+        { key: :easy_booking_clicks, name: "3. Easy Booking Clicks", icon: "⚡", drop_key: :checkout_started },
+        { key: :checkout_started, name: "4. Checkout Started", icon: "🛒", drop_key: :address_submitted },
+        { key: :address_submitted, name: "5. Address Submitted", icon: "📍", drop_key: :payment_started },
+        { key: :payment_started, name: "6. Payments Started", icon: "💳", drop_key: :orders_completed },
+        { key: :orders_completed, name: "7. Orders Completed", icon: "🎉", drop_key: nil }
+      ]
+      max_count = [@funnel_counts[:visitors], 1].max
+    %>
+
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <% funnel_steps.each_with_index do |step, idx| %>
+        <%
+          cnt = @funnel_counts[step[:key]] || 0
+          pct = ((cnt.to_f / max_count) * 100).round(1)
+          drop_pct = step[:drop_key] ? @funnel_dropoffs[step[:drop_key]] : nil
+        %>
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.95rem;">
+            <span style="font-weight: 700; color: var(--secondary);">
+              <%= step[:icon] %> <%= step[:name] %>
+            </span>
+            <span style="font-weight: 700; color: var(--primary);">
+              <%= number_with_delimiter(cnt) %> <span style="font-weight: 400; color: var(--text-muted); font-size: 0.85rem;">(<%= pct %>%)</span>
+            </span>
+          </div>
+
+          <!-- Progress Bar -->
+          <div style="background: #e2e8f0; height: 10px; border-radius: 999px; overflow: hidden;">
+            <div style="background: linear-gradient(90deg, #15803d, #22c55e); height: 100%; width: <%= [pct, 100].min %>%; border-radius: 999px; transition: width 0.4s ease;"></div>
+          </div>
+
+          <% if drop_pct.present? %>
+            <div style="margin-top: 0.5rem; text-align: right; font-size: 0.8rem; font-weight: 600; color: #dc2626;">
+              ↓ <%= drop_pct %>% drop-off to next step
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+
+<!-- Charts Section -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+  <!-- Visitors Trend Line Chart -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">👥 Website Visitors Trend</h3>
+    <%= line_chart @visitors_trend, colors: ["#224229"], xtitle: (@date_filter == "today" || @date_filter == "yesterday" ? "Hour" : "Date"), ytitle: "Unique Visitors", round: 0 %>
+  </div>
+
+  <!-- Orders Trend Line Chart -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">🛒 Orders Created Trend</h3>
+    <%= line_chart @orders_trend, colors: ["#b12704"], xtitle: (@date_filter == "today" || @date_filter == "yesterday" ? "Hour" : "Date"), ytitle: "Orders Placed", round: 0 %>
+  </div>
+
+  <!-- Visitors vs Orders Comparison Bar/Column Chart -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">📊 Visitors vs Orders Comparison</h3>
+    <%= column_chart @visitors_vs_orders, colors: ["#224229", "#b12704"], xtitle: (@date_filter == "today" || @date_filter == "yesterday" ? "Hour" : "Date"), ytitle: "Count" %>
+  </div>
+
+  <!-- Order Status Distribution Pie Chart -->
+  <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">🍕 Order Status Distribution</h3>
+    <% if @order_statuses.any? %>
+      <%= pie_chart @order_statuses, donut: true %>
+    <% else %>
+      <div style="height: 300px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+        No status data available for selected period.
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Data Table Section -->
+<div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 1.5rem; margin-bottom: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary);">Detailed Breakdown</h3>
+    <div style="display: flex; gap: 0.5rem;">
+      <a href="/admin_custom/analytics.xlsx?<%= request.query_parameters.to_query %>" class="btn btn-secondary btn-sm" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+        📥 Export Excel (.xlsx)
+      </a>
+      <a href="/admin_custom/analytics.pdf?<%= request.query_parameters.to_query %>" class="btn btn-outline btn-sm" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+        📄 Export PDF (.pdf)
+      </a>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table" style="margin-bottom: 0;">
+      <thead>
+        <tr>
+          <th>Date / Time</th>
+          <th style="text-align: right;">Website Visitors</th>
+          <th style="text-align: right;">Orders Created</th>
+          <th style="text-align: right;">Conversion Rate</th>
+          <th style="text-align: right;">Revenue</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @table_data.each do |row| %>
+          <tr>
+            <td style="font-weight: 600; color: var(--secondary);"><%= row[:date] %></td>
+            <td style="text-align: right;"><%= number_with_delimiter(row[:visitors]) %></td>
+            <td style="text-align: right;"><%= number_with_delimiter(row[:orders]) %></td>
+            <td style="text-align: right;"><%= row[:conversion] %>%</td>
+            <td style="text-align: right; font-weight: 600; color: var(--primary);">₹<%= number_with_precision(row[:revenue], precision: 2, delimiter: ",") %></td>
+          </tr>
+        <% end %>
+        <% if @table_data.empty? %>
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No details available for selected period.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

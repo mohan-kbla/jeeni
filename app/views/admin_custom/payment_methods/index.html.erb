@@ -1,0 +1,45 @@
+<% content_for :title, "Payment Methods - Admin" %>
+
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Payment Methods</h1>
+  <p style="color: var(--text-muted);">Manage payment methods, configure API keys, webhook secrets, and activate/deactivate payment options.</p>
+</div>
+
+<% if @payment_methods.any? %>
+  <div class="table-responsive" style="max-width: 800px;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @payment_methods.each do |method| %>
+          <tr>
+            <td style="font-weight: 600; color: var(--secondary);"><%= method.name %></td>
+            <td><%= method.description %></td>
+            <td>
+              <% if method.active? %>
+                <span style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.8rem; font-weight: 600; border-radius: var(--radius-sm); background-color: #d1fae5; color: #065f46;">Active</span>
+              <% else %>
+                <span style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.8rem; font-weight: 600; border-radius: var(--radius-sm); background-color: #f3f4f6; color: #374151;">Inactive</span>
+              <% end %>
+            </td>
+            <td>
+              <a href="/admin_custom/payment_methods/<%= method.id %>/edit" class="btn btn-secondary btn-sm" style="padding: 0.4rem 0.6rem;">✏️ Edit Settings</a>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div style="text-align: center; padding: 5rem 2rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md); max-width: 800px;">
+    <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">💳</span>
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">No Payment Methods</h3>
+    <p style="color: var(--text-muted);">No payment methods have been defined in the database.</p>
+  </div>
+<% end %>

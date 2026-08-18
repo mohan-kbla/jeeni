@@ -1,0 +1,572 @@
+<style>
+  .payment-method-card {
+    border: 2px solid var(--border) !important;
+    background: var(--bg-card) !important;
+    border-radius: 12px !important;
+    padding: 1.25rem !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+    position: relative !important;
+    margin-bottom: 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  .payment-method-card:hover {
+    border-color: #cbd5e1 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  .payment-method-card.selected {
+    border-color: var(--success) !important;
+    background: #fbfdf7 !important;
+    box-shadow: 0 4px 15px rgba(67, 140, 64, 0.08) !important;
+  }
+  
+  #checkout-submit-btn {
+    transition: all 0.3s ease !important;
+  }
+  
+  #checkout-submit-btn.disabled-btn {
+    opacity: 0.65 !important;
+    cursor: not-allowed !important;
+    background-color: #94a3b8 !important;
+    border-color: #94a3b8 !important;
+    box-shadow: none !important;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes text-blink-glow {
+    0% {
+      opacity: 0.8;
+      box-shadow: 0 0 2px rgba(3, 105, 161, 0.1);
+      border-color: #bae6fd;
+    }
+    50% {
+      opacity: 1;
+      box-shadow: 0 0 12px rgba(3, 105, 161, 0.35);
+      border-color: #0284c7;
+    }
+    100% {
+      opacity: 0.8;
+      box-shadow: 0 0 2px rgba(3, 105, 161, 0.1);
+      border-color: #bae6fd;
+    }
+  }
+
+  .premium-gift-highlight {
+    display: inline-block;
+    padding: 0.45rem 0.9rem;
+    background: #f0f9ff !important;
+    border: 1.5px solid #bae6fd !important;
+    border-radius: 8px !important;
+    color: #0369a1 !important;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.2px !important;
+    animation: text-blink-glow 2s infinite ease-in-out !important;
+    margin-top: 0.5rem !important;
+  }
+  
+  .premium-gift-highlight strong {
+    color: #e11d48 !important;
+    font-weight: 900 !important;
+  }
+</style>
+
+<% if meta_pixel_id.present? %>
+  <script>
+    if (typeof fbq !== 'undefined') {
+      fbq('track', 'AddPaymentInfo', {
+        value: <%= @order.total.to_f %>,
+        currency: 'INR',
+        content_ids: <%= raw @order.line_items.map { |li| li.variant.product.master.sku.presence || li.variant.product.id.to_s }.to_json %>,
+        content_type: 'product'
+      });
+    }
+  </script>
+<% end %>
+
+<!-- Checkout Wizard Stepper -->
+<div class="checkout-steps">
+  <div class="checkout-step completed">1. Address</div>
+  <div class="checkout-step completed">2. Delivery</div>
+  <div class="checkout-step active">3. Payment</div>
+  <div class="checkout-step">4. Confirm</div>
+</div>
+
+<div style="max-width: 600px; margin: 0 auto;">
+  <div class="checkout-security-bar" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #e7eedd; border: 1px solid #c5d9ad; color: var(--success); font-weight: 700; font-size: 0.9rem; padding: 0.6rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; text-align: center;">
+    🔒 PCI-DSS Compliant & 256-Bit SSL Secured Checkout
+  </div>
+</div>
+
+<h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 2rem; color: var(--secondary); text-align: center;">Select Payment Method</h2>
+
+<%= form_for @order, url: update_checkout_path, method: :patch do |f| %>
+  <div id="payment-page-container" 
+       style="max-width: 600px; margin: 0 auto;"
+       data-is-karnataka="<%= @order.ship_address&.state&.name.to_s.downcase.include?('karnataka') ? 'true' : 'false' %>"
+       data-item-total="<%= @order.item_total.to_f %>"
+       data-tax-total="<%= @order.tax_total.to_f %>"
+       data-adjustment-total="<%= (@order.adjustment_total - @order.promo_total).to_f %>"
+       data-promo-total="<%= @order.promo_total.to_f %>">
+      <% is_eligible_order = PromotionService.unlocked_free_gift_promo?(@order) %>
+
+      <!-- Dynamic Payment Method Promotion Status Card -->
+      <% if is_eligible_order %>
+        <%
+          gift_product = Spree::Product.find_by(slug: 'vegetable-cofpee') || Spree::Product.where("LOWER(name) LIKE ?", "%vegetable%").first
+          gift_img_src = gift_product ? product_image_url(gift_product) : nil
+          gift_price = gift_product&.price&.to_i || 299
+        %>
+        <div id="checkout-gift-notice-online" style="display: flex; align-items: center; gap: 1.25rem; background: linear-gradient(135deg, #f0fdf4, #e6f7ed); border: 2px solid var(--success); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(67, 140, 64, 0.08); transition: all 0.3s ease;">
+          <% if gift_img_src.present? %>
+            <div style="flex-shrink: 0; width: 100px; height: 100px; background: white; border-radius: 8px; border: 1px solid #c5d9ad; display: flex; align-items: center; justify-content: center; padding: 0.5rem; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+              <img src="<%= gift_img_src %>" alt="Free Vegetable Coffee" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+          <% end %>
+          <div style="flex-grow: 1;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.35rem;">
+              <span style="font-size: 1.2rem;">🎁</span>
+              <strong style="color: var(--secondary); font-size: 1.05rem; font-weight: 700;">FREE Vegetable Coffee</strong>
+              <span style="background: var(--success); color: white; font-weight: 800; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.3px;">Worth ₹<%= gift_price %></span>
+            </div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin: 0.5rem 0; font-size: 0.85rem; font-weight: 600; color: var(--success);">
+              <span style="display: inline-flex; align-items: center; gap: 0.25rem;">🚚 Free Delivery</span>
+              <span style="display: inline-flex; align-items: center; gap: 0.25rem;">⚡ Instant Order Confirmation</span>
+            </div>
+            
+            <div class="premium-gift-highlight">
+              Choose Razorpay and receive this gift absolutely <strong>FREE</strong>.
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <div id="checkout-gift-notice-cod" style="display: none; align-items: center; gap: 0.75rem; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 0.85rem 1.1rem; margin-bottom: 1.25rem;">
+        <span style="font-size: 1.5rem;">🚚</span>
+        <div>
+          <strong style="color: #14532d; font-size: 0.95rem;">Free Delivery Applied</strong>
+          <span style="color: #166534; font-size: 0.85rem; display: block;">(Switch to Online Payment for FREE Vegetable Coffee Gift)</span>
+        </div>
+      </div>
+
+      <%
+        selected_method_id = nil
+        if @razorpay_order_id.present?
+          selected_method_id = @order.payments.last&.payment_method_id
+        end
+      %>
+
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <% if @payment_methods.any? %>
+          <% @payment_methods.sort_by { |m| m.name.to_s.downcase.include?('razorpay') ? 0 : 1 }.each do |method| %>
+            <% is_razorpay = method.is_a?(Spree::PaymentMethod::Razorpay) || method.name.to_s.downcase.include?('razorpay') %>
+            <div class="payment-method-card" id="card_<%= method.id %>">
+              <div style="display: flex; align-items: flex-start; gap: 0.85rem; width: 100%;">
+                <input type="radio" name="order[payments_attributes][][payment_method_id]" value="<%= method.id %>" id="payment_<%= method.id %>" required <%= (selected_method_id == method.id) ? 'checked' : '' %> style="margin-top: 0.25rem; accent-color: var(--success); width: 1.1rem; height: 1.1rem; cursor: pointer;">
+                <label for="payment_<%= method.id %>" style="cursor: pointer; font-size: 0.95rem; color: var(--text-main); flex-grow: 1; display: block; width: 100%;">
+                  <div style="font-weight: 700; color: var(--secondary); font-size: 1.05rem; display: flex; align-items: center; justify-content: space-between;">
+                    <span><%= method.name %></span>
+                    <% if is_razorpay %>
+                      <span style="font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 700; letter-spacing: 0.3px;">POPULAR</span>
+                    <% end %>
+                  </div>
+                  <div style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.25rem;"><%= method.description %></div>
+                  
+                  <% if is_razorpay %>
+                    <!-- Supported payment methods list below the Razorpay title -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.35rem 0.75rem; margin-top: 0.75rem; font-size: 0.8rem; font-weight: 600; color: #475569;">
+                      <span style="display: inline-flex; align-items: center; gap: 0.15rem; background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px;">✅ UPI</span>
+                      <span style="display: inline-flex; align-items: center; gap: 0.15rem; background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px;">💳 Credit & Debit Cards</span>
+                      <span style="display: inline-flex; align-items: center; gap: 0.15rem; background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px;">🏦 Net Banking</span>
+                      <span style="display: inline-flex; align-items: center; gap: 0.15rem; background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px;">📱 Google Pay</span>
+                      <span style="display: inline-flex; align-items: center; gap: 0.15rem; background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px;">📱 PhonePe</span>
+                      <span style="display: inline-flex; align-items: center; gap: 0.15rem; background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px;">📱 Paytm</span>
+                    </div>
+                    <div style="margin-top: 0.75rem; font-size: 0.75rem; color: #1e40af; background: #eff6ff; border: 1px solid #bfdbfe; padding: 0.3rem 0.6rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.25rem; font-weight: 600; width: fit-content;">
+                      <span>🔒 Secure payments powered by Razorpay</span>
+                    </div>
+                  <% end %>
+                </label>
+              </div>
+              
+              <% if is_razorpay %>
+                <!-- Reassurance message visible when Razorpay is selected -->
+                <div id="razorpay-reassurance-panel" style="display: none; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 1rem; margin-top: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.02); animation: fadeIn 0.3s ease;">
+                  <div style="font-weight: 700; color: #14532d; font-size: 0.875rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.35rem;">
+                    🛡️ 100% Secure Payment
+                  </div>
+                  <ul style="margin: 0; padding-left: 1.15rem; font-size: 0.8rem; color: #166534; line-height: 1.5; display: flex; flex-direction: column; gap: 0.25rem;">
+                    <li>PCI-DSS compliant secure payment</li>
+                    <li>Your payment information is encrypted</li>
+                    <li>If payment fails, no money will be deducted.</li>
+                    <li>If any amount is deducted during a failed transaction, it will be refunded automatically according to your bank's processing time.</li>
+                  </ul>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <div style="text-align: center; padding: 1rem; color: var(--danger); font-weight: 500;">
+            No payment methods available. Please contact store administrator.
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Order Summary Card -->
+    <div class="card" style="padding: 1.5rem; background-color: white; margin-top: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-sm);">
+      <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Order Summary</h3>
+      
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.65rem; font-size: 0.95rem;">
+        <span style="color: var(--text-muted);">Items Subtotal</span>
+        <span style="font-weight: 600;"><%= @order.display_item_total.to_s %></span>
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.65rem; font-size: 0.95rem;">
+        <span style="color: var(--text-muted);">Delivery Charge</span>
+        <span id="summary-shipping-charge" style="font-weight: 600; color: var(--success);"><%= @order.shipment_total == 0 ? "Free Delivery" : @order.display_shipment_total.to_s %></span>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 1.15rem; font-weight: 700; color: var(--secondary); border-top: 1px solid var(--border); padding-top: 0.75rem;">
+        <span>Order Total</span>
+        <span id="summary-order-total" style="color: var(--primary);"><%= @order.display_total.to_s %></span>
+      </div>
+    </div>
+
+    <!-- Submit Buttons -->
+    <div class="checkout-actions" style="margin-top: 2rem;">
+      <a href="/checkout/delivery" class="btn btn-outline">&larr; Back to Delivery</a>
+      <%= f.submit "Save & Continue &rarr;".html_safe, class: "btn btn-primary disabled-btn", id: "checkout-submit-btn", style: "padding: 0.75rem 2rem; font-size: 1rem;" %>
+    </div>
+    
+    <div style="max-width: 600px; margin: 0.5rem auto 0 auto;">
+      <div id="payment-validation-message" style="display: none; color: #dc2626; background: #fef2f2; border: 1px solid #fca5a5; padding: 0.75rem; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.9rem; animation: fadeIn 0.3s ease;">
+        Please select a payment method to continue.
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if @razorpay_order_id.present? %>
+  <!-- Loading overlay for Razorpay -->
+  <div id="razorpay-loading-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(4px);">
+    <div style="background: white; padding: 2.5rem; border-radius: var(--radius-md); max-width: 450px; width: 90%; box-shadow: var(--shadow-lg); text-align: center; border-top: 5px solid var(--primary); font-family: inherit;">
+      <div style="font-size: 3rem; margin-bottom: 1rem; display: inline-block; animation: spin 2s linear infinite;">🔄</div>
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">Launching Payment Gateway</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.5;">Please complete your payment in the secure Razorpay popup window. Do not close or refresh this page.</p>
+      <button onclick="retryPayment()" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem;">Pay Now</button>
+      <button onclick="cancelPayment()" style="background: none; border: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; cursor: pointer; text-decoration: underline;">Cancel and Go Back</button>
+    </div>
+  </div>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    (function() {
+      // Define keyframes spin in head if not present
+      if (!document.getElementById("spin-animation-style")) {
+        var style = document.createElement('style');
+        style.id = "spin-animation-style";
+        style.innerHTML = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
+        document.head.appendChild(style);
+      }
+
+      window.cancelPayment = function() {
+        alert("Payment cancelled.");
+        location.reload();
+      };
+
+      // Handle Sandbox Simulation mode
+      if ("<%= @razorpay_order_id %>".startsWith("order_dummy_")) {
+        window.simulateDummyPayment = function(success) {
+          var overlay = document.getElementById("razorpay-loading-overlay");
+          if (success) {
+            overlay.innerHTML = `
+              <div style="background: white; padding: 2.5rem; border-radius: var(--radius-md); max-width: 450px; width: 90%; box-shadow: var(--shadow-lg); text-align: center; border-top: 5px solid var(--primary); font-family: inherit;">
+                <div style="border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1.5rem;"></div>
+                <h4 style="font-weight: 600; color: var(--secondary);">Verifying simulated payment...</h4>
+              </div>
+            `;
+            
+            fetch("<%= razorpay_callback_path %>", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                razorpay_payment_id: "pay_dummy_" + Math.random().toString(36).substring(2, 15),
+                razorpay_order_id: "<%= @razorpay_order_id %>",
+                razorpay_signature: "sig_dummy_" + Math.random().toString(36).substring(2, 15)
+              })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+              if (data.success) {
+                window.location.href = data.redirect_url;
+              } else {
+                alert("Sandbox verification failed: " + data.error);
+                location.reload();
+              }
+            })
+            .catch(function(err) {
+              alert("Error simulating sandbox payment: " + err);
+              location.reload();
+            });
+          } else {
+            alert("Sandbox simulation: Payment failed.");
+            location.reload();
+          }
+        };
+
+        // Render Sandbox choices on top of our launcher
+        var overlay = document.getElementById("razorpay-loading-overlay");
+        if (overlay) {
+          overlay.innerHTML = `
+            <div style="background: white; padding: 2.5rem; border-radius: var(--radius-md); max-width: 450px; width: 90%; box-shadow: var(--shadow-lg); text-align: center; border-top: 5px solid var(--primary); font-family: inherit;">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">💳</div>
+              <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">Razorpay Sandbox Simulator</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.5;">You are using dummy test credentials. Please select whether you want to simulate a successful payment or a failed payment for testing.</p>
+              <div style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 2rem;">Amount Due: <%= @order.display_total.to_s %></div>
+              
+              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <button onclick="simulateDummyPayment(true)" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 0.95rem; font-weight: 600;">✔️ Simulate Success</button>
+                <button onclick="simulateDummyPayment(false)" class="btn btn-outline" style="width: 100%; padding: 0.75rem; font-size: 0.95rem; font-weight: 600; color: #b91c1c; border-color: #fca5a5;">❌ Simulate Failure</button>
+                <button onclick="cancelPayment()" style="background: none; border: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; cursor: pointer; text-decoration: underline; margin-top: 0.5rem;">Cancel and Go Back</button>
+              </div>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      // Real Razorpay setup
+      var options = {
+        "key": "<%= @key_id %>",
+        "amount": "<%= (@order.total * 100).to_i %>",
+        "currency": "INR",
+        "name": "Jeeni Millet Mix",
+        "description": "Order <%= @order.number %>",
+        "order_id": "<%= @razorpay_order_id %>",
+        "handler": function (response){
+          var overlay = document.getElementById("razorpay-loading-overlay");
+          if (overlay) {
+            overlay.innerHTML = `
+              <div style="background: white; padding: 2.5rem; border-radius: var(--radius-md); max-width: 450px; width: 90%; box-shadow: var(--shadow-lg); text-align: center; border-top: 5px solid var(--primary); font-family: inherit;">
+                <div style="border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1.5rem;"></div>
+                <h4 style="font-weight: 600; color: var(--secondary);">Verifying payment...</h4>
+              </div>
+            `;
+          }
+          
+          fetch("<%= razorpay_callback_path %>", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature
+            })
+          })
+          .then(function(res) { return res.json(); })
+          .then(function(data) {
+            if (data.success) {
+              window.location.href = data.redirect_url;
+            } else {
+              alert("Payment verification failed: " + data.error);
+              location.reload();
+            }
+          })
+          .catch(function(err) {
+            alert("Error processing payment callback: " + err);
+            location.reload();
+          });
+        },
+        "prefill": {
+          "name": "<%= @order.ship_address&.full_name %>",
+          "email": "<%= current_spree_user&.email || @order.email %>",
+          "contact": "<%= @order.ship_address&.phone %>"
+        },
+        "theme": {
+          "color": "#b12704"
+        },
+        "modal": {
+          "ondismiss": function() {
+            alert("Payment was cancelled or dismissed.");
+            location.reload();
+          }
+        }
+      };
+
+      window.retryPayment = function() {
+        if (typeof Razorpay === "undefined") {
+          alert("Razorpay is still loading. Please try again.");
+          return;
+        }
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+      };
+
+      function launchRazorpay() {
+        if (typeof Razorpay === "undefined") {
+          setTimeout(launchRazorpay, 200);
+          return;
+        }
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+      }
+
+      // Try automatic launch after a tiny delay
+      setTimeout(launchRazorpay, 500);
+    })();
+  </script>
+<% end %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const paymentRadios = document.querySelectorAll('input[name="order[payments_attributes][][payment_method_id]"]');
+    const onlineNotice = document.getElementById('checkout-gift-notice-online');
+    const codNotice = document.getElementById('checkout-gift-notice-cod');
+    const reassurancePanel = document.getElementById('razorpay-reassurance-panel');
+    const submitBtn = document.getElementById('checkout-submit-btn');
+    const validationMsg = document.getElementById('payment-validation-message');
+
+    // Click handler for card selection
+    document.querySelectorAll('.payment-method-card').forEach(function(card) {
+      card.addEventListener('click', function(e) {
+        const radio = card.querySelector('input[type="radio"]');
+        if (radio && e.target !== radio) {
+          if (e.target.tagName === 'A' || e.target.closest('a')) return;
+          radio.checked = true;
+          radio.dispatchEvent(new Event('change'));
+        }
+      });
+    });
+
+    function updateView() {
+      let selectedLabel = '';
+      let anySelected = false;
+      
+      paymentRadios.forEach(function(radio) {
+        const card = document.getElementById('card_' + radio.value);
+        if (!card) return;
+        
+        if (radio.checked) {
+          anySelected = true;
+          card.classList.add('selected');
+          const labelEl = document.querySelector('label[for="' + radio.id + '"]');
+          if (labelEl) selectedLabel = labelEl.innerText.toLowerCase();
+        } else {
+          card.classList.remove('selected');
+        }
+      });
+
+      // Enable/disable submit button styling
+      if (anySelected) {
+        submitBtn.classList.remove('disabled-btn');
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+        submitBtn.style.backgroundColor = ''; // Restore original style
+        submitBtn.style.borderColor = '';
+      } else {
+        submitBtn.classList.add('disabled-btn');
+      }
+
+      // Hide validation msg if any is selected
+      if (anySelected && validationMsg) {
+        validationMsg.style.display = 'none';
+      }
+
+      const isCod = selectedLabel.includes('cod') || selectedLabel.includes('cash') || selectedLabel.includes('check');
+      const isRazorpay = selectedLabel.includes('razorpay');
+      
+      // Update gift/shipping notices
+      if (anySelected) {
+        if (isCod) {
+          if (onlineNotice) onlineNotice.style.display = 'none';
+          if (codNotice) codNotice.style.display = 'flex';
+        } else {
+          if (onlineNotice) onlineNotice.style.display = 'flex';
+          if (codNotice) codNotice.style.display = 'none';
+        }
+      } else {
+        // Default on load: show promotional offer, hide COD notice
+        if (onlineNotice) onlineNotice.style.display = 'flex';
+        if (codNotice) codNotice.style.display = 'none';
+      }
+
+      // Reassurance panel toggle
+      if (reassurancePanel) {
+        if (isRazorpay) {
+          reassurancePanel.style.display = 'block';
+        } else {
+          reassurancePanel.style.display = 'none';
+        }
+      }
+
+      // Recalculate shipping charge and order total dynamically
+      const container = document.getElementById('payment-page-container');
+      const isKarnataka = container ? container.getAttribute('data-is-karnataka') === 'true' : false;
+      const itemTotal = container ? parseFloat(container.getAttribute('data-item-total')) : 0;
+      const taxTotal = container ? parseFloat(container.getAttribute('data-tax-total')) : 0;
+      const promoTotal = container ? parseFloat(container.getAttribute('data-promo-total')) : 0;
+      const adjustmentTotal = container ? parseFloat(container.getAttribute('data-adjustment-total')) : 0;
+      
+      const shippingChargeEl = document.getElementById('summary-shipping-charge');
+      const orderTotalEl = document.getElementById('summary-order-total');
+      
+      if (shippingChargeEl && orderTotalEl) {
+        let shippingCost = 0;
+        if (anySelected && isCod && !isKarnataka) {
+          shippingCost = 80;
+        }
+        
+        if (shippingCost === 0) {
+          shippingChargeEl.innerText = 'Free Delivery';
+          shippingChargeEl.style.color = 'var(--success)';
+        } else {
+          shippingChargeEl.innerText = '₹' + shippingCost.toFixed(2);
+          shippingChargeEl.style.color = 'var(--text-main)';
+        }
+        
+        const totalCost = itemTotal + taxTotal + promoTotal + adjustmentTotal + shippingCost;
+        orderTotalEl.innerText = '₹' + totalCost.toFixed(2);
+      }
+    }
+
+    // Form submission validation
+    if (submitBtn) {
+      submitBtn.addEventListener('click', function(e) {
+        let selected = false;
+        paymentRadios.forEach(function(radio) {
+          if (radio.checked) selected = true;
+        });
+        
+        if (!selected) {
+          e.preventDefault();
+          if (validationMsg) {
+            validationMsg.style.display = 'block';
+            validationMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+          return false;
+        }
+      });
+    }
+
+    paymentRadios.forEach(function(radio) {
+      radio.addEventListener('change', updateView);
+    });
+    
+    // Initialize view state
+    updateView();
+  });
+</script>

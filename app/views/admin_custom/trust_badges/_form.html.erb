@@ -1,0 +1,51 @@
+<%= form_for @badge, url: @badge.new_record? ? admin_custom_trust_badges_path : admin_custom_trust_badge_path(@badge), method: @badge.new_record? ? :post : :patch, html: { multipart: true } do |f| %>
+  <% if @badge.errors.any? %>
+    <div class="alert alert-alert">
+      <div>
+        <strong><%= pluralize(@badge.errors.count, "error") %> prohibited this badge from being saved:</strong>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+          <% @badge.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card" style="padding: 2rem; background-color: white; margin-bottom: 2rem; max-width: 600px;">
+    <div class="form-group">
+      <%= f.label :name, "Badge Name", class: "form-label" %>
+      <%= f.text_field :name, class: "form-control", required: true, placeholder: "e.g., Secure Payment, Fast Delivery" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :icon, "Icon Type / Preset", class: "form-label" %>
+      <%= f.select :icon, options_for_select(TrustBadge::ICONS.invert, @badge.icon), { include_blank: "Select icon preset..." }, class: "form-control", required: true %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :description, "Badge Description", class: "form-label" %>
+      <%= f.text_area :description, class: "form-control", rows: 3, placeholder: "Brief text explaining the trust badge guarantee" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :image, "Custom Icon Image (Optional)", class: "form-label" %>
+      <%= f.file_field :image, class: "form-control" %>
+      <% if @badge.image.attached? %>
+        <div style="margin-top: 10px;">
+          <img src="<%= url_for(@badge.image) %>" style="max-height: 40px; border-radius: 4px;">
+        </div>
+      <% end %>
+    </div>
+
+    <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+      <%= f.check_box :active %>
+      <%= f.label :active, "Active (Display on product pages)", style: "font-weight: 500; margin: 0; cursor: pointer;" %>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 1rem;">
+    <%= f.submit "Save Trust Badge", class: "btn btn-primary" %>
+    <a href="/admin_custom/trust_badges" class="btn btn-outline">Cancel</a>
+  </div>
+<% end %>

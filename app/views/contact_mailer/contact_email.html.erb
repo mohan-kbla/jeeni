@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h2>New Contact Us Inquiry</h2>
+    <p>You have received a new message from the contact form on your website.</p>
+    
+    <table style="text-align: left; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px;">
+      <tr>
+        <th style="padding: 5px; border-bottom: 1px solid #ccc;">Name:</th>
+        <td style="padding: 5px; border-bottom: 1px solid #ccc;"><%= @name %></td>
+      </tr>
+      <tr>
+        <th style="padding: 5px; border-bottom: 1px solid #ccc;">Email:</th>
+        <td style="padding: 5px; border-bottom: 1px solid #ccc;"><%= @email %></td>
+      </tr>
+      <tr>
+        <th style="padding: 5px; border-bottom: 1px solid #ccc;">Mobile:</th>
+        <td style="padding: 5px; border-bottom: 1px solid #ccc;"><%= @mobile %></td>
+      </tr>
+    </table>
+
+    <h3 style="margin-bottom: 5px;">Message:</h3>
+    <p style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #4F7D3A;">
+      <%= simple_format(@message) %>
+    </p>
+  </body>
+</html>

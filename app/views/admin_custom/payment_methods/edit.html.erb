@@ -1,0 +1,64 @@
+<% content_for :title, "Edit Payment Method - Admin" %>
+
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Edit Payment Method: <%= @payment_method.name %></h1>
+  <p style="color: var(--text-muted);">Modify display settings, status, and API credentials for this payment gateway.</p>
+</div>
+
+<%= form_for @payment_method, url: admin_custom_payment_method_path(@payment_method), method: :patch do |f| %>
+  <div class="card" style="padding: 2rem; background-color: white; margin-bottom: 2rem; max-width: 600px;">
+    <!-- Base Fields -->
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <%= f.label :name, class: "form-label" do %>
+        Display Name <span style="color: var(--danger);">*</span>
+      <% end %>
+      <%= f.text_field :name, class: "form-control", required: true, placeholder: "e.g., Credit Card, Cash on Delivery" %>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <%= f.label :description, class: "form-label" %>
+      <%= f.text_area :description, class: "form-control", rows: 3, placeholder: "Payment method description shown to customer..." %>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem;">
+      <%= f.check_box :active, style: "width: auto; margin-right: 0.5rem;" %>
+      <%= f.label :active, "Active (Show on Front-End)", style: "cursor: pointer; font-weight: 600; color: var(--secondary);" %>
+    </div>
+
+    <!-- Razorpay Specific Preferences -->
+    <% if @payment_method.is_a?(Spree::PaymentMethod::Razorpay) %>
+      <div style="border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 1.5rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--secondary); margin-bottom: 1.25rem;">Razorpay Settings</h3>
+        
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <%= f.label :preferred_key_id, class: "form-label" do %>
+            Key ID <span style="color: var(--danger);">*</span>
+          <% end %>
+          <%= f.text_field :preferred_key_id, class: "form-control", required: true, placeholder: "rzp_test_..." %>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <%= f.label :preferred_key_secret, class: "form-label" do %>
+            Key Secret <span style="color: var(--danger);">*</span>
+          <% end %>
+          <%= f.text_field :preferred_key_secret, class: "form-control", required: true, placeholder: "Your Razorpay secret key" %>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <%= f.label :preferred_webhook_secret, class: "form-label" do %>
+            Webhook Secret <span style="color: var(--danger);">*</span>
+          <% end %>
+          <%= f.text_field :preferred_webhook_secret, class: "form-control", required: true, placeholder: "Secret key for signature verification" %>
+          <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 0.25rem;">
+            Provide the same secret key you configure in the Razorpay Webhooks dashboard.
+          </span>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div style="display: flex; gap: 1rem;">
+    <%= f.submit "Save Changes", class: "btn btn-primary" %>
+    <a href="/admin_custom/payment_methods" class="btn btn-outline">Cancel</a>
+  </div>
+<% end %>

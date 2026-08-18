@@ -1,0 +1,9 @@
+<h2>ALERT: New Order Received</h2>
+<p>An order has been completed by a customer on the storefront.</p>
+<p>Order details:</p>
+<ul>
+  <li>Order Number: <strong><%= @order.number %></strong></li>
+  <li>Customer Email: <%= @order.email %></li>
+  <li>Total Amount: <%= @order.display_total.to_s %></li>
+</ul>
+<p>Please log in to the admin panel to manage fulfillment: <a href="http://localhost:3000/admin_custom/orders/<%= @order.number %>">Manage Order</a></p>

@@ -1,0 +1,72 @@
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--secondary); margin: 0;">💬 Reviews Moderation</h1>
+  <p style="color: var(--text-muted); margin-top: 0.25rem;">Moderate and approve customer reviews submitted on product pages.</p>
+</div>
+
+<div class="card" style="background-color: white; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm);">
+  <% if @reviews.any? %>
+    <table class="table" style="margin: 0; width: 100%; border-collapse: collapse; text-align: left;">
+      <thead>
+        <tr style="background-color: var(--bg-main); border-bottom: 1px solid var(--border);">
+          <th style="padding: 1rem;">Product</th>
+          <th style="padding: 1rem;">Customer</th>
+          <th style="padding: 1rem;">Rating</th>
+          <th style="padding: 1rem;">Title & Body</th>
+          <th style="padding: 1rem;">Status</th>
+          <th style="padding: 1rem; text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @reviews.each do |review| %>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 1rem; font-weight: 600; color: var(--secondary); font-size: 0.9rem;">
+              <%= review.product ? review.product.name : "N/A" %>
+            </td>
+            <td style="padding: 1rem; color: var(--text-main); font-size: 0.85rem; font-weight: 500;">
+              <%= review.user ? review.user.email : "Anonymous Customer" %>
+            </td>
+            <td style="padding: 1rem; color: #f59e0b; font-weight: bold; white-space: nowrap;">
+              <% review.rating.times do %>★<% end %><% (5 - review.rating).times do %>☆<% end %>
+            </td>
+            <td style="padding: 1rem; font-size: 0.85rem; max-width: 300px;">
+              <strong style="display: block; color: var(--secondary); margin-bottom: 0.25rem;"><%= review.title %></strong>
+              <span style="color: var(--text-muted); line-height: 1.4;"><%= review.body %></span>
+            </td>
+            <td style="padding: 1rem;">
+              <% status = review.status.presence || 'approved' %>
+              <span class="badge <%= status == 'approved' ? 'badge-success' : 'badge-danger' %>">
+                <%= status.capitalize %>
+              </span>
+            </td>
+            <td style="padding: 1rem; text-align: right; white-space: nowrap;">
+              <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <% if review.status != 'approved' %>
+                  <%= button_to approve_admin_custom_review_path(review), method: :patch, class: "btn btn-secondary btn-sm", style: "background: var(--success); border-color: var(--success);" do %>
+                    Approve
+                  <% end %>
+                <% end %>
+                <% if review.status != 'rejected' %>
+                  <%= button_to reject_admin_custom_review_path(review), method: :patch, class: "btn btn-outline btn-sm", style: "color: var(--danger); border-color: #fee2e2;" do %>
+                    Hide
+                  <% end %>
+                <% end %>
+                <%= button_to admin_custom_review_path(review), method: :delete, class: "btn btn-outline btn-sm", style: "color: var(--danger); border-color: #fee2e2;", data: { confirm: "Are you sure you want to delete this review permanently?" } do %>
+                  Delete
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    
+    <div style="padding: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: center;">
+      <%= paginate @reviews %>
+    </div>
+  <% else %>
+    <div style="padding: 3rem; text-align: center; color: var(--text-muted);">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">💬</div>
+      <p style="font-weight: 500;">No reviews submitted yet.</p>
+    </div>
+  <% end %>
+</div>
