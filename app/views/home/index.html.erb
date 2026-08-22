@@ -638,50 +638,6 @@
     </div>
   </section>
 
-  <!-- Why Choose Jeeni Value Proposition -->
-  <section style="padding: 5rem 0; background: #fdfcf7; border-top: 1px solid #e6e3d5; border-bottom: 1px solid #e6e3d5;">
-    <div style="text-align: center; margin-bottom: 3.5rem; padding: 0 1rem;">
-      <h2 class="home-font-serif" style="font-size: 2.5rem; font-weight: 800; color: #1b4332; margin-bottom: 0.75rem;">
-        Why Millets?
-      </h2>
-      <p style="font-size: 1.1rem; color: #4b5320; max-width: 600px; margin: 0 auto; line-height: 1.6;">
-        Traditional Indian superfoods, high in dietary fiber and essential minerals, harvested sustainably for your daily health.
-      </p>
-    </div>
-
-    <div class="premium-why-grid">
-      <div class="premium-why-card">
-        <span class="premium-why-icon">🌿</span>
-        <h3 class="premium-why-title">Preservative Free</h3>
-        <p class="premium-why-desc">No preservatives or synthetic additives.</p>
-      </div>
-      
-      <div class="premium-why-card">
-        <span class="premium-why-icon">🌾</span>
-        <h3 class="premium-why-title">Millet Rich</h3>
-        <p class="premium-why-desc">Packed with finger, foxtail, & pearl millets.</p>
-      </div>
-
-      <div class="premium-why-card">
-        <span class="premium-why-icon">🥇</span>
-        <h3 class="premium-why-title">Sourced Locally</h3>
-        <p class="premium-why-desc">Directly harvested from small farms in Karnataka.</p>
-      </div>
-
-      <div class="premium-why-card">
-        <span class="premium-why-icon">🏺</span>
-        <h3 class="premium-why-title">Traditional Recipe</h3>
-        <p class="premium-why-desc">Balanced traditional formulas passed down through families.</p>
-      </div>
-
-      <div class="premium-why-card">
-        <span class="premium-why-icon">⏱️</span>
-        <h3 class="premium-why-title">Quick Serving</h3>
-        <p class="premium-why-desc">Nutritious, warm millet drink in under 10 minutes.</p>
-      </div>
-    </div>
-  </section>
-
   <!-- Signature Featured Products Showcase (JEENI Slim, JEENI Sugaramla, JEENI Millet Health Mix) -->
   <section style="padding: 5rem 0; background: #ffffff;">
     <div style="text-align: center; margin-bottom: 4rem; padding: 0 1rem;">
@@ -787,6 +743,50 @@
           </div>
         </a>
       <% end %>
+    </div>
+  </section>
+
+  <!-- Why Choose Jeeni Value Proposition -->
+  <section style="padding: 5rem 0; background: #fdfcf7; border-top: 1px solid #e6e3d5; border-bottom: 1px solid #e6e3d5;">
+    <div style="text-align: center; margin-bottom: 3.5rem; padding: 0 1rem;">
+      <h2 class="home-font-serif" style="font-size: 2.5rem; font-weight: 800; color: #1b4332; margin-bottom: 0.75rem;">
+        Why Millets?
+      </h2>
+      <p style="font-size: 1.1rem; color: #4b5320; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        Traditional Indian superfoods, high in dietary fiber and essential minerals, harvested sustainably for your daily health.
+      </p>
+    </div>
+
+    <div class="premium-why-grid">
+      <div class="premium-why-card">
+        <span class="premium-why-icon">🌿</span>
+        <h3 class="premium-why-title">Preservative Free</h3>
+        <p class="premium-why-desc">No preservatives or synthetic additives.</p>
+      </div>
+      
+      <div class="premium-why-card">
+        <span class="premium-why-icon">🌾</span>
+        <h3 class="premium-why-title">Millet Rich</h3>
+        <p class="premium-why-desc">Packed with finger, foxtail, & pearl millets.</p>
+      </div>
+
+      <div class="premium-why-card">
+        <span class="premium-why-icon">🥇</span>
+        <h3 class="premium-why-title">Sourced Locally</h3>
+        <p class="premium-why-desc">Directly harvested from small farms in Karnataka.</p>
+      </div>
+
+      <div class="premium-why-card">
+        <span class="premium-why-icon">🏺</span>
+        <h3 class="premium-why-title">Traditional Recipe</h3>
+        <p class="premium-why-desc">Balanced traditional formulas passed down through families.</p>
+      </div>
+
+      <div class="premium-why-card">
+        <span class="premium-why-icon">⏱️</span>
+        <h3 class="premium-why-title">Quick Serving</h3>
+        <p class="premium-why-desc">Nutritious, warm millet drink in under 10 minutes.</p>
+      </div>
     </div>
   </section>
 
@@ -931,41 +931,7 @@
     </div>
   </section>
 
-  <!-- Genuine Testimonials Section -->
-  <% if @testimonials.present? && @testimonials.any? %>
-    <section style="padding: 5rem 0; background: #fdfcf7; border-bottom: 1px solid #e6e3d5;">
-      <div style="text-align: center; margin-bottom: 4rem; padding: 0 1rem;">
-        <h2 class="home-font-serif" style="font-size: 2.5rem; font-weight: 800; color: #1b4332; margin-bottom: 0.75rem;">
-          Loved by Over 50,000+ Happy Families
-        </h2>
-        <p style="font-size: 1.1rem; color: #4b5320; max-width: 600px; margin: 0 auto; line-height: 1.6;">
-          Real reviews and success stories shared by our wonderful community.
-        </p>
-      </div>
 
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 0 1rem; box-sizing: border-box;" class="grid-mobile-1col">
-        <% @testimonials.each do |t| %>
-          <div class="premium-testimonial-card">
-            <div style="display: flex; gap: 0.25rem; color: #fbbf24; font-size: 1.1rem; margin-bottom: 1rem;">
-              ★★★★★
-            </div>
-            <p class="premium-testimonial-text">
-              "<%= t.content %>"
-            </p>
-            <div class="premium-testimonial-user">
-              <div class="premium-testimonial-avatar">
-                <%= t.author_name.to_s[0].to_s.upcase %>
-              </div>
-              <div>
-                <h5 class="premium-testimonial-name"><%= t.author_name %></h5>
-                <p class="premium-testimonial-role">Verified Customer</p>
-              </div>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </section>
-  <% end %>
 
   <!-- Trust / Supports Banner -->
   <section style="padding: 5rem 1rem; background: #ffffff;">

@@ -635,10 +635,6 @@
 
       <!-- Ratings & Suitability badges -->
       <div class="premium-rating-row">
-        <div class="premium-rating-badge">
-          <span>⭐⭐⭐⭐⭐</span>
-          <span><%= avg_rating %> (<%= reviews_count %> Reviews)</span>
-        </div>
         <div class="premium-veg-badge">
           <div class="premium-veg-dot">
             <div class="premium-veg-dot-inner"></div>
@@ -919,63 +915,7 @@
 
     </div>
 
-    <!-- Verified Customer Reviews section -->
-    <section id="reviews-section" style="margin-top: 4.5rem; border-top: 2px solid #e6e3d5; padding-top: 3rem; text-align: left;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
-        <div>
-          <h2 style="font-family: 'Playfair Display', Georgia, serif; font-size: 1.75rem; font-weight: 800; color: #1b4332; margin: 0 0 0.35rem 0; font-style: italic;"> Verified Customer Reviews</h2>
-          <p style="color: #64748b; font-size: 0.85rem; margin: 0;">Genuine ratings and feedback from our verified buyers.</p>
-        </div>
-        <div style="background: #1b4332; color: #fdfcf7; padding: 0.45rem 1rem; border-radius: 999px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 4px 10px rgba(27,67,50,0.15);">
-          <%= avg_rating %> / 5.0 Rating (<%= reviews_count %> Reviews)
-        </div>
-      </div>
 
-      <%
-        default_testimonials = [
-          { author: "Rajesh Kumar", rating: 5, title: "Highly Recommended!", body: "Excellent wholesome millet blend! I've been taking this daily for 3 weeks and noticed improved digestion and sustained energy throughout my workday." },
-          { author: "Priya Sharma", rating: 5, title: "Great Taste & Results", body: "Tastes very clean and keeps me full for hours. Combined with healthy eating, I feel much lighter and highly recommend this to anyone looking for a clean wellness blend." },
-          { author: "Vikram Singh", rating: 5, title: "Easy to prepare", body: "Very easy to prepare and taste is great with warm milk or buttermilk. Great quality packaging and fast delivery within 3 days." }
-        ]
-
-        display_reviews = approved_reviews.map do |r|
-          {
-            author: r.user&.email&.split('@')&.first&.capitalize || "Verified Customer",
-            rating: r.rating,
-            title: r.title.presence || "Great Product!",
-            body: r.body
-          }
-        end
-
-        if display_reviews.count < 3
-          needed = 3 - display_reviews.count
-          display_reviews += default_testimonials.first(needed)
-        end
-      %>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
-        <% display_reviews.each do |review| %>
-          <div style="background: #ffffff; border: 1.5px solid #e6e3d5; border-radius: 12px; padding: 1.25rem; box-shadow: 0 4px 10px rgba(27, 67, 50, 0.015); display: flex; flex-direction: column; gap: 0.75rem;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
-                  <%= review[:author][0].upcase %>
-                </div>
-                <div>
-                  <strong style="color: #0f172a; font-size: 0.9rem; display: block;"><%= review[:author] %></strong>
-                  <span style="font-size: 0.72rem; color: #15803d; font-weight: 700;">✓ Verified Buyer</span>
-                </div>
-              </div>
-              <div style="color: #fbbf24; font-size: 0.85rem;">
-                <% review[:rating].times do %>★<% end %><% (5 - review[:rating]).times do %>☆<% end %>
-              </div>
-            </div>
-            <h4 style="font-size: 0.9rem; font-weight: 700; color: #0f172a; margin: 0.25rem 0 0.1rem 0;"><%= review[:title] %></h4>
-            <p style="font-size: 0.85rem; color: #4b5563; line-height: 1.5; margin: 0;"><%= review[:body] %></p>
-          </div>
-        <% end %>
-      </div>
-    </section>
 
     <!-- RELATED PRODUCTS ("You May Also Like") -->
     <%
