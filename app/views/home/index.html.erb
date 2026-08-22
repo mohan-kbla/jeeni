@@ -1,10 +1,147 @@
 <style>
-  /* Remove top padding of the main wrapper on the homepage to prevent a white gap under the navbar */
+  /* Base Overrides for Premium Design */
   main {
     padding-top: 0 !important;
+    background-color: #faf9f5;
   }
 
-  /* Redesigned Premium Showcase styles */
+  .home-font-serif {
+    font-family: 'Libre Baskerville', Georgia, serif !important;
+  }
+
+  .home-font-sans {
+    font-family: 'Poppins', 'Inter', sans-serif !important;
+  }
+
+  /* Redesigned Premium Hero Section */
+  .premium-hero-container {
+    background: linear-gradient(135deg, #fdfcf7 0%, #f4f1ea 100%);
+    padding: 6rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .premium-hero-left {
+    flex: 1.1;
+    max-width: 580px;
+  }
+
+  .premium-hero-tag {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #2d6a4f;
+    padding: 0.4rem 1.1rem;
+    border-radius: 99px;
+    font-size: 0.825rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 1.5rem;
+  }
+
+  .premium-hero-title {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 3.25rem;
+    font-weight: 800;
+    color: #1b4332;
+    line-height: 1.15;
+    margin: 0 0 1.5rem 0;
+    letter-spacing: -0.015em;
+  }
+
+  .premium-hero-desc {
+    font-size: 1.1rem;
+    color: #475569;
+    line-height: 1.65;
+    margin: 0 0 2.25rem 0;
+  }
+
+  .premium-hero-actions {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .premium-hero-btn-primary {
+    background: #2d6a4f;
+    color: #ffffff !important;
+    padding: 1rem 2.25rem;
+    border-radius: 99px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(45, 106, 79, 0.35);
+    transition: all 0.3s ease;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .premium-hero-btn-primary:hover {
+    background: #1b4332;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(45, 106, 79, 0.45);
+  }
+
+  .premium-hero-btn-secondary {
+    border: 2px solid #2d6a4f;
+    color: #2d6a4f !important;
+    padding: 0.9rem 2.25rem;
+    border-radius: 99px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    background: transparent;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .premium-hero-btn-secondary:hover {
+    background: rgba(45, 106, 79, 0.05);
+    transform: translateY(-2px);
+  }
+
+  .premium-hero-right {
+    flex: 0.9;
+    max-width: 520px;
+    position: relative;
+  }
+
+  .premium-hero-image-card {
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    border: 4px solid #ffffff;
+    background: #ffffff;
+    transition: transform 0.4s ease;
+  }
+
+  .premium-hero-image-card:hover {
+    transform: scale(1.02);
+  }
+
+  .premium-hero-floating-badge {
+    position: absolute;
+    bottom: 24px;
+    left: -24px;
+    background: #ffffff;
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    border: 1px solid #e2e8f0;
+  }
+
+  /* Product Showcase Cards Grid & Elements */
   .premium-showcase-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -15,8 +152,22 @@
     box-sizing: border-box;
   }
 
+  .premium-signature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.25rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+  }
+
   @media (max-width: 1024px) {
     .premium-showcase-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .premium-signature-grid {
       grid-template-columns: repeat(3, 1fr);
       gap: 1.5rem;
     }
@@ -28,6 +179,27 @@
       gap: 1rem;
       padding: 0 0.5rem;
     }
+    .premium-signature-grid {
+      grid-template-columns: repeat(1, 1fr);
+      gap: 1.5rem;
+      padding: 0 1rem;
+    }
+    .premium-hero-container {
+      flex-direction: column;
+      padding: 3rem 1rem;
+      gap: 2.5rem;
+      text-align: center;
+    }
+    .premium-hero-title {
+      font-size: 2.25rem;
+    }
+    .premium-hero-actions {
+      justify-content: center;
+    }
+    .premium-hero-floating-badge {
+      left: 10px;
+      bottom: -15px;
+    }
   }
 
   .premium-showcase-card {
@@ -35,7 +207,7 @@
     border: 1px solid #e2e8f0;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.025);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.015);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
@@ -48,7 +220,7 @@
 
   .premium-showcase-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 25px -5px rgba(21, 128, 61, 0.08), 0 10px 10px -5px rgba(21, 128, 61, 0.03);
+    box-shadow: 0 20px 25px -5px rgba(21, 128, 61, 0.06), 0 10px 10px -5px rgba(21, 128, 61, 0.02);
     border-color: rgba(21, 128, 61, 0.25);
   }
 
@@ -93,13 +265,13 @@
     top: 1rem;
     left: 1rem;
     font-weight: 800;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     padding: 0.25rem 0.65rem;
     border-radius: 999px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     z-index: 2;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
   }
 
   .premium-showcase-badge-popular {
@@ -141,7 +313,7 @@
     color: #0f172a;
     margin: 0 0 0.5rem 0;
     line-height: 1.35;
-    font-family: 'Outfit', 'Inter', sans-serif;
+    font-family: 'Poppins', 'Inter', sans-serif;
     transition: color 0.3s ease;
   }
 
@@ -214,161 +386,428 @@
     transform: translateX(4px);
     color: #166534;
   }
-  
-  /* Mobile optimization adjustments */
-  @media (max-width: 480px) {
-    .premium-showcase-image-wrapper {
-      height: 160px;
-      padding: 0.75rem;
+
+  /* Why Choose Section */
+  .premium-why-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 991px) {
+    .premium-why-grid {
+      grid-template-columns: repeat(3, 1fr);
     }
-    .premium-showcase-content {
-      padding: 1rem;
+  }
+
+  @media (max-width: 640px) {
+    .premium-why-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
-    .premium-showcase-card-title {
-      font-size: 0.95rem;
-      margin-bottom: 0.25rem;
+  }
+
+  .premium-why-card {
+    background: #ffffff;
+    border: 1px solid #e6e3d5;
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+    transition: all 0.3s ease;
+  }
+
+  .premium-why-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(75, 83, 32, 0.05);
+    border-color: #c2bead;
+  }
+
+  .premium-why-icon {
+    font-size: 2.25rem;
+    margin-bottom: 1.25rem;
+    display: inline-block;
+  }
+
+  .premium-why-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #1b4332;
+    margin: 0 0 0.5rem 0;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .premium-why-desc {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.45;
+  }
+
+  /* Testimonials styling */
+  .premium-testimonial-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.3s ease;
+    box-sizing: border-box;
+  }
+
+  .premium-testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.04);
+  }
+
+  .premium-testimonial-text {
+    font-size: 0.9rem;
+    color: #475569;
+    line-height: 1.6;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+  }
+
+  .premium-testimonial-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .premium-testimonial-avatar {
+    width: 42px;
+    height: 42px;
+    background: #e8f5e9;
+    color: #2d6a4f;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+  }
+
+  .premium-testimonial-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  .premium-testimonial-role {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  /* Trust Banner Elements */
+  .premium-trust-banner {
+    background: #1b4332;
+    color: #ffffff;
+    padding: 3rem 1.5rem;
+    border-radius: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .premium-trust-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .premium-trust-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
     }
-    .premium-showcase-description {
-      font-size: 0.78rem;
-      margin-bottom: 0.75rem;
+  }
+
+  .premium-trust-item {
+    text-align: center;
+  }
+
+  .premium-trust-icon {
+    font-size: 2.0rem;
+    margin-bottom: 0.75rem;
+    display: inline-block;
+  }
+
+  .premium-trust-title {
+    font-weight: 700;
+    font-size: 1.0rem;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .premium-trust-desc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+  }
+
+  /* Cooking Prep Redesign */
+  .prep-number-badge {
+    background: #2d6a4f;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    margin: 0 auto 1rem auto;
+  }
+
+  .prep-card-premium {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.75rem 1.25rem;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .prep-card-premium:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(45, 106, 79, 0.04);
+    border-color: rgba(45, 106, 79, 0.2);
+  }
+
+  .prep-grid-premium {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.25rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 991px) {
+    .prep-grid-premium {
+      grid-template-columns: repeat(3, 1fr);
     }
-    .premium-showcase-price {
-      font-size: 1.05rem;
-    }
-    .premium-showcase-cta {
-      font-size: 0.78rem;
+  }
+
+  @media (max-width: 640px) {
+    .prep-grid-premium {
+      grid-template-columns: repeat(1, 1fr);
     }
   }
 </style>
 
-<div class="homepage-sections-wrapper">
-  <!-- Top Hero Banner with Clear HD Millet Image -->
-  <div class="home-hero-banner" style="position: relative; width: 100vw; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; height: 775px; overflow: hidden; display: block; margin-top: 0; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); box-sizing: border-box;">
-    <!-- Foreground Image with Brightness and Contrast Filters (Full Width, Restricted Height 280px with Cover) -->
-    <img src="/millet_banner_wide.png" style="width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; filter: brightness(1.25) contrast(1.05); border: none; margin: 0;" alt="Jeeni Millet Mix Banner">
-  </div>
+<div class="homepage-sections-wrapper" style="overflow-x: hidden;">
+  <!-- Split Hero Section (Millet Amma Inspired) -->
+  <section class="premium-hero-container">
+    <div class="premium-hero-left">
+      <span class="premium-hero-tag">🌾 100% Organic & Natural Grains</span>
+      <h1 class="premium-hero-title">
+        Nourish Your Family With Traditional Goodness
+      </h1>
+      <p class="premium-hero-desc">
+        Discover Jeeni's premium, natural, millet-based formulas crafted for daily wellness, fitness, and vitality. Healthy convenient nutrition passed down through generations.
+      </p>
+      <div class="premium-hero-actions">
+        <a href="/products" class="premium-hero-btn-primary">Shop Signature Mixes →</a>
+        <a href="/blogs" class="premium-hero-btn-secondary">Our Story</a>
+      </div>
+    </div>
+    
+    <div class="premium-hero-right">
+      <div class="premium-hero-image-card">
+        <img src="/millet_banner_wide.png" style="width: 100%; height: auto; display: block; filter: brightness(1.04) contrast(1.01);" alt="Jeeni Millet Mix Hero">
+      </div>
+      <!-- floating quick stats badge -->
+      <div class="premium-hero-floating-badge">
+        <span style="font-size: 2.0rem; line-height: 1;">🥤</span>
+        <div>
+          <div style="font-weight: 800; font-size: 0.85rem; color: #0f172a;">Quick & Easy</div>
+          <div style="font-size: 0.75rem; color: #64748b;">Warm energy in 10 mins</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <!-- Highlighted Highest Selling Featured Products Section -->
-  <div class="highest-selling-section" style="margin: 1.5rem 0 2rem 0;">
-    <div style="text-align: center; margin-bottom: 1.25rem;">
-      <h2 style="font-size: 1.35rem; font-weight: 900; color: #0f172a; margin: 0; line-height: 1.25;">
-        Customer Favorites & Top Recommended Blends
+  <!-- Why Choose Jeeni Value Proposition -->
+  <section style="padding: 5rem 0; background: #fdfcf7; border-top: 1px solid #e6e3d5; border-bottom: 1px solid #e6e3d5;">
+    <div style="text-align: center; margin-bottom: 3.5rem; padding: 0 1rem;">
+      <h2 class="home-font-serif" style="font-size: 2.5rem; font-weight: 800; color: #1b4332; margin-bottom: 0.75rem;">
+        Why Organic Millets?
       </h2>
+      <p style="font-size: 1.1rem; color: #4b5320; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        Traditional Indian superfoods, high in dietary fiber and essential minerals, harvested sustainably for your daily health.
+      </p>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem;" class="grid-mobile-1col">
-      <!-- Product 1: Jeeni Slim Mix -->
-      <% if @slim_product.present? %>
-        <div class="highlight-product-card highlight-product-card-slim">
-          <span class="highlight-badge highlight-badge-slim">
-            ⭐ #1 BEST SELLER
-          </span>
+    <div class="premium-why-grid">
+      <div class="premium-why-card">
+        <span class="premium-why-icon">🌿</span>
+        <h3 class="premium-why-title">100% Natural</h3>
+        <p class="premium-why-desc">No preservatives or synthetic additives.</p>
+      </div>
+      
+      <div class="premium-why-card">
+        <span class="premium-why-icon">🌾</span>
+        <h3 class="premium-why-title">Millet Rich</h3>
+        <p class="premium-why-desc">Packed with pure finger, foxtail, & pearl millets.</p>
+      </div>
 
-          <div class="highlight-card-body">
-            <a href="/products/<%= @slim_product.slug %>" class="highlight-img-link">
-              <img src="<%= product_image_url(@slim_product) %>" alt="<%= @slim_product.name %>" class="highlight-img">
-            </a>
-            <div class="highlight-info">
-              <div class="highlight-reviews">
-                ⭐⭐⭐⭐⭐ 4.9 (1,240+ Reviews)
-              </div>
-              <h3 class="highlight-title">
-                <a href="/products/<%= @slim_product.slug %>"><%= @slim_product.name %></a>
-              </h3>
-              <div class="highlight-price-row">
-                <% if karnataka_visitor? && @slim_product.karnataka_price.present? %>
-                  <span class="highlight-price" style="color: #16a34a;">₹<%= @slim_product.karnataka_price.to_i %></span>
-                  <span class="highlight-old-price">₹<%= @slim_product.price.to_i %></span>
-                  <span class="highlight-save-badge highlight-save-badge-slim" style="background: #16a34a; color: #ffffff;">KARNATAKA SPECIAL</span>
+      <div class="premium-why-card">
+        <span class="premium-why-icon">🥇</span>
+        <h3 class="premium-why-title">Sourced Locally</h3>
+        <p class="premium-why-desc">Directly harvested from small farms in Karnataka.</p>
+      </div>
+
+      <div class="premium-why-card">
+        <span class="premium-why-icon">🏺</span>
+        <h3 class="premium-why-title">Traditional Recipe</h3>
+        <p class="premium-why-desc">Balanced traditional formulas passed down through families.</p>
+      </div>
+
+      <div class="premium-why-card">
+        <span class="premium-why-icon">⏱️</span>
+        <h3 class="premium-why-title">Quick Serving</h3>
+        <p class="premium-why-desc">Nutritious, warm millet drink in under 10 minutes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Signature Featured Products Showcase (JEENI Slim, JEENI Sugaramla, JEENI Millet Health Mix) -->
+  <section style="padding: 5rem 0; background: #ffffff;">
+    <div style="text-align: center; margin-bottom: 4rem; padding: 0 1rem;">
+      <h2 class="home-font-serif" style="font-size: 2.5rem; font-weight: 800; color: #1b4332; margin-bottom: 0.75rem;">
+        ⭐ Our Signature Millet Blends
+      </h2>
+      <p style="font-size: 1.1rem; color: #475569; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        Give your daily diet a major boost with our highly-recommended customer favorites.
+      </p>
+    </div>
+
+    <% 
+      # Resolve the three key products requested
+      @signature_products = []
+      
+      slim = Spree::Product.active_products.find_by(slug: 'jeeni-slim-new') || 
+             Spree::Product.active_products.where("LOWER(slug) LIKE '%slim%'").first
+      @signature_products << slim if slim
+      
+      sugaramla = Spree::Product.active_products.find_by(slug: 'jeeni-sugaramla-1kg-sugaramla-1kg') || 
+                  Spree::Product.active_products.where("LOWER(slug) LIKE '%sugaramla%'").first
+      @signature_products << sugaramla if sugaramla
+      
+      tradmix = Spree::Product.active_products.find_by(slug: 'jeeni-millet-traditional-mix-900gm') || 
+                Spree::Product.active_products.find_by(slug: 'jeeni-millet-traditional-mix-500gm') ||
+                Spree::Product.active_products.where("LOWER(slug) LIKE '%traditional%'").first
+      @signature_products << tradmix if tradmix
+      
+      signature_ids = @signature_products.map(&:id)
+    %>
+
+    <div class="premium-signature-grid">
+      <% @signature_products.each do |product| %>
+        <% 
+          badge_text = nil
+          badge_class = nil
+          
+          if product.slug == 'jeeni-slim-new'
+            badge_text = "Best Seller"
+            badge_class = "premium-showcase-badge-best"
+          elsif product.slug.include?('sugaramla')
+            badge_text = "Popular"
+            badge_class = "premium-showcase-badge-popular"
+          elsif product.slug.include?('traditional')
+            badge_text = "Signature"
+            badge_class = "premium-showcase-badge-new"
+          end
+        %>
+        
+        <%
+          video_markup = nil
+          if product.respond_to?(:product_gallery) && product.product_gallery.present?
+            gallery = product.product_gallery
+            v = gallery.gallery_videos.find_by(is_featured: true) || gallery.gallery_videos.order(position: :asc).first
+            if v
+              if v.file.attached?
+                video_url = Rails.application.routes.url_helpers.rails_blob_path(v.file, only_path: true)
+                video_markup = "<video src='#{video_url}' autoplay muted loop playsinline class='premium-showcase-video' style='width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;'></video>".html_safe
+              elsif v.youtube_embed_url.present?
+                embed_url = v.youtube_embed_url
+                if embed_url.include?('youtube.com/embed/')
+                  separator = embed_url.include?('?') ? '&' : '?'
+                  playlist_param = embed_url.split('/embed/')[1]
+                  embed_url = "#{embed_url}#{separator}autoplay=1&mute=1&loop=1&controls=0&playlist=#{playlist_param}"
+                end
+                video_markup = "<iframe src='#{embed_url}' class='premium-showcase-video' style='width: 100%; height: 100%; border: none; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;' allow='autoplay; encrypted-media' loading='lazy'></iframe>".html_safe
+              end
+            end
+          end
+        %>
+        
+        <a href="/products/<%= product.slug %>" class="premium-showcase-card" style="box-shadow: 0 10px 25px rgba(0,0,0,0.04); border-color: #e2e8f0;">
+          <div class="premium-showcase-image-wrapper" style="height: 260px; background: #faf9f6;">
+            <% if badge_text %>
+              <span class="premium-showcase-badge <%= badge_class %>">
+                <%= badge_text %>
+              </span>
+            <% end %>
+            <img src="<%= product_image_url(product) %>" class="premium-showcase-image" alt="<%= product.name %>" loading="lazy">
+            <% if video_markup.present? %>
+              <%= video_markup %>
+            <% end %>
+          </div>
+          <div class="premium-showcase-content" style="padding: 1.75rem;">
+            <span class="cert-badge" style="background: #fdf6e2; color: #b45309; border: 1px solid #fde68a; width: fit-content; margin-bottom: 0.5rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Premium Select</span>
+            <h3 class="premium-showcase-card-title" style="font-size: 1.25rem;"><%= product.name %></h3>
+            <p class="premium-showcase-description" style="font-size: 0.88rem;"><%= truncate(product.description, length: 95) %></p>
+            
+            <div class="premium-showcase-footer">
+              <div class="premium-showcase-price-box">
+                <span class="premium-showcase-price-label">Price</span>
+                <% if karnataka_visitor? && product.karnataka_price.present? %>
+                  <span class="premium-showcase-price premium-showcase-price-special" style="font-size: 1.4rem;">₹<%= product.karnataka_price.to_i %></span>
+                  <span class="premium-showcase-price-old">₹<%= product.price.to_i %></span>
                 <% else %>
-                  <span class="highlight-price"><%= @slim_product.display_price.to_s %></span>
+                  <span class="premium-showcase-price" style="font-size: 1.4rem;">₹<%= product.price.to_i %></span>
                 <% end %>
               </div>
-              <p class="highlight-desc">
-                Traditional Millet Blend for Fitness, Weight Balance & Vitality.
-              </p>
+              <div class="premium-showcase-cta">
+                Shop Now <span style="font-size: 1.15rem; line-height: 1;">→</span>
+              </div>
             </div>
           </div>
-
-          <div class="highlight-card-footer">
-            <span class="highlight-gift-label highlight-gift-label-slim">
-              🎁 Includes FREE Gift!
-            </span>
-            <a href="/products/<%= @slim_product.slug %>" class="btn highlight-buy-btn highlight-buy-btn-slim">
-              Buy Now ↗
-            </a>
-          </div>
-        </div>
-      <% end %>
-
-      <!-- Product 2: Jeeni Sugaramla 1KG -->
-      <% if @sugaramla_product.present? %>
-        <div class="highlight-product-card highlight-product-card-sugaramla">
-          <span class="highlight-badge highlight-badge-sugaramla">
-            🔥 TOP RATED 1KG
-          </span>
-
-          <div class="highlight-card-body">
-            <a href="/products/<%= @sugaramla_product.slug %>" class="highlight-img-link">
-              <img src="<%= product_image_url(@sugaramla_product) %>" alt="<%= @sugaramla_product.name %>" class="highlight-img">
-            </a>
-            <div class="highlight-info">
-              <div class="highlight-reviews">
-                ⭐⭐⭐⭐⭐ 4.95 (980+ Reviews)
-              </div>
-              <h3 class="highlight-title">
-                <a href="/products/<%= @sugaramla_product.slug %>"><%= @sugaramla_product.name %></a>
-              </h3>
-              <div class="highlight-price-row">
-                <% if karnataka_visitor? && @sugaramla_product.karnataka_price.present? %>
-                  <span class="highlight-price" style="color: #16a34a;">₹<%= @sugaramla_product.karnataka_price.to_i %></span>
-                  <span class="highlight-old-price">₹<%= @sugaramla_product.price.to_i %></span>
-                  <span class="highlight-save-badge highlight-save-badge-sugaramla" style="background: #16a34a; color: #ffffff;">KARNATAKA SPECIAL</span>
-                <% else %>
-                  <span class="highlight-price"><%= @sugaramla_product.display_price.to_s %></span>
-                  <span class="highlight-save-badge highlight-save-badge-sugaramla">FAMILY PACK 1KG</span>
-                <% end %>
-              </div>
-              <p class="highlight-desc">
-                Traditional Amla & Herbal Grain Formula for Daily Immunity.
-              </p>
-            </div>
-          </div>
-
-          <div class="highlight-card-footer">
-            <span class="highlight-gift-label highlight-gift-label-sugaramla">
-              🎁 Includes FREE Gift!
-            </span>
-            <a href="/products/<%= @sugaramla_product.slug %>" class="btn highlight-buy-btn highlight-buy-btn-sugaramla">
-              Buy Now ↗
-            </a>
-          </div>
-        </div>
+        </a>
       <% end %>
     </div>
-  </div>
+  </section>
 
-
-
-
-
-
-
-
-  <!-- FEATURE 4 (cont.): Explore More Healthy Products Section -->
-  <section class="home-section-other-products" style="margin-bottom: 4rem;">
-    <div style="text-align: center; margin-bottom: 3rem; padding: 0 1rem;">
-      <h2 style="font-size: 2.25rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem; letter-spacing: -0.025em; font-family: 'Outfit', 'Inter', sans-serif;">
+  <!-- Dynamic Other Products Grid -->
+  <section class="home-section-other-products" style="padding: 5rem 0; background: #fdfcf7; border-top: 1px solid #e6e3d5; border-bottom: 1px solid #e6e3d5;">
+    <div style="text-align: center; margin-bottom: 3.5rem; padding: 0 1rem;">
+      <h2 class="home-font-serif" style="font-size: 2.5rem; font-weight: 800; color: #1b4332; margin-bottom: 0.75rem;">
         🌾 Explore More Healthy Millet Products
       </h2>
-      <p style="font-size: 1.1rem; color: #475569; max-width: 600px; margin: 0 auto; line-height: 1.6; font-family: 'Inter', sans-serif;">
+      <p style="font-size: 1.1rem; color: #475569; max-width: 600px; margin: 0 auto; line-height: 1.6;">
         Discover delicious and nutritious choices for your everyday wellness.
       </p>
     </div>
     
     <div class="premium-showcase-grid">
-      <% if @other_products.present? && @other_products.any? %>
-        <% @other_products.each do |product| %>
+      <% 
+        # Load other products avoiding duplicates of signature products
+        @display_others = @other_products.reject { |p| signature_ids.include?(p.id) }.first(8)
+      %>
+      <% if @display_others.any? %>
+        <% @display_others.each do |product| %>
           <% 
             badge_text = nil
             badge_class = nil
@@ -448,92 +887,114 @@
     </div>
   </section>
 
-
-
-  <!-- Step-by-Step Preparation Method -->
-  <section class="prep-container home-section-prep" style="margin-bottom: 4rem;">
-    <div class="section-title-wrap" style="margin-bottom: 1.5rem;">
-      <h2 class="section-title-main">Easy Preparation Method</h2>
-      <p class="section-title-sub">Cook a healthy warm drink in 10 minutes</p>
+  <!-- Redesigned Cooking Preparation Section -->
+  <section style="padding: 5rem 0; background: #ffffff; border-bottom: 1px solid #f1f5f9;">
+    <div style="text-align: center; margin-bottom: 3.5rem; padding: 0 1rem;">
+      <h2 class="home-font-serif" style="font-size: 2.5rem; font-weight: 800; color: #1b4332; margin-bottom: 0.75rem;">
+        Easy Preparation Method
+      </h2>
+      <p style="font-size: 1.1rem; color: #475569; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        Make your warm, nutritious energy drink in just 10 minutes.
+      </p>
     </div>
-    
-    <div class="prep-grid">
-      <div class="prep-step">
-        <div class="prep-number">1</div>
-        <div class="prep-title">Measure Portion</div>
-        <div class="prep-desc">Add 1½ tablespoons (15g) of Jeeni mix.</div>
+
+    <div class="prep-grid-premium">
+      <div class="prep-card-premium">
+        <div class="prep-number-badge">1</div>
+        <h4 style="font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; font-size: 1.0rem;">Measure Portion</h4>
+        <p style="font-size: 0.8rem; color: #64748b; margin: 0; line-height: 1.5;">Add 1½ tablespoons (15g) of Jeeni mix.</p>
       </div>
-      <div class="prep-step">
-        <div class="prep-number">2</div>
-        <div class="prep-title">Mix with Water</div>
-        <div class="prep-desc">Pour 250ml of clean water and mix well.</div>
+
+      <div class="prep-card-premium">
+        <div class="prep-number-badge">2</div>
+        <h4 style="font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; font-size: 1.0rem;">Mix with Water</h4>
+        <p style="font-size: 0.8rem; color: #64748b; margin: 0; line-height: 1.5;">Pour 250ml of clean water and mix well.</p>
       </div>
-      <div class="prep-step">
-        <div class="prep-number">3</div>
-        <div class="prep-title">Stir to Smooth</div>
-        <div class="prep-desc">Mix thoroughly to completely avoid any lumps.</div>
+
+      <div class="prep-card-premium">
+        <div class="prep-number-badge">3</div>
+        <h4 style="font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; font-size: 1.0rem;">Stir to Smooth</h4>
+        <p style="font-size: 0.8rem; color: #64748b; margin: 0; line-height: 1.5;">Mix thoroughly to completely avoid any lumps.</p>
       </div>
-      <div class="prep-step">
-        <div class="prep-number">4</div>
-        <div class="prep-title">Cook on Low Flame</div>
-        <div class="prep-desc">Boil for 7–10 minutes while stirring continuously.</div>
+
+      <div class="prep-card-premium">
+        <div class="prep-number-badge">4</div>
+        <h4 style="font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; font-size: 1.0rem;">Cook on Low Flame</h4>
+        <p style="font-size: 0.8rem; color: #64748b; margin: 0; line-height: 1.5;">Boil for 7–10 minutes while stirring continuously.</p>
       </div>
-      <div class="prep-step">
-        <div class="prep-number">5</div>
-        <div class="prep-title">Add Flavor & Serve</div>
-        <div class="prep-desc">Add jaggery, salt, or buttermilk as preferred. Serve warm!</div>
+
+      <div class="prep-card-premium">
+        <div class="prep-number-badge">5</div>
+        <h4 style="font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; font-size: 1.0rem;">Add Flavor</h4>
+        <p style="font-size: 0.8rem; color: #64748b; margin: 0; line-height: 1.5;">Add jaggery, salt, or buttermilk as preferred. Serve warm!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Genuine Testimonials Section -->
+  <% if @testimonials.present? && @testimonials.any? %>
+    <section style="padding: 5rem 0; background: #fdfcf7; border-bottom: 1px solid #e6e3d5;">
+      <div style="text-align: center; margin-bottom: 4rem; padding: 0 1rem;">
+        <h2 class="home-font-serif" style="font-size: 2.5rem; font-weight: 800; color: #1b4332; margin-bottom: 0.75rem;">
+          Loved by Over 50,000+ Happy Families
+        </h2>
+        <p style="font-size: 1.1rem; color: #4b5320; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+          Real reviews and success stories shared by our wonderful community.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 0 1rem; box-sizing: border-box;" class="grid-mobile-1col">
+        <% @testimonials.each do |t| %>
+          <div class="premium-testimonial-card">
+            <div style="display: flex; gap: 0.25rem; color: #fbbf24; font-size: 1.1rem; margin-bottom: 1rem;">
+              ★★★★★
+            </div>
+            <p class="premium-testimonial-text">
+              "<%= t.content %>"
+            </p>
+            <div class="premium-testimonial-user">
+              <div class="premium-testimonial-avatar">
+                <%= t.author_name.to_s[0].to_s.upcase %>
+              </div>
+              <div>
+                <h5 class="premium-testimonial-name"><%= t.author_name %></h5>
+                <p class="premium-testimonial-role">Verified Customer</p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <!-- Trust / Supports Banner -->
+  <section style="padding: 5rem 1rem; background: #ffffff;">
+    <div class="premium-trust-banner">
+      <div class="premium-trust-grid">
+        <div class="premium-trust-item">
+          <span class="premium-trust-icon">🛡️</span>
+          <h4 class="premium-trust-title">Secure Checkout</h4>
+          <p class="premium-trust-desc">Guaranteed safe payment gateways.</p>
+        </div>
+
+        <div class="premium-trust-item">
+          <span class="premium-trust-icon">📦</span>
+          <h4 class="premium-trust-title">Fast Delivery</h4>
+          <p class="premium-trust-desc">Quick shipping throughout India.</p>
+        </div>
+
+        <div class="premium-trust-item">
+          <span class="premium-trust-icon">💯</span>
+          <h4 class="premium-trust-title">Premium Quality</h4>
+          <p class="premium-trust-desc">Rigorous standards of processing.</p>
+        </div>
+
+        <div class="premium-trust-item">
+          <span class="premium-trust-icon">📞</span>
+          <h4 class="premium-trust-title">Dedicated Support</h4>
+          <p class="premium-trust-desc">Friendly help call: +91 76249 31166.</p>
+        </div>
       </div>
     </div>
   </section>
 </div>
-
-<!-- Mobile Responsive Styles helper -->
-<style>
-  @media (max-width: 768px) {
-    .home-limited-offer-card {
-      grid-template-columns: 1fr !important;
-      text-align: center !important;
-      gap: 1rem !important;
-    }
-    .grid-mobile-1col {
-      grid-template-columns: 1fr !important;
-    }
-  }
-</style>
-
-<!-- Auto-rotating Carousel Script -->
-<script>
-  let currentSlide = 0;
-  const totalSlides = 3;
-  let slideInterval = setInterval(nextSlide, 4500);
-
-  function updateCarousel() {
-    const slidesContainer = document.getElementById('hero-slider');
-    if (!slidesContainer) return;
-    slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
-    const dots = document.querySelectorAll('.carousel-dot');
-    dots.forEach((dot, index) => {
-      if (index === currentSlide) {
-        dot.classList.add('active');
-      } else {
-        dot.classList.remove('active');
-      }
-    });
-  }
-
-  function nextSlide() {
-    const slidesContainer = document.getElementById('hero-slider');
-    if (!slidesContainer) return;
-    currentSlide = (currentSlide + 1) % totalSlides;
-    updateCarousel();
-  }
-
-  function goToSlide(index) {
-    const slidesContainer = document.getElementById('hero-slider');
-    if (!slidesContainer) return;
-    clearInterval(slideInterval);
-    currentSlide = index;
-    updateCarousel();
-    slideInterval = setInterval(nextSlide, 4500);
-  }
-</script>

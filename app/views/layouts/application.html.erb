@@ -70,21 +70,21 @@
 
   <body>
     <!-- Navbar -->
-    <nav class="navbar" style="background-color: var(--secondary); border-bottom: 2px solid rgba(255, 255, 255, 0.1); position: sticky; top: 0; z-index: 50;">
+    <nav class="navbar" style="background-color: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 50;">
       <div class="container navbar-container">
         <a href="/" class="navbar-logo" style="display: flex; align-items: center;">
-          <img src="/Jeeni-12.png" alt="Jeeni Millet Mix" style="max-height: 48px; width: auto; object-fit: contain; background: rgba(255, 255, 255, 0.95); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm);">
+          <img src="/Jeeni-12.png" alt="Jeeni Millet Mix" style="max-height: 52px; width: auto; object-fit: contain;">
         </a>
 
         <!-- Mobile Top Bar Actions -->
         <div class="mobile-top-actions" style="display: none; align-items: center; gap: 0.5rem; margin-left: auto; margin-right: 0.75rem;">
-          <button onclick="openLocationModal();" style="background: none; border: none; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15);" title="Check Pincode">
+          <button onclick="openLocationModal();" style="background: none; border: none; color: #1b4332; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #f4f1ea;" title="Check Pincode">
             📍
           </button>
-          <a href="/cart" style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15); color: white; text-decoration: none;">
+          <a href="/cart" style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #f4f1ea; color: #1b4332; text-decoration: none;">
             🛒
             <% if current_order && current_order.item_count > 0 %>
-              <span style="position: absolute; top: -4px; right: -4px; background: #e11d48; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; font-weight: bold;"><%= current_order.item_count %></span>
+              <span style="position: absolute; top: -4px; right: -4px; background: #d97706; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; font-weight: bold;"><%= current_order.item_count %></span>
             <% end %>
           </a>
         </div>
@@ -100,19 +100,17 @@
         <div class="navbar-menu" id="navbarMenu">
           <% unless is_ad_traffic? %>
             <ul class="navbar-links">
-              <li><a href="/" class="navbar-link <%= current_page?(main_app.root_path) ? 'active' : '' %>" style="color: <%= current_page?(main_app.root_path) ? 'var(--accent)' : '#ffffff' %>;">Home</a></li>
-              <li><a href="/products" class="navbar-link <%= current_page?(main_app.products_path) ? 'active' : '' %>" style="color: <%= current_page?(main_app.products_path) ? 'var(--accent)' : '#ffffff' %>;">Shop</a></li>
-              <li><a href="/blogs" class="navbar-link <%= current_page?(main_app.blogs_path) ? 'active' : '' %>" style="color: <%= current_page?(main_app.blogs_path) ? 'var(--accent)' : '#ffffff' %>;">Our Story</a></li>
-              <li><a href="/track-order" class="navbar-link <%= current_page?('/track-order') ? 'active' : '' %>" style="color: <%= current_page?('/track-order') ? 'var(--accent)' : '#ffffff' %>;">Track Order</a></li>
+              <li><a href="/" class="navbar-link <%= current_page?(main_app.root_path) ? 'active' : '' %>" style="color: <%= current_page?(main_app.root_path) ? '#d97706 !important' : '#1b4332 !important' %>;">Home</a></li>
+              <li><a href="/products" class="navbar-link <%= current_page?(main_app.products_path) ? 'active' : '' %>" style="color: <%= current_page?(main_app.products_path) ? '#d97706 !important' : '#1b4332 !important' %>;">Shop</a></li>
+              <li><a href="/blogs" class="navbar-link <%= current_page?(main_app.blogs_path) ? 'active' : '' %>" style="color: <%= current_page?(main_app.blogs_path) ? '#d97706 !important' : '#1b4332 !important' %>;">Our Story</a></li>
+              <li><a href="/track-order" class="navbar-link <%= current_page?('/track-order') ? 'active' : '' %>" style="color: <%= current_page?('/track-order') ? '#d97706 !important' : '#1b4332 !important' %>;">Track Order</a></li>
             </ul>
-
-
 
             <!-- Search Bar -->
             <div class="navbar-search">
-              <form action="/products" method="get" style="display: flex; align-items: center; background: white; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; padding: 0.25rem 0.5rem; box-shadow: var(--shadow-sm);">
-                <input type="text" name="keywords" placeholder="Search Jeeni products..." style="border: none; outline: none; padding: 0.5rem 1rem; width: 100%; font-size: 0.875rem;" value="<%= params[:keywords] %>">
-                <button type="submit" style="background: var(--primary); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition);">
+              <form action="/products" method="get" style="display: flex; align-items: center; background: white; border: 1px solid #cbd5e1; border-radius: 999px; overflow: hidden; padding: 0.25rem 0.5rem; box-shadow: var(--shadow-sm);">
+                <input type="text" name="keywords" placeholder="Search products..." style="border: none; outline: none; padding: 0.4rem 1rem; width: 100%; font-size: 0.875rem;" value="<%= params[:keywords] %>">
+                <button type="submit" style="background: #15803d; border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition);">
                   🔍
                 </button>
               </form>
@@ -121,35 +119,35 @@
           
           <div class="navbar-actions">
             <!-- Location Selector -->
-            <button onclick="openLocationModal();" style="background: none; border: none; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.85rem; font-weight: 600; padding: 0.4rem 0.75rem; border-radius: 999px; background: rgba(255,255,255,0.1); margin-right: 0.5rem; transition: var(--transition);" id="nav-location-btn">
+            <button onclick="openLocationModal();" style="background: none; border: none; color: #1b4332; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.85rem; font-weight: 700; padding: 0.45rem 0.9rem; border-radius: 999px; background: #f4f1ea; margin-right: 0.5rem; transition: var(--transition); border: 1px solid #e2e8f0;" id="nav-location-btn">
               <% if karnataka_visitor? %>
-                <span style="color: #4ade80;">📍 Karnataka Active</span>
+                <span style="color: #15803d;">📍 Karnataka Active</span>
               <% else %>
-                <span>📍 Check Pincode</span>
+                <span style="color: #4b5320;">📍 Check Pincode</span>
               <% end %>
             </button>
 
             <!-- Cart Link with Badge -->
-            <a href="/cart" class="btn btn-primary btn-sm" style="position: relative; display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 999px;">
+            <a href="/cart" class="btn btn-primary btn-sm" style="position: relative; display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 999px; background: #15803d; border: none; color: #ffffff !important; font-weight: 700;">
               🛒 Cart
               <% if current_order && current_order.item_count > 0 %>
-                <span class="badge badge-success" style="background: white; color: var(--primary); padding: 0.15rem 0.4rem; font-size: 0.65rem; margin-left: 0.15rem;"><%= current_order.item_count %></span>
+                <span class="badge badge-success" style="background: white; color: #15803d; padding: 0.15rem 0.4rem; font-size: 0.65rem; margin-left: 0.15rem;"><%= current_order.item_count %></span>
               <% end %>
             </a>
             
             <!-- Authentication links -->
             <% if spree_current_user %>
               <% if spree_current_user.has_spree_role?("admin") %>
-                <a href="/admin_custom" class="btn btn-secondary btn-sm" style="border-radius: 999px;">Admin</a>
+                <a href="/admin_custom" class="btn btn-secondary btn-sm" style="border-radius: 999px; background: #64748b; border: none; color: white !important;">Admin</a>
               <% end %>
-              <div style="display: flex; flex-direction: column; align-items: flex-end;">
+              <div style="display: flex; flex-direction: column; align-items: flex-end; margin-left: 0.5rem;">
                 <% user_display_name = spree_current_user.first_name.presence || spree_current_user.email.to_s.split('@').first.to_s.split(/[\._]/).first.to_s.capitalize %>
-                <a href="/account" class="navbar-link" style="color: #ffffff;">👤 <%= user_display_name %></a>
-                <%= link_to "Logout", main_app.spree_logout_path, data: { turbo_method: :delete }, style: "font-size: 0.75rem; color: var(--danger); text-decoration: underline;" %>
+                <a href="/account" class="navbar-link" style="color: #1b4332 !important; font-weight: 700; font-size: 0.9rem;">👤 <%= user_display_name %></a>
+                <%= link_to "Logout", main_app.spree_logout_path, data: { turbo_method: :delete }, style: "font-size: 0.75rem; color: #ef4444; text-decoration: underline;" %>
               </div>
             <% else %>
-              <a href="/login" class="btn btn-outline btn-sm" style="border-radius: 999px; color: #ffffff; border-color: rgba(255, 255, 255, 0.4);">Login</a>
-              <a href="/signup" class="btn btn-primary btn-sm" style="border-radius: 999px; color: #ffffff;">Register</a>
+              <a href="/login" class="btn btn-outline btn-sm" style="border-radius: 999px; color: #1b4332 !important; border-color: #1b4332 !important; font-weight: 700; margin-left: 0.25rem;">Login</a>
+              <a href="/signup" class="btn btn-primary btn-sm" style="border-radius: 999px; color: #ffffff !important; background: #1b4332 !important; border: none; font-weight: 700; margin-left: 0.25rem;">Register</a>
             <% end %>
           </div>
         </div>
