@@ -805,27 +805,7 @@
             end
           %>
           
-          <%
-            video_markup = nil
-            if product.respond_to?(:product_gallery) && product.product_gallery.present?
-              gallery = product.product_gallery
-              v = gallery.gallery_videos.find_by(is_featured: true) || gallery.gallery_videos.order(position: :asc).first
-              if v
-                if v.file.attached?
-                  video_url = Rails.application.routes.url_helpers.rails_blob_path(v.file, only_path: true)
-                  video_markup = "<video src='#{video_url}' autoplay muted loop playsinline class='premium-showcase-video' style='width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;'></video>".html_safe
-                elsif v.youtube_embed_url.present?
-                  embed_url = v.youtube_embed_url
-                  if embed_url.include?('youtube.com/embed/')
-                    separator = embed_url.include?('?') ? '&' : '?'
-                    playlist_param = embed_url.split('/embed/')[1]
-                    embed_url = "#{embed_url}#{separator}autoplay=1&mute=1&loop=1&controls=0&playlist=#{playlist_param}"
-                  end
-                  video_markup = "<iframe src='#{embed_url}' class='premium-showcase-video' style='width: 100%; height: 100%; border: none; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;' allow='autoplay; encrypted-media' loading='lazy'></iframe>".html_safe
-                end
-              end
-            end
-          %>
+
           
           <a href="/products/<%= product.slug %>" class="premium-showcase-card">
             <div class="premium-showcase-image-wrapper">
@@ -835,9 +815,7 @@
                 </span>
               <% end %>
               <img src="<%= product_image_url(product) %>" class="premium-showcase-image" alt="<%= product.name %>" loading="lazy">
-              <% if video_markup.present? %>
-                <%= video_markup %>
-              <% end %>
+
             </div>
             <div class="premium-showcase-content">
               <span class="cert-badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; width: fit-content; margin-bottom: 0.5rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Traditional Wholesome</span>
