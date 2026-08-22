@@ -1,129 +1,697 @@
 <% content_for :title, "Product Catalog - Jeeni Shop" %>
 
-<!-- Breadcrumbs -->
-<div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-  <a href="/">Home</a> / <span style="color: var(--text-main); font-weight: 500;">Catalog</span>
-</div>
+<style>
+  .premium-catalog-bg {
+    background-color: #fdfcf7;
+    min-height: 100vh;
+    padding: 3rem 1.5rem 5rem 1.5rem;
+    font-family: 'Outfit', 'Inter', sans-serif;
+  }
+  
+  .premium-breadcrumb {
+    font-size: 0.85rem;
+    color: #8c8876;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .premium-breadcrumb a {
+    color: #1b4332;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  
+  .premium-breadcrumb a:hover {
+    color: #d97706;
+  }
+  
+  .premium-catalog-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+  }
+  
+  .premium-catalog-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: #1b4332;
+    margin-bottom: 0.75rem;
+    font-style: italic;
+  }
+  
+  .premium-catalog-subtitle {
+    font-size: 1.1rem;
+    color: #4b5320;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  
+  /* Horizontal Filter Bar */
+  .premium-filter-bar {
+    background: #ffffff;
+    border: 1.5px solid #e6e3d5;
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 15px rgba(27, 67, 50, 0.02);
+  }
+  
+  .premium-filter-form {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  
+  .premium-filter-group {
+    flex: 1;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  
+  .premium-filter-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #1b4332;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .premium-filter-select, .premium-filter-input {
+    width: 100%;
+    background-color: #faf9f6;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.9rem;
+    color: #1e293b;
+    outline: none;
+    transition: border-color 0.25s ease;
+    box-sizing: border-box;
+  }
+  
+  .premium-filter-select:focus, .premium-filter-input:focus {
+    border-color: #1b4332;
+    background-color: #ffffff;
+  }
+  
+  .premium-filter-btn {
+    background-color: #1b4332;
+    color: #fdfcf7;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1.75rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    align-self: flex-end;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(27, 67, 50, 0.15);
+  }
+  
+  .premium-filter-btn:hover {
+    background-color: #d97706;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(217, 119, 6, 0.25);
+  }
+  
+  .premium-clear-btn {
+    font-size: 0.85rem;
+    color: #ef4444;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    transition: color 0.2s ease;
+    align-self: center;
+    padding-top: 1.5rem;
+  }
+  
+  .premium-clear-btn:hover {
+    color: #b91c1c;
+    text-decoration: underline;
+  }
+  
+  /* Products Responsive Grid */
+  .premium-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2.25rem;
+  }
+  
+  @media (max-width: 1200px) {
+    .premium-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.75rem;
+    }
+  }
+  
+  @media (max-width: 900px) {
+    .premium-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .premium-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+    }
+    .premium-filter-group {
+      min-width: 100%;
+    }
+    .premium-filter-btn {
+      width: 100%;
+    }
+    .premium-clear-btn {
+      align-self: center;
+      padding-top: 0.5rem;
+      width: 100%;
+      text-align: center;
+    }
+    .premium-catalog-title {
+      font-size: 2.0rem;
+    }
+  }
+  
+  /* Product Card */
+  .premium-card {
+    background: #ffffff;
+    border: 1.5px solid #e6e3d5;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(27, 67, 50, 0.015);
+    height: 100%;
+    position: relative;
+  }
+  
+  .premium-card:hover {
+    transform: translateY(-8px);
+    border-color: #1b4332;
+    box-shadow: 0 16px 30px rgba(27, 67, 50, 0.07);
+  }
+  
+  .premium-card-img-wrapper {
+    position: relative;
+    height: 240px;
+    background-color: #ffffff;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  @media (max-width: 480px) {
+    .premium-card-img-wrapper {
+      height: 160px;
+      padding: 0.75rem;
+    }
+  }
+  
+  .premium-card-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .premium-card:hover .premium-card-img {
+    transform: scale(1.06);
+  }
+  
+  /* Priority Badges */
+  .premium-card-badge {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.85rem;
+    background: #1b4332;
+    color: #fdfcf7;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 999px;
+    z-index: 5;
+    box-shadow: 0 2px 6px rgba(27, 67, 50, 0.15);
+  }
+  
+  .premium-card-badge-amber {
+    background: #d97706;
+  }
+  
+  .premium-card-body {
+    padding: 1.25rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+  
+  @media (max-width: 480px) {
+    .premium-card-body {
+      padding: 0.85rem;
+    }
+  }
+  
+  .premium-card-meta {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #8c8876;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .premium-card-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.35;
+    transition: color 0.2s ease;
+  }
+  
+  .premium-card:hover .premium-card-title {
+    color: #1b4332;
+  }
+  
+  .premium-card-desc {
+    font-size: 0.825rem;
+    color: #64748b;
+    line-height: 1.45;
+    margin: 0 0 1rem 0;
+    flex-grow: 1;
+  }
+  
+  @media (max-width: 480px) {
+    .premium-card-desc {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+  }
+  
+  .premium-card-pricing {
+    border-top: 1.5px solid #f1f5f9;
+    padding-top: 0.85rem;
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .premium-price-special-tag {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #15803d;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
+  }
+  
+  .premium-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  
+  .premium-price-current {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #1b4332;
+  }
+  
+  .premium-price-original {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-decoration: line-through;
+    font-weight: 500;
+  }
+  
+  .premium-card-actions {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    .premium-card-actions {
+      margin-top: 0.75rem;
+      gap: 0.4rem;
+    }
+  }
+  
+  .premium-btn-buynow {
+    width: 100%;
+    background-color: #d97706;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.15);
+  }
+  
+  .premium-btn-buynow:hover {
+    background-color: #b45309;
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 14px rgba(180, 83, 9, 0.25);
+  }
+  
+  .premium-btn-row {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .premium-btn-add {
+    flex: 1;
+    background-color: #1b4332;
+    color: #fdfcf7;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    transition: all 0.25s ease;
+  }
+  
+  .premium-btn-add:hover {
+    background-color: #112a20;
+  }
+  
+  .premium-btn-details {
+    flex: 1;
+    background-color: #ffffff;
+    color: #1b4332;
+    border: 1.5px solid #1b4332;
+    border-radius: 8px;
+    padding: 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+  }
+  
+  .premium-btn-details:hover {
+    background-color: #f4faf8;
+  }
+  
+  .premium-admin-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 0.5rem;
+  }
+  
+  .premium-btn-admin-edit {
+    flex: 1;
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  
+  .premium-btn-admin-edit:hover {
+    background-color: #e2e8f0;
+  }
+  
+  .premium-btn-admin-delete {
+    flex: 1;
+    background-color: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+    border-radius: 6px;
+    padding: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .premium-btn-admin-delete:hover {
+    background-color: #fee2e2;
+  }
+  
+  .premium-pagination-container {
+    margin-top: 4rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .premium-empty-container {
+    text-align: center;
+    padding: 5rem 2rem;
+    background: #ffffff;
+    border: 1.5px solid #e6e3d5;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(27, 67, 50, 0.015);
+  }
+  
+  .premium-empty-icon {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 1.25rem;
+  }
+  
+  .premium-empty-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1b4332;
+    margin-bottom: 0.5rem;
+  }
+  
+  .premium-empty-desc {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+  }
+</style>
 
-<div class="catalog-layout" style="grid-template-columns: 1fr;">
+<div class="premium-catalog-bg">
+  <!-- Breadcrumbs -->
+  <div class="premium-breadcrumb">
+    <a href="/">Home</a> / <span style="color: #4b5320; font-weight: 600;">Catalog</span>
+  </div>
 
-  <!-- Product Grid Section -->
-  <section>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-      <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--secondary);">
-        <%= params[:query].present? ? "Search Results for '#{params[:query]}'" : "All Products" %>
-        <span style="font-size: 0.875rem; font-weight: 400; color: var(--text-muted); margin-left: 0.5rem;">(<%= @products.total_count %> found)</span>
-      </h2>
-      <% if spree_current_user&.has_spree_role?("admin") %>
-        <div>
-          <a href="/admin_custom/products/new" class="btn btn-primary btn-sm">➕ Create New Product</a>
-        </div>
+  <!-- Header Section -->
+  <header class="premium-catalog-header">
+    <h1 class="premium-catalog-title">Our Products</h1>
+    <p class="premium-catalog-subtitle">
+      Nourish your family with our signature multi-millet health mixes, amla blends, and traditional wellness grains.
+    </p>
+  </header>
+
+  <!-- Horizontal Filter Panel -->
+  <div class="premium-filter-bar">
+    <%= form_tag products_path, method: :get, class: "premium-filter-form" do %>
+      <!-- Search Input -->
+      <div class="premium-filter-group" style="flex: 2; min-width: 240px;">
+        <label class="premium-filter-label" for="query">Search Products</label>
+        <input type="text" name="query" id="query" value="<%= params[:query] %>" placeholder="Type keywords e.g. Slim, Amla..." class="premium-filter-input">
+      </div>
+      
+      <!-- Category Dropdown -->
+      <div class="premium-filter-group">
+        <label class="premium-filter-label" for="category">Category</label>
+        <select name="category" id="category" class="premium-filter-select">
+          <option value="">All Categories</option>
+          <% @categories.each do |category| %>
+            <option value="<%= category.id %>" <%= params[:category] == category.id.to_s ? 'selected' : '' %>><%= category.name %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <!-- Sourced State Dropdown -->
+      <div class="premium-filter-group">
+        <label class="premium-filter-label" for="state">Sourced From</label>
+        <select name="state" id="state" class="premium-filter-select">
+          <option value="">All Regions</option>
+          <% @states.each do |st| %>
+            <option value="<%= st %>" <%= params[:state] == st ? 'selected' : '' %>><%= st %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <!-- Filter Submission Button -->
+      <button type="submit" class="premium-filter-btn">
+        🔍 Filter
+      </button>
+      
+      <!-- Clear Filters Link -->
+      <% if params[:query].present? || params[:category].present? || params[:state].present? || params[:district].present? %>
+        <a href="/products" class="premium-clear-btn">✕ Clear Filters</a>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Product Listing Grid -->
+  <% if @products.any? %>
+    <div class="premium-grid">
+      <% @products.each do |product| %>
+        <article class="premium-card">
+          <!-- Image Wrapper with Hyperlink -->
+          <a href="/products/<%= product.slug %>" style="text-decoration: none; color: inherit; display: block; position: relative;">
+            <div class="premium-card-img-wrapper">
+              <!-- Priority Badges -->
+              <% if priority_product?(product) %>
+                <% if product.slug == 'jeeni-slim-new' %>
+                  <span class="premium-card-badge">Slim & Active</span>
+                <% elsif product.slug == 'jeeni-sugaramla-1kg-sugaramla-1kg' %>
+                  <span class="premium-card-badge premium-card-badge-amber">Sugar Balance</span>
+                <% elsif product.name.to_s.downcase.include?('health mix') %>
+                  <span class="premium-card-badge">Best Seller</span>
+                <% else %>
+                  <span class="premium-card-badge">Featured</span>
+                <% end %>
+              <% elsif product.featured? %>
+                <span class="premium-card-badge">Featured</span>
+              <% end %>
+              
+              <!-- STRICT IMAGE-ONLY RENDERING -->
+              <img src="<%= product_image_url(product) %>" class="premium-card-img" alt="<%= product.name %>" loading="lazy">
+            </div>
+          </a>
+
+          <!-- Card Content Body -->
+          <div class="premium-card-body">
+            <span class="premium-card-meta">
+              📍 <%= [product.district, product.state].compact.reject(&:empty?).first || "Traditional Sourced" %>
+            </span>
+            
+            <a href="/products/<%= product.slug %>" style="text-decoration: none; color: inherit;">
+              <h3 class="premium-card-title"><%= product.name %></h3>
+            </a>
+            
+            <p class="premium-card-desc"><%= truncate(strip_tags(product.description), length: 80) %></p>
+            
+            <!-- Pricing Block -->
+            <div class="premium-card-pricing">
+              <% if karnataka_visitor? && product.karnataka_price.present? %>
+                <span class="premium-price-special-tag">🏷️ Karnataka Special Price</span>
+                <div class="premium-price-row">
+                  <span class="premium-price-current">₹<%= product.karnataka_price.to_i %></span>
+                  <span class="premium-price-original">₹<%= product.price.to_i %></span>
+                </div>
+              <% else %>
+                <div class="premium-price-row">
+                  <span class="premium-price-current"><%= product.display_price.to_s %></span>
+                </div>
+              <% end %>
+            </div>
+            
+            <!-- CTAs and Interaction Buttons -->
+            <div class="premium-card-actions">
+              <% if priority_product?(product) %>
+                <!-- Quick Checkout (COD) -->
+                <%= form_tag add_to_cart_path, method: :post, style: "margin: 0; width: 100%;" do %>
+                  <input type="hidden" name="variant_id" value="<%= product.master.id %>">
+                  <input type="hidden" name="checkout" value="1">
+                  <button type="submit" class="premium-btn-buynow">
+                    ⚡ BUY NOW (COD)
+                  </button>
+                <% end %>
+                
+                <div class="premium-btn-row">
+                  <%= form_tag add_to_cart_path, method: :post, style: "margin: 0; flex: 1;" do %>
+                    <input type="hidden" name="variant_id" value="<%= product.master.id %>">
+                    <button type="submit" class="premium-btn-add">
+                      🛒 Add
+                    </button>
+                  <% end %>
+                  <a href="/products/<%= product.slug %>" class="premium-btn-details">
+                    Details
+                  </a>
+                </div>
+              <% else %>
+                <!-- Standard Action buttons -->
+                <div class="premium-btn-row">
+                  <%= form_tag add_to_cart_path, method: :post, style: "margin: 0; flex: 1;" do %>
+                    <input type="hidden" name="variant_id" value="<%= product.master.id %>">
+                    <button type="submit" class="premium-btn-add">
+                      🛒 Add to Cart
+                    </button>
+                  <% end %>
+                  <a href="/products/<%= product.slug %>" class="premium-btn-details">
+                    Details
+                  </a>
+                </div>
+              <% end %>
+              
+              <!-- Admin Controls -->
+              <% if spree_current_user&.has_spree_role?("admin") %>
+                <div class="premium-admin-actions">
+                  <a href="/admin_custom/products/<%= product.slug %>/edit" class="premium-btn-admin-edit">✏️ Edit</a>
+                  <%= button_to admin_custom_product_path(product), method: :delete, class: "premium-btn-admin-delete", data: { confirm: "Delete this product?" } do %>
+                    🗑️ Delete
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </article>
       <% end %>
     </div>
 
-    <% if @products.any? %>
-      <div class="grid grid-cols-3">
-        <% @products.each do |product| %>
-          <div class="card <%= priority_product?(product) ? 'priority-product-card' : '' %>">
-            <div class="card-img-wrapper" style="position: relative; overflow: hidden; background: #f1f5f9; height: 180px;">
-              <% if priority_product?(product) %>
-                <% if product.slug == 'jeeni-slim-new' %>
-                  <span class="priority-badge priority-badge-best-seller">Slim & Active</span>
-                <% elsif product.slug == 'jeeni-sugaramla-1kg-sugaramla-1kg' %>
-                  <span class="priority-badge priority-badge-best-seller">Sugar Balance</span>
-                <% elsif product.name.to_s.downcase.include?('health mix') %>
-                  <span class="priority-badge priority-badge-best-seller">Best Seller</span>
-                <% else %>
-                  <span class="priority-badge">Featured</span>
-                <% end %>
-              <% elsif product.featured? %>
-                <span class="card-badge">Featured</span>
-              <% end %>
-              <%= render_product_media(product) %>
-            </div>
-            
-            <div class="card-content">
-              <h3 class="card-title" style="font-size: 1.1rem;"><a href="/products/<%= product.slug %>"><%= product.name %></a></h3>
-              <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">
-                📍 <%= [product.district, product.state].compact.reject(&:empty?).join(', ') %>
-              </p>
-              <p class="card-description"><%= truncate(product.description, length: 70) %></p>
-              
-              <div class="card-footer" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
-                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                  <% if karnataka_visitor? && product.karnataka_price.present? %>
-                    <div style="display: flex; flex-direction: column; gap: 0.15rem; align-items: flex-start; text-align: left;">
-                      <span style="font-size: 0.75rem; color: #16a34a; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;">🏷️ Karnataka Special Price</span>
-                      <span class="card-price" style="font-size: 1.4rem; font-weight: 900; color: #16a34a;">₹<%= product.karnataka_price.to_i %></span>
-                      <span style="font-size: 0.85rem; color: #94a3b8; text-decoration: line-through; font-weight: 500;">₹<%= product.price.to_i %></span>
-                    </div>
-                  <% else %>
-                    <span class="card-price"><%= product.display_price.to_s %></span>
-                  <% end %>
-                </div>
-                
-                <% if priority_product?(product) %>
-                  <!-- Easy Booking (Full Width) -->
-                  <%= form_tag add_to_cart_path, method: :post, style: "width: 100%; display: flex; flex-direction: column; gap: 0.5rem; margin: 0;" do %>
-                    <input type="hidden" name="variant_id" value="<%= product.master.id %>">
-                    <input type="hidden" name="checkout" value="1">
-                    <button type="submit" class="btn" style="width: 100%; justify-content: center; background: #b12704; color: white; font-weight: 800; border: none; border-radius: var(--radius-md); padding: 0.75rem; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(177, 39, 4, 0.25);">
-                      ⚡ BUY NOW (Cash on Delivery)
-                    </button>
-                  <% end %>
-                  
-                  <!-- Row for Add to Cart and View Details -->
-                  <div style="display: flex; gap: 0.5rem; width: 100%;">
-                    <%= form_tag add_to_cart_path, method: :post, style: "flex: 1; margin: 0;" do %>
-                      <input type="hidden" name="variant_id" value="<%= product.master.id %>">
-                      <button type="submit" class="btn btn-outline" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.5rem; min-height: 38px; border-color: var(--border); color: var(--text-main); display: inline-flex; align-items: center; gap: 0.25rem;">
-                        🛒 Add
-                      </button>
-                    <% end %>
-                    <a href="/products/<%= product.slug %>" class="btn btn-outline" style="flex: 1; justify-content: center; font-size: 0.85rem; padding: 0.5rem; min-height: 38px; border-color: var(--border); color: var(--text-main); display: inline-flex; align-items: center; justify-content: center;">
-                      Details
-                    </a>
-                  </div>
-                <% else %>
-                  <!-- Row for Add to Cart and View Details (for standard products) -->
-                  <div style="display: flex; gap: 0.5rem; width: 100%;">
-                    <%= form_tag add_to_cart_path, method: :post, style: "flex: 1; margin: 0;" do %>
-                      <input type="hidden" name="variant_id" value="<%= product.master.id %>">
-                      <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.5rem; min-height: 38px; background: linear-gradient(135deg, #15803d, #166534); border: none; color: white; display: inline-flex; align-items: center; gap: 0.25rem; border-radius: var(--radius-md);">
-                        🛒 Add
-                      </button>
-                    <% end %>
-                    <a href="/products/<%= product.slug %>" class="btn btn-outline" style="flex: 1; justify-content: center; font-size: 0.85rem; padding: 0.5rem; min-height: 38px; border-color: var(--border); color: var(--text-main); display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
-                      Details
-                    </a>
-                  </div>
-                <% end %>
-
-                <% if spree_current_user&.has_spree_role?("admin") %>
-                  <div style="display: flex; gap: 0.5rem; justify-content: space-between; width: 100%; margin-top: 0.5rem;">
-                    <a href="/admin_custom/products/<%= product.slug %>/edit" class="btn btn-secondary btn-sm" style="flex: 1;">✏️ Edit</a>
-                    <%= button_to admin_custom_product_path(product), method: :delete, class: "btn btn-outline btn-sm", style: "flex: 1; border-color: #fee2e2; color: var(--danger);", data: { confirm: "Delete this product?" } do %>
-                      🗑️ Delete
-                    <% end %>
-                  </div>
-                <% end %>
-              </div>
-            </div>
-          </div>
-        <% end %>
-      </div>
-      
-      <!-- Pagination -->
-      <div style="margin-top: 3rem; display: flex; justify-content: center;">
-        <%= paginate @products %>
-      </div>
-    <% else %>
-      <div style="text-align: center; padding: 5rem 2rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md);">
-        <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">🔍</span>
-        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">No Products Found</h3>
-        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Try adjusting your filter criteria or search keyword.</p>
-        <a href="/products" class="btn btn-primary">Reset Filters</a>
-      </div>
-    <% end %>
-  </section>
+    <!-- Pagination Controls -->
+    <div class="premium-pagination-container">
+      <%= paginate @products %>
+    </div>
+  <% else %>
+    <!-- Empty Catalog Fallback -->
+    <div class="premium-empty-container">
+      <span class="premium-empty-icon">🌾</span>
+      <h3 class="premium-empty-title">No Products Found</h3>
+      <p class="premium-empty-desc">We couldn't find any products matching your selection. Try clearing filters.</p>
+      <a href="/products" class="premium-filter-btn" style="text-decoration: none; display: inline-flex;">Reset Collection</a>
+    </div>
+  <% end %>
 </div>
