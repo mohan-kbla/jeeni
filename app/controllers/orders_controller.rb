@@ -97,13 +97,13 @@ class OrdersController < ApplicationController
       pdf.text "Total: #{@order.display_total.to_s.gsub('₹', 'Rs. ')}", size: 12, style: :bold, align: :right, color: "4F46E5"
     end
     
-    # FSSAI footer
+    # Footer details
     pdf.move_down 45
     pdf.stroke_horizontal_line 0, 500
     pdf.move_down 10
     
-    pdf.text "Food Business Operator (FBO) Details:", size: 9, style: :bold, color: "444444"
-    pdf.text "Jeevitha Enterprises | FSSAI License Number: 11220327000212 (Karnataka State)", size: 9, color: "555555"
+    pdf.text "Manufacturer & FBO Details:", size: 9, style: :bold, color: "444444"
+    pdf.text "Jeevitha Enterprises (Karnataka State)", size: 9, color: "555555"
     pdf.text "Registered Address: No. 343, 6th Cross, J.C. Nagar, Sira Taluk, Tumkur District, Karnataka - 572137", size: 8, color: "777777"
     pdf.text "Customer Care Helpline: +91 76249 31166 / +91 74066 61438 | support@jeenimilletmix.in", size: 8, color: "777777"
     

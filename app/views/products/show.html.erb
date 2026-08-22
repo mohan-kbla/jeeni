@@ -1,5 +1,5 @@
 <% content_for :title, "#{@product.name} - Jeeni Shop" %>
-<% content_for :meta_description, "Traditional Millet Health Mix for Weight Management & Energy. Pure and wholesome traditional millet blend with easy booking and fast delivery." %>
+<% content_for :meta_description, "Traditional Millet Health Mix for Weight Management & Energy. Wholesome traditional millet blend with easy booking and fast delivery." %>
 
 <%
   is_karnataka_price = karnataka_visitor? && @product.karnataka_price.present?
@@ -325,20 +325,13 @@
         <span style="color: #f59e0b; font-size: 0.95rem;">⭐⭐⭐⭐⭐</span>
         <span style="font-size: 0.8rem; font-weight: 700; color: #92400e;"><%= avg_rating %> (<%= reviews_count %> Reviews)</span>
       </div>
-      
-      <!-- FSSAI Mini Badge -->
-      <div style="display: flex; align-items: center; gap: 0.35rem; background: #f0fdf4; border: 1.5px solid #bbf7d0; padding: 0.35rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; color: #166534;">
-        <span style="color: #15803d; font-family: 'Outfit', 'Inter', sans-serif; font-weight: 900; letter-spacing: 0.25px;">fssai</span>
-        <span style="color: #86efac;">|</span>
-        <span style="color: #1e293b; font-weight: 600;">Lic. No. 11220327000212</span>
-      </div>
 
       <!-- Veg Badge -->
       <div style="display: flex; align-items: center; gap: 0.35rem; background: #f0fdf4; border: 1.5px solid #bbf7d0; padding: 0.35rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; color: #166534;">
         <div style="width: 12px; height: 12px; border: 2px solid #15803d; display: flex; align-items: center; justify-content: center; background: white; padding: 1px; box-sizing: border-box;">
           <div style="width: 6px; height: 6px; border-radius: 50%; background: #15803d;"></div>
         </div>
-        <span style="color: #15803d; font-weight: 600;">100% VEG</span>
+        <span style="color: #15803d; font-weight: 600;">VEGETARIAN</span>
       </div>
     </div>
 
@@ -396,7 +389,7 @@
       end
       if benefits_list.empty?
         benefits_list = [
-          "Pure & Wholesome Traditional Millets",
+          "Wholesome Traditional Millets",
           "Rich in Fiber & Plant Protein",
           "No Added Sugar or Chemicals",
           "Sustained Energy & Nutrition"
@@ -592,7 +585,7 @@
 <!-- FSSAI and Nutritional Declarations (Mandatory under Indian FSSAI E-commerce rules) -->
 <div style="margin-top: 2.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.75rem; text-align: left;">
   <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
-    🛡️ FSSAI & Product Safety Declarations
+    🛡️ Product Safety & Declarations
   </h3>
 
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
@@ -600,22 +593,17 @@
     <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 0.85rem;">
       <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 0.65rem;">
         <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <span style="font-weight: 900; color: #15803d; font-family: 'Outfit', 'Inter', sans-serif; font-size: 1.15rem; letter-spacing: 0.25px;">fssai</span>
-          <span style="font-size: 0.72rem; color: #64748b; font-weight: 700; background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px;">REGISTERED</span>
+          <span style="font-size: 0.72rem; color: #64748b; font-weight: 700; background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px;">PRODUCT DECLARATIONS</span>
         </div>
         <div style="display: flex; align-items: center; gap: 0.35rem;">
           <div style="width: 14px; height: 14px; border: 2px solid #15803d; display: flex; align-items: center; justify-content: center; background: white; padding: 1px; box-sizing: border-box;">
             <div style="width: 6px; height: 6px; border-radius: 50%; background: #15803d;"></div>
           </div>
-          <span style="font-size: 0.78rem; font-weight: 700; color: #15803d; letter-spacing: 0.25px;">100% VEG</span>
+          <span style="font-size: 0.78rem; font-weight: 700; color: #15803d; letter-spacing: 0.25px;">VEGETARIAN</span>
         </div>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.85rem; color: #334155;">
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.4rem;">
-          <strong style="color: #475569;">FSSAI License No:</strong>
-          <span style="font-weight: 700; color: #0f172a;">11220327000212</span>
-        </div>
         <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.4rem;">
           <strong style="color: #475569;">FBO & Brand Name:</strong>
           <span style="font-weight: 600; color: #0f172a; text-align: right;">Jeevitha Enterprises</span>
@@ -721,7 +709,7 @@
     <div class="cro-benefit-card" style="background: white; border-radius: 10px; padding: 1.15rem; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 0.4rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
       <span style="font-size: 1.8rem; margin: 0;">🌱</span>
       <strong style="font-size: 0.95rem; color: #0f172a;">Traditionally Sourced</strong>
-      <p style="font-size: 0.825rem; color: #475569; margin: 0; line-height: 1.45;">100% traditional pure whole millets with zero preservatives or additives.</p>
+      <p style="font-size: 0.825rem; color: #475569; margin: 0; line-height: 1.45;">Traditional whole millets with zero preservatives or additives.</p>
     </div>
   </div>
 </div>
