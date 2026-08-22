@@ -293,9 +293,14 @@
 
     <!-- Order Details Summary Card -->
     <div class="track-card">
-      <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--secondary, #0f172a); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border, #e2e8f0); padding-bottom: 0.75rem;">
-        Order Details
-      </h3>
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border, #e2e8f0); padding-bottom: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--secondary, #0f172a); margin: 0;">
+          Order Details
+        </h3>
+        <%= link_to download_invoice_path(order_number: @order.number, verification: @verification), class: "btn btn-primary", style: "display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; padding: 0.5rem 1.25rem; border-radius: var(--radius-md, 8px); font-weight: 600; font-size: 0.9rem; color: #ffffff !important; background-color: #1b4332; border: none;" do %>
+          <span>📄</span> Download Invoice
+        <% end %>
+      </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; background: #f8fafc; padding: 1.25rem; border-radius: var(--radius-md, 8px); border: 1px solid var(--border, #e2e8f0);">
         <div>
@@ -392,12 +397,7 @@
             </div>
           </div>
 
-          <!-- Download Invoice Link -->
-          <div style="margin-top: 1rem;">
-            <%= link_to download_invoice_path(order_number: @order.number, verification: @verification), class: "btn btn-primary", style: "display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; width: 100%; padding: 0.85rem; border-radius: var(--radius-md, 8px); font-weight: 600; box-sizing: border-box; text-align: center; color: #ffffff !important; background-color: #1b4332; border: none;" do %>
-              <span>📄</span> Download Invoice
-            <% end %>
-          </div>
+
         </div>
       </div>
     </div>
