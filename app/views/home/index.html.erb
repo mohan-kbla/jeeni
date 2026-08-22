@@ -3,6 +3,242 @@
   main {
     padding-top: 0 !important;
   }
+
+  /* Redesigned Premium Showcase styles */
+  .premium-showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 1024px) {
+    .premium-showcase-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .premium-showcase-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      padding: 0 0.5rem;
+    }
+  }
+
+  .premium-showcase-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.025);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .premium-showcase-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(21, 128, 61, 0.08), 0 10px 10px -5px rgba(21, 128, 61, 0.03);
+    border-color: rgba(21, 128, 61, 0.25);
+  }
+
+  .premium-showcase-image-wrapper {
+    position: relative;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    padding: 1.5rem;
+    overflow: hidden;
+    transition: background 0.4s ease;
+  }
+
+  .premium-showcase-card:hover .premium-showcase-image-wrapper {
+    background: #f0fdf4;
+  }
+
+  .premium-showcase-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .premium-showcase-card:hover .premium-showcase-image {
+    transform: scale(1.08);
+  }
+
+  .premium-showcase-video {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .premium-showcase-card:hover .premium-showcase-video {
+    transform: scale(1.08);
+  }
+
+  /* Badge styling */
+  .premium-showcase-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-weight: 800;
+    font-size: 0.72rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .premium-showcase-badge-popular {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+  }
+
+  .premium-showcase-badge-best {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+  }
+
+  .premium-showcase-badge-new {
+    background: #faf5ff;
+    color: #6b21a8;
+    border: 1px solid #e9d5ff;
+  }
+
+  .premium-showcase-badge-offer {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fef3c7;
+  }
+
+  /* Content area styling */
+  .premium-showcase-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background: #ffffff;
+  }
+
+  .premium-showcase-card-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.35;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    transition: color 0.3s ease;
+  }
+
+  .premium-showcase-card:hover .premium-showcase-card-title {
+    color: #15803d;
+  }
+
+  .premium-showcase-description {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0 0 1.25rem 0;
+    line-height: 1.5;
+    flex-grow: 1;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .premium-showcase-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .premium-showcase-price-box {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .premium-showcase-price-label {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.1rem;
+  }
+
+  .premium-showcase-price {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1.1;
+  }
+
+  .premium-showcase-price-special {
+    color: #16a34a;
+  }
+
+  .premium-showcase-price-old {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-decoration: line-through;
+    font-weight: 500;
+    margin-top: 0.1rem;
+  }
+
+  /* CTA link styling */
+  .premium-showcase-cta {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #15803d;
+    transition: all 0.3s ease;
+  }
+
+  .premium-showcase-card:hover .premium-showcase-cta {
+    transform: translateX(4px);
+    color: #166534;
+  }
+  
+  /* Mobile optimization adjustments */
+  @media (max-width: 480px) {
+    .premium-showcase-image-wrapper {
+      height: 160px;
+      padding: 0.75rem;
+    }
+    .premium-showcase-content {
+      padding: 1rem;
+    }
+    .premium-showcase-card-title {
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+    .premium-showcase-description {
+      font-size: 0.78rem;
+      margin-bottom: 0.75rem;
+    }
+    .premium-showcase-price {
+      font-size: 1.05rem;
+    }
+    .premium-showcase-cta {
+      font-size: 0.78rem;
+    }
+  }
 </style>
 
 <div class="homepage-sections-wrapper">
@@ -121,40 +357,92 @@
 
   <!-- FEATURE 4 (cont.): Explore More Healthy Products Section -->
   <section class="home-section-other-products" style="margin-bottom: 4rem;">
-    <div class="section-title-wrap">
-      <h2 class="section-title-main">🌾 Explore More Healthy Millet Products</h2>
-      <p class="section-title-sub">Discover our full range of daily wellness and traditional mixes</p>
+    <div style="text-align: center; margin-bottom: 3rem; padding: 0 1rem;">
+      <h2 style="font-size: 2.25rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem; letter-spacing: -0.025em; font-family: 'Outfit', 'Inter', sans-serif;">
+        🌾 Explore More Healthy Millet Products
+      </h2>
+      <p style="font-size: 1.1rem; color: #475569; max-width: 600px; margin: 0 auto; line-height: 1.6; font-family: 'Inter', sans-serif;">
+        Discover delicious and nutritious choices for your everyday wellness.
+      </p>
     </div>
     
-    <div class="grid grid-cols-4">
+    <div class="premium-showcase-grid">
       <% if @other_products.present? && @other_products.any? %>
         <% @other_products.each do |product| %>
-          <div class="card">
-            <div class="card-img-wrapper" style="position: relative; overflow: hidden; background: #f1f5f9; height: 220px;">
-              <%= render_product_media(product) %>
+          <% 
+            badge_text = nil
+            badge_class = nil
+            
+            if product.discount_info.present?
+              badge_text = product.discount_info
+              badge_class = "premium-showcase-badge-offer"
+            elsif karnataka_visitor? && product.karnataka_price.present?
+              badge_text = "Special Offer"
+              badge_class = "premium-showcase-badge-offer"
+            elsif product.featured?
+              badge_text = "Popular"
+              badge_class = "premium-showcase-badge-popular"
+            elsif product.created_at > 30.days.ago
+              badge_text = "New"
+              badge_class = "premium-showcase-badge-new"
+            end
+          %>
+          
+          <%
+            video_markup = nil
+            if product.respond_to?(:product_gallery) && product.product_gallery.present?
+              gallery = product.product_gallery
+              v = gallery.gallery_videos.find_by(is_featured: true) || gallery.gallery_videos.order(position: :asc).first
+              if v
+                if v.file.attached?
+                  video_url = Rails.application.routes.url_helpers.rails_blob_path(v.file, only_path: true)
+                  video_markup = "<video src='#{video_url}' autoplay muted loop playsinline class='premium-showcase-video' style='width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;'></video>".html_safe
+                elsif v.youtube_embed_url.present?
+                  embed_url = v.youtube_embed_url
+                  if embed_url.include?('youtube.com/embed/')
+                    separator = embed_url.include?('?') ? '&' : '?'
+                    playlist_param = embed_url.split('/embed/')[1]
+                    embed_url = "#{embed_url}#{separator}autoplay=1&mute=1&loop=1&controls=0&playlist=#{playlist_param}"
+                  end
+                  video_markup = "<iframe src='#{embed_url}' class='premium-showcase-video' style='width: 100%; height: 100%; border: none; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;' allow='autoplay; encrypted-media' loading='lazy'></iframe>".html_safe
+                end
+              end
+            end
+          %>
+          
+          <a href="/products/<%= product.slug %>" class="premium-showcase-card">
+            <div class="premium-showcase-image-wrapper">
+              <% if badge_text %>
+                <span class="premium-showcase-badge <%= badge_class %>">
+                  <%= badge_text %>
+                </span>
+              <% end %>
+              <img src="<%= product_image_url(product) %>" class="premium-showcase-image" alt="<%= product.name %>" loading="lazy">
+              <% if video_markup.present? %>
+                <%= video_markup %>
+              <% end %>
             </div>
-            <div class="card-content">
-              <span class="cert-badge">Free Delivery</span>
-              <h3 class="card-title"><a href="/products/<%= product.slug %>"><%= product.name %></a></h3>
-              <p class="card-description"><%= truncate(product.description, length: 75) %></p>
-              <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; width: 100%; box-sizing: border-box;">
-                <% if karnataka_visitor? && product.karnataka_price.present? %>
-                  <div style="display: flex; flex-direction: column;">
-                    <span class="card-price" style="flex-shrink: 0; font-weight: 800; color: #16a34a; font-size: 1.1rem; line-height: 1.1;">₹<%= product.karnataka_price.to_i %></span>
-                    <span style="font-size: 0.75rem; color: #94a3b8; text-decoration: line-through; line-height: 1.1;">₹<%= product.price.to_i %></span>
-                  </div>
-                <% else %>
-                  <span class="card-price" style="flex-shrink: 0; font-weight: 800; color: #0f172a;"><%= product.display_price.to_s %></span>
-                <% end %>
-                <%= form_tag add_to_cart_path, method: :post, style: "margin: 0; display: inline-block;" do %>
-                  <%= hidden_field_tag :variant_id, product.master.id %>
-                  <%= hidden_field_tag :quantity, 1 %>
-                  <%= hidden_field_tag :checkout, 1 %>
-                  <%= submit_tag "⚡ Easy Booking", class: "btn btn-primary btn-sm", style: "border-radius: 99px; padding: 0.45rem 1rem; font-size: 0.825rem; font-weight: 800; cursor: pointer; border: none; white-space: nowrap; background: linear-gradient(135deg, #15803d, #166534); color: white;" %>
-                <% end %>
+            <div class="premium-showcase-content">
+              <span class="cert-badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; width: fit-content; margin-bottom: 0.5rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Traditional Wholesome</span>
+              <h3 class="premium-showcase-card-title"><%= product.name %></h3>
+              <p class="premium-showcase-description"><%= truncate(product.description, length: 85) %></p>
+              
+              <div class="premium-showcase-footer">
+                <div class="premium-showcase-price-box">
+                  <span class="premium-showcase-price-label">Price</span>
+                  <% if karnataka_visitor? && product.karnataka_price.present? %>
+                    <span class="premium-showcase-price premium-showcase-price-special">₹<%= product.karnataka_price.to_i %></span>
+                    <span class="premium-showcase-price-old">₹<%= product.price.to_i %></span>
+                  <% else %>
+                    <span class="premium-showcase-price">₹<%= product.price.to_i %></span>
+                  <% end %>
+                </div>
+                <div class="premium-showcase-cta">
+                  Shop Now <span style="font-size: 1.1rem; line-height: 1;">→</span>
+                </div>
               </div>
             </div>
-          </div>
+          </a>
         <% end %>
       <% end %>
     </div>
