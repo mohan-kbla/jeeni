@@ -85,7 +85,7 @@
 
   .premium-show-layout {
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-columns: 0.85fr 1.15fr;
     gap: 3.5rem;
     max-width: 1200px;
     margin: 0 auto;
@@ -113,6 +113,9 @@
     padding: 1.5rem;
     box-sizing: border-box;
     overflow: hidden;
+    max-width: 440px;
+    width: 100%;
+    margin: 0 auto;
   }
 
   .premium-gallery-main img, .premium-gallery-main video {
@@ -127,6 +130,9 @@
     overflow-x: auto;
     scrollbar-width: none;
     padding: 0.25rem 2px;
+    max-width: 440px;
+    width: 100%;
+    margin: 0 auto;
   }
 
   .premium-thumbs-row::-webkit-scrollbar {
@@ -478,27 +484,29 @@
       gap: 2rem;
     }
     .premium-gallery-main {
-      max-width: 480px;
+      max-width: 380px;
       margin: 0 auto;
     }
     .premium-thumbs-row {
-      max-width: 480px;
+      max-width: 380px;
       margin: 0.5rem auto 1rem auto;
     }
   }
 
   @media (max-width: 480px) {
     .premium-show-bg {
-      padding: 1.5rem 1rem 4rem 1rem;
+      padding: 1rem 0.75rem 4rem 0.75rem;
     }
     .premium-show-title {
-      font-size: 1.75rem;
+      font-size: 1.5rem;
     }
     .premium-gallery-main {
-      max-width: 100%;
+      max-width: 290px;
+      margin: 0 auto;
     }
     .premium-thumbs-row {
-      max-width: 100%;
+      max-width: 290px;
+      margin: 0.5rem auto 1rem auto;
     }
     .premium-checklist {
       grid-template-columns: 1fr;
