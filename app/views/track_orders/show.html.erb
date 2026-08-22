@@ -394,7 +394,7 @@
 
           <!-- Download Invoice Link -->
           <div style="margin-top: 1rem;">
-            <%= link_to download_invoice_path(order_number: @order.number, verification: @verification), class: "btn btn-primary", style: "display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; width: 100%; padding: 0.85rem; border-radius: var(--radius-md, 8px); font-weight: 600; box-sizing: border-box; text-align: center; color: white;" do %>
+            <%= link_to download_invoice_path(order_number: @order.number, verification: @verification), class: "btn btn-primary", style: "display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; width: 100%; padding: 0.85rem; border-radius: var(--radius-md, 8px); font-weight: 600; box-sizing: border-box; text-align: center; color: #ffffff !important; background-color: #1b4332; border: none;" do %>
               <span>📄</span> Download Invoice
             <% end %>
           </div>
