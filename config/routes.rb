@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get '/privacy', to: 'pages#privacy', as: :privacy
   get '/terms', to: 'pages#terms', as: :terms
   get '/track-order', to: 'track_orders#show', as: :track_order
+  get '/track-order/invoice', to: 'track_orders#invoice', as: :download_invoice
 
   # Meta Catalog Product Feed
   get '/facebook_feed', to: 'facebook_feed#index'
