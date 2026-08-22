@@ -202,10 +202,7 @@ map $remote_addr $is_authorized_ip {{
 }}
 
 map "$is_exempt_path:$is_authorized_ip" $access_restricted {{
-    "1:0" 0;  # Exempt path -> Allow
-    "1:1" 0;  # Exempt path -> Allow
-    "0:1" 0;  # Authorized IP -> Allow
-    default 1;  # Restrict others
+    default 0;  # Public access enabled, maintenance mode disabled
 }}
 
 upstream rails_app {{
