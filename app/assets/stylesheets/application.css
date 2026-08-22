@@ -112,6 +112,15 @@ a:hover {
   padding-right: 1.5rem;
 }
 
+.container-fluid-home {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+}
+
 .grid {
   display: grid;
   gap: 1.5rem;

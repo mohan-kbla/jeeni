@@ -156,7 +156,7 @@
 
     <!-- Main Content Area -->
     <main style="padding: 2rem 0; min-height: calc(100vh - 350px);">
-      <div class="container">
+      <div class="<%= (controller_name == 'home' && action_name == 'index') ? 'container-fluid-home' : 'container' %>">
         <!-- Flash messages -->
         <% flash.each do |key, value| %>
           <% next if key.to_s.start_with?("meta_pixel_") %>
