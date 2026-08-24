@@ -651,7 +651,112 @@
       max-width: 1500px;
     }
   }
+
+  /* Added style for dual hero products showcase */
+  .premium-hero-products-showcase {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+  }
+
+  .premium-hero-prod-card {
+    background: #ffffff;
+    border: 1.5px solid #e6e3d5;
+    border-radius: 20px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(27, 67, 50, 0.05);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  .premium-hero-prod-card:hover {
+    transform: translateY(-4px);
+    border-color: #b7e4c7;
+    box-shadow: 0 15px 35px rgba(27, 67, 50, 0.1);
+  }
+
+  .premium-hero-prod-img-box {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafcf9;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+  }
+
+  .premium-hero-prod-img-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .premium-hero-prod-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1b4332;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.3;
+    height: 2.6em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .premium-hero-prod-booking-btn {
+    background: #2d6a4f;
+    color: #ffffff;
+    border: none;
+    border-radius: 99px;
+    padding: 0.6rem 1.25rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s, transform 0.2s;
+    box-shadow: 0 4px 10px rgba(45, 106, 79, 0.25);
+  }
+
+  .premium-hero-prod-booking-btn:hover {
+    background: #1b4332;
+    transform: translateY(-1px);
+  }
+
+  /* Adjust mobile grid spacing */
+  @media (max-width: 480px) {
+    .premium-hero-products-showcase {
+      gap: 0.75rem;
+    }
+    .premium-hero-prod-card {
+      padding: 0.75rem;
+    }
+    .premium-hero-prod-img-box {
+      height: 120px;
+    }
+    .premium-hero-prod-title {
+      font-size: 0.85rem;
+    }
+    .premium-hero-prod-booking-btn {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+    }
+  }
 </style>
+
+<%
+  slim = Spree::Product.active_products.find_by(slug: 'jeeni-slim-new') || 
+         Spree::Product.active_products.where("LOWER(slug) LIKE '%slim%'").first
+  sugaramla = Spree::Product.active_products.find_by(slug: 'jeeni-sugaramla-1kg-sugaramla-1kg') || 
+              Spree::Product.active_products.where("LOWER(slug) LIKE '%sugaramla%'").first
+%>
 
 <div class="homepage-sections-wrapper" style="overflow-x: hidden;">
   <!-- Split Hero Section (Millet Amma Inspired) -->
@@ -671,11 +776,42 @@
     </div>
     
     <div class="premium-hero-right">
-      <div class="premium-hero-image-card">
-        <img src="/millet_banner_wide.png" style="width: 100%; height: auto; display: block; filter: brightness(1.04) contrast(1.01);" alt="Jeeni Millet Mix Hero">
-      </div>
+      <% if slim && sugaramla %>
+        <div class="premium-hero-products-showcase">
+          <!-- Slim Card -->
+          <a href="/products/<%= slim.slug %>" class="premium-hero-prod-card" style="text-decoration: none;">
+            <div class="premium-hero-prod-img-box">
+              <img src="<%= product_image_url(slim) %>" alt="<%= slim.name %>">
+            </div>
+            <h4 class="premium-hero-prod-title"><%= slim.name %></h4>
+            <%= form_tag add_to_cart_path, method: :post, style: "width: 100%; margin-top: auto;" do %>
+              <%= hidden_field_tag :variant_id, slim.master.id %>
+              <%= hidden_field_tag :checkout, '1' %>
+              <button type="submit" class="premium-hero-prod-booking-btn" onclick="event.stopPropagation();">Easy Booking</button>
+            <% end %>
+          </a>
+
+          <!-- Sugaramla Card -->
+          <a href="/products/<%= sugaramla.slug %>" class="premium-hero-prod-card" style="text-decoration: none;">
+            <div class="premium-hero-prod-img-box">
+              <img src="<%= product_image_url(sugaramla) %>" alt="<%= sugaramla.name %>">
+            </div>
+            <h4 class="premium-hero-prod-title"><%= sugaramla.name %></h4>
+            <%= form_tag add_to_cart_path, method: :post, style: "width: 100%; margin-top: auto;" do %>
+              <%= hidden_field_tag :variant_id, sugaramla.master.id %>
+              <%= hidden_field_tag :checkout, '1' %>
+              <button type="submit" class="premium-hero-prod-booking-btn" onclick="event.stopPropagation();">Easy Booking</button>
+            <% end %>
+          </a>
+        </div>
+      <% else %>
+        <div class="premium-hero-image-card">
+          <img src="/millet_banner_wide.png" style="width: 100%; height: auto; display: block; filter: brightness(1.04) contrast(1.01);" alt="Jeeni Millet Mix Hero">
+        </div>
+      <% end %>
+      
       <!-- floating quick stats badge -->
-      <div class="premium-hero-floating-badge">
+      <div class="premium-hero-floating-badge" style="z-index: 10;">
         <span style="font-size: 2.0rem; line-height: 1;">🥤</span>
         <div>
           <div style="font-weight: 800; font-size: 0.85rem; color: #0f172a;">Quick & Easy</div>
