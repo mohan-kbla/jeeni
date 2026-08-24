@@ -20,7 +20,13 @@
   }
 
   .homepage-sections-wrapper {
-    background: linear-gradient(135deg, #fdfcf7 0%, #f4f1ea 100%);
+    background-image: 
+      url("<%= product_image_url(slim) if slim %>"),
+      url("<%= product_image_url(sugaramla) if sugaramla %>"),
+      linear-gradient(135deg, #fdfcf7 0%, #f4f1ea 100%);
+    background-repeat: no-repeat, no-repeat, repeat;
+    background-position: left 1% top 700px, right 1% top 1500px, center center;
+    background-size: 240px auto, 240px auto, auto;
   }
 
   .premium-hero-container {
@@ -194,7 +200,13 @@
       padding: 0 1rem;
     }
     .homepage-sections-wrapper {
-      background: linear-gradient(135deg, #fdfcf7 0%, #f4f1ea 100%);
+      background-image: 
+        url("<%= product_image_url(slim) if slim %>"),
+        url("<%= product_image_url(sugaramla) if sugaramla %>"),
+        linear-gradient(135deg, #fdfcf7 0%, #f4f1ea 100%);
+      background-repeat: no-repeat, no-repeat, repeat;
+      background-position: left 2% top 900px, right 2% top 1800px, center center;
+      background-size: 100px auto, 100px auto, auto;
     }
     .premium-hero-container {
       flex-direction: column;
