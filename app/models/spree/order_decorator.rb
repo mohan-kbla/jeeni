@@ -118,16 +118,7 @@ module Spree
       state_name = (ship_addr.state&.name || ship_addr.state_name).to_s.downcase.strip
       is_karnataka = (state_name == 'karnataka')
 
-      last_payment = order.payments.reload.last rescue order.payments.last
-      is_cod = false
-      if last_payment
-        payment_name = last_payment.payment_method&.name.to_s.downcase
-        is_cod = payment_name.include?('check') || payment_name.include?('cash') || payment_name.include?('cod')
-      end
-
-
-
-      if is_cod && !is_karnataka
+      if !is_karnataka
         is_first_shipment ? 80.0 : 0.0
       else
         default_cost

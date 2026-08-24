@@ -111,7 +111,7 @@
 <%= form_for @order, url: update_checkout_path, method: :patch do |f| %>
   <div id="payment-page-container" 
        style="max-width: 600px; margin: 0 auto;"
-       data-is-karnataka="<%= @order.ship_address&.state&.name.to_s.downcase.include?('karnataka') ? 'true' : 'false' %>"
+       data-is-karnataka="<%= (@order.ship_address&.state&.name.to_s.downcase.include?('karnataka') || @order.ship_address&.state_name.to_s.downcase.include?('karnataka')) ? 'true' : 'false' %>"
        data-item-total="<%= @order.item_total.to_f %>"
        data-tax-total="<%= @order.tax_total.to_f %>"
        data-adjustment-total="<%= (@order.adjustment_total - @order.promo_total).to_f %>"
@@ -526,7 +526,7 @@
       
       if (shippingChargeEl && orderTotalEl) {
         let shippingCost = 0;
-        if (anySelected && isCod && !isKarnataka) {
+        if (!isKarnataka) {
           shippingCost = 80;
         }
         
