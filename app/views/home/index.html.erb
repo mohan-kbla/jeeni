@@ -1,3 +1,9 @@
+<%
+  slim = Spree::Product.active_products.find_by(slug: 'jeeni-slim-new') || 
+         Spree::Product.active_products.where("LOWER(slug) LIKE '%slim%'").first
+  sugaramla = Spree::Product.active_products.find_by(slug: 'jeeni-sugaramla-1kg-sugaramla-1kg') || 
+              Spree::Product.active_products.where("LOWER(slug) LIKE '%sugaramla%'").first
+%>
 <style>
   /* Base Overrides for Premium Design */
   main {
@@ -15,7 +21,10 @@
 
   /* Redesigned Premium Hero Section */
   .premium-hero-container {
-    background: linear-gradient(135deg, #fdfcf7 0%, #f4f1ea 100%);
+    background: linear-gradient(135deg, rgba(253, 252, 247, 0.93) 0%, rgba(244, 241, 234, 0.95) 100%), url("<%= product_image_url(slim) if slim %>");
+    background-repeat: no-repeat;
+    background-position: right 8% center;
+    background-size: 350px auto;
     padding: 6rem 2rem;
     display: flex;
     align-items: center;
@@ -46,7 +55,7 @@
 
   .premium-hero-title {
     font-family: 'Libre Baskerville', Georgia, serif;
-    font-size: 3.25rem;
+    font-size: 2.5rem;
     font-weight: 800;
     color: #1b4332;
     line-height: 1.15;
@@ -189,9 +198,11 @@
       padding: 3rem 1rem;
       gap: 2.5rem;
       text-align: center;
+      background-position: center bottom 220px;
+      background-size: 220px auto;
     }
     .premium-hero-title {
-      font-size: 2.25rem;
+      font-size: 1.85rem;
     }
     .premium-hero-actions {
       justify-content: center;
@@ -751,12 +762,7 @@
   }
 </style>
 
-<%
-  slim = Spree::Product.active_products.find_by(slug: 'jeeni-slim-new') || 
-         Spree::Product.active_products.where("LOWER(slug) LIKE '%slim%'").first
-  sugaramla = Spree::Product.active_products.find_by(slug: 'jeeni-sugaramla-1kg-sugaramla-1kg') || 
-              Spree::Product.active_products.where("LOWER(slug) LIKE '%sugaramla%'").first
-%>
+<!-- Dual products resolved at top of page -->
 
 <div class="homepage-sections-wrapper" style="overflow-x: hidden;">
   <!-- Split Hero Section (Millet Amma Inspired) -->
