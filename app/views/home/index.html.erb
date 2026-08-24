@@ -19,14 +19,18 @@
     font-family: 'Poppins', 'Inter', sans-serif !important;
   }
 
-  .premium-hero-container {
+  .homepage-sections-wrapper {
     background-image: 
       linear-gradient(135deg, rgba(253, 252, 247, 0.92) 0%, rgba(244, 241, 234, 0.94) 100%), 
       url("<%= product_image_url(slim) if slim %>"),
       url("<%= product_image_url(sugaramla) if sugaramla %>");
     background-repeat: no-repeat, no-repeat, no-repeat;
-    background-position: right 5% center, right 26% center;
+    background-position: right 5% top 80px, right 26% top 80px;
     background-size: 280px auto, 280px auto;
+  }
+
+  .premium-hero-container {
+    background: transparent;
     padding: 6rem 2rem;
     display: flex;
     align-items: center;
@@ -195,18 +199,21 @@
       gap: 1.5rem;
       padding: 0 1rem;
     }
-    .premium-hero-container {
-      flex-direction: column;
-      padding: 3rem 1rem;
-      gap: 2.5rem;
-      text-align: center;
+    .homepage-sections-wrapper {
       background-image: 
         linear-gradient(135deg, rgba(253, 252, 247, 0.94) 0%, rgba(244, 241, 234, 0.96) 100%), 
         url("<%= product_image_url(slim) if slim %>"),
         url("<%= product_image_url(sugaramla) if sugaramla %>");
       background-repeat: no-repeat, no-repeat, no-repeat;
-      background-position: left 8% bottom 220px, right 8% bottom 220px;
+      background-position: left 8% top 460px, right 8% top 460px;
       background-size: 140px auto, 140px auto;
+    }
+    .premium-hero-container {
+      flex-direction: column;
+      padding: 3rem 1rem;
+      gap: 2.5rem;
+      text-align: center;
+      background: transparent;
     }
     .premium-hero-title {
       font-size: 1.85rem;
