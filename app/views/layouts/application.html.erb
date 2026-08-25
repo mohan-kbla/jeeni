@@ -821,7 +821,7 @@
           <a href="/products/<%= slim_promo.slug %>" class="jeeni-promo-item">
             <img src="<%= product_image_url(slim_promo) %>" class="jeeni-promo-img" alt="<%= slim_promo.name %>">
             <div class="jeeni-promo-name"><%= slim_promo.name %></div>
-            <%= form_tag add_to_cart_path, method: :post, style: "width: 100%; margin-top: auto;" do %>
+            <%= form_tag main_app.add_to_cart_path, method: :post, style: "width: 100%; margin-top: auto;" do %>
               <%= hidden_field_tag :variant_id, slim_promo.master.id %>
               <%= hidden_field_tag :checkout, '1' %>
               <button type="submit" class="jeeni-promo-btn" onclick="event.stopPropagation();">Book Now</button>
@@ -832,7 +832,7 @@
           <a href="/products/<%= sugaramla_promo.slug %>" class="jeeni-promo-item">
             <img src="<%= product_image_url(sugaramla_promo) %>" class="jeeni-promo-img" alt="<%= sugaramla_promo.name %>">
             <div class="jeeni-promo-name"><%= sugaramla_promo.name %></div>
-            <%= form_tag add_to_cart_path, method: :post, style: "width: 100%; margin-top: auto;" do %>
+            <%= form_tag main_app.add_to_cart_path, method: :post, style: "width: 100%; margin-top: auto;" do %>
               <%= hidden_field_tag :variant_id, sugaramla_promo.master.id %>
               <%= hidden_field_tag :checkout, '1' %>
               <button type="submit" class="jeeni-promo-btn" onclick="event.stopPropagation();">Book Now</button>
