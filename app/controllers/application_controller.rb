@@ -14,6 +14,7 @@ class ApplicationController < ActionController::Base
   before_action :track_visit
   before_action :associate_attribution_to_order
   before_action :set_visitor_session_thread
+  before_action :auto_detect_karnataka_location
   before_action :restrict_read_only_staff_from_storefront!
 
   helper_method :is_ad_traffic?, :karnataka_visitor?, :current_visitor_address
@@ -36,6 +37,55 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def auto_detect_karnataka_location
+    # Only run detection if location is not already set in session
+    return if session[:visitor_state].present? || session[:visitor_pincode].present?
+    
+    # Avoid duplicate detection attempts in the same session
+    return if session[:location_detected]
+    session[:location_detected] = true
+
+    # Get client IP
+    ip = request.remote_ip
+    # Skip local/private/test IPs
+    return if ip.blank? || ip == '127.0.0.1' || ip.start_with?('192.168.', '10.', '172.')
+
+    begin
+      # Fetch from cache first to be extremely fast and avoid rate limits
+      is_karnataka = Rails.cache.fetch("ip_is_karnataka_#{ip}", expires_in: 7.days) do
+        require 'net/http'
+        require 'json'
+        
+        # We can use freeipapi.com (which has 60 requests per minute and does not require a key)
+        uri = URI("https://freeipapi.com/api/json/#{ip}")
+        response = Net::HTTP.get_response(uri)
+        if response.code.to_i == 200
+          data = JSON.parse(response.body)
+          region = data['regionName'].to_s.strip.downcase
+          region == 'karnataka'
+        else
+          # Fallback to ip-api.com
+          uri2 = URI("http://ip-api.com/json/#{ip}")
+          response2 = Net::HTTP.get_response(uri2)
+          if response2.code.to_i == 200
+            data2 = JSON.parse(response2.body)
+            region2 = data2['regionName'].presence || data2['region'].presence || ''
+            region2.to_s.strip.downcase == 'karnataka' || region2.to_s.strip.downcase == 'ka'
+          else
+            false
+          end
+        end
+      end
+
+      if is_karnataka
+        session[:visitor_state] = 'Karnataka'
+        Rails.logger.info("Auto-detected visitor IP #{ip} as being in Karnataka state.")
+      end
+    rescue => e
+      Rails.logger.error("Auto-detect location error for IP #{ip}: #{e.message}")
+    end
+  end
 
   def check_ad_traffic
     if params[:utm_source].to_s.downcase.include?('facebook') || 
