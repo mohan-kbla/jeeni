@@ -9,15 +9,18 @@ class HomeController < ApplicationController
         session[:visitor_state] = 'Karnataka'
         render json: { success: true, is_karnataka: true, message: "Karnataka Special Price unlocked!" }
       else
-        session[:visitor_state] = nil
+        state_obj = PricingService.state_by_pincode(pincode)
+        session[:visitor_state] = state_obj ? state_obj.name : 'Other States'
         render json: { success: true, is_karnataka: false, message: "Default price applies." }
       end
-    elsif params[:state].to_s.downcase == 'karnataka'
-      session[:visitor_state] = 'Karnataka'
+    elsif params[:state].present?
+      state_name = params[:state].to_s.strip.titleize
+      session[:visitor_state] = state_name
       session[:visitor_pincode] = nil
-      render json: { success: true, is_karnataka: true, message: "Karnataka Special Price unlocked!" }
+      is_ka = state_name.downcase == 'karnataka'
+      render json: { success: true, is_karnataka: is_ka, message: is_ka ? "Karnataka Special Price unlocked!" : "#{state_name} active." }
     else
-      session[:visitor_state] = nil
+      session[:visitor_state] = 'Other States'
       session[:visitor_pincode] = nil
       render json: { success: true, is_karnataka: false, message: "Location reset." }
     end
