@@ -779,6 +779,23 @@
 <!-- Dual products resolved at top of page -->
 
 <div class="homepage-sections-wrapper" style="overflow-x: hidden;">
+  <!-- Active State Location Banner (Clickable to open location picker) -->
+  <div style="background: #fdfbf7; border-bottom: 1px solid #e6e3d5; padding: 0.85rem 1rem; text-align: center; font-size: 0.85rem; font-weight: 700; color: #1b4332; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.5rem; cursor: pointer; transition: background 0.2s;" onclick="openLocationModal();" onmouseover="this.style.background='#f5f2e8'" onmouseout="this.style.background='#fdfbf7'">
+    <% if karnataka_visitor? %>
+      <span style="display: inline-flex; align-items: center; gap: 0.35rem; background: #e8f5e9; color: #15803d; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.72rem; font-weight: 800; border: 1px solid #c8e6c9;">📍 Karnataka Active</span>
+      <span>You are seeing special Karnataka pricing. Click here to change location or enter pincode for other states.</span>
+    <% elsif session[:visitor_state].present? %>
+      <span style="display: inline-flex; align-items: center; gap: 0.35rem; background: #fff3e0; color: #d97706; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.72rem; font-weight: 800; border: 1px solid #ffe0b2;">📍 <%= session[:visitor_state].to_s.titleize %> Active</span>
+      <span>You are seeing standard out-of-state pricing. Click here to change your location or check Karnataka pincode.</span>
+    <% elsif session[:visitor_pincode].present? %>
+      <span style="display: inline-flex; align-items: center; gap: 0.35rem; background: #fff3e0; color: #d97706; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.72rem; font-weight: 800; border: 1px solid #ffe0b2;">📍 Pincode: <%= session[:visitor_pincode] %></span>
+      <span>You are seeing standard out-of-state pricing. Click here to change your location or check Karnataka pincode.</span>
+    <% else %>
+      <span style="display: inline-flex; align-items: center; gap: 0.35rem; background: #f1f5f9; color: #475569; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.72rem; font-weight: 800; border: 1px solid #e2e8f0;">📍 Check Pincode</span>
+      <span>Enter your delivery pincode to check location-based special pricing. Click here to set location.</span>
+    <% end %>
+  </div>
+
   <!-- Split Hero Section (Millet Amma Inspired) -->
   <section class="premium-hero-container">
     <div class="premium-hero-left">
