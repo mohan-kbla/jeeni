@@ -122,6 +122,10 @@
             <button onclick="openLocationModal();" style="background: none; border: none; color: #1b4332; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.85rem; font-weight: 700; padding: 0.45rem 0.9rem; border-radius: 999px; background: #f4f1ea; margin-right: 0.5rem; transition: var(--transition); border: 1px solid #e2e8f0;" id="nav-location-btn">
               <% if karnataka_visitor? %>
                 <span style="color: #15803d;">📍 Karnataka Active</span>
+              <% elsif session[:visitor_state].present? %>
+                <span style="color: #d97706;">📍 <%= session[:visitor_state].to_s.titleize %> Active</span>
+              <% elsif session[:visitor_pincode].present? %>
+                <span style="color: #d97706;">📍 Pincode: <%= session[:visitor_pincode] %></span>
               <% else %>
                 <span style="color: #4b5320;">📍 Check Pincode</span>
               <% end %>
@@ -506,7 +510,26 @@
         <button onclick="submitPincode();" style="width: 100%; padding: 0.75rem; background: #15803d; color: #ffffff; border: none; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: background 0.2s; border-radius: 8px;">Check Location</button>
         
         <div style="text-align: center; margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
-          <button onclick="selectKarnatakaState();" style="background: none; border: none; color: #15803d; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline;">Directly set Karnataka State</button>
+          <button onclick="selectKarnatakaState();" style="background: none; border: none; color: #15803d; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline; margin-bottom: 0.5rem; display: inline-block;">Directly set Karnataka State</button>
+          
+          <div style="margin-top: 0.5rem; text-align: left;">
+            <label style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 0.25rem; display: block;">Or select state manually:</label>
+            <select id="modal-state-select" onchange="selectStateFromDropdown();" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: #0f172a; background: white; outline: none; cursor: pointer;">
+              <option value="">-- Select State --</option>
+              <option value="karnataka">Karnataka</option>
+              <option value="delhi">Delhi</option>
+              <option value="maharashtra">Maharashtra</option>
+              <option value="tamil nadu">Tamil Nadu</option>
+              <option value="andhra pradesh">Andhra Pradesh</option>
+              <option value="telangana">Telangana</option>
+              <option value="kerala">Kerala</option>
+              <option value="gujarat">Gujarat</option>
+              <option value="rajasthan">Rajasthan</option>
+              <option value="uttar pradesh">Uttar Pradesh</option>
+              <option value="west bengal">West Bengal</option>
+              <option value="other states">Other States (Rest of India)</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
@@ -523,6 +546,13 @@
 
       function selectKarnatakaState() {
         setVisitorLocation({ state: 'karnataka' });
+      }
+
+      function selectStateFromDropdown() {
+        const stateVal = document.getElementById('modal-state-select').value;
+        if (stateVal) {
+          setVisitorLocation({ state: stateVal });
+        }
       }
 
       function submitPincode() {
