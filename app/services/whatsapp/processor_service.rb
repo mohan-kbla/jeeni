@@ -329,10 +329,7 @@ module Whatsapp
       lastname = parts[1].presence || parts[0]
 
       india = Spree::Country.find_by(iso: "IN") || Spree::Country.default
-      state_obj = nil
-      if city.present?
-        state_obj = Spree::State.where(country: india).where("LOWER(name) = ? OR LOWER(abbr) = ?", city.downcase, city.downcase).first
-      end
+      state_obj = PricingService.detect_state(pincode: pincode, city_name: city)
       state_obj ||= Spree::State.find_by(name: "Karnataka")
 
       phone_clean = @chat.phone_number.to_s.gsub(/\D/, '')

@@ -58,4 +58,65 @@ class PricingService
       nil
     end
   end
+
+  def self.state_by_pincode(pincode)
+    pincode = pincode.to_s.gsub(/\D/, '').strip
+    return nil if pincode.length != 6
+    
+    prefix = pincode[0..1]
+    abbr = case prefix
+    when '11' then 'DL'
+    when '12', '13' then 'HR'
+    when '14', '15' then 'PB'
+    when '16' then 'CH'
+    when '17' then 'HP'
+    when '18', '19' then 'JK'
+    when '20', '21', '22', '23', '24', '25', '26', '27', '28' then 'UP'
+    when '30', '31', '32', '33', '34' then 'RJ'
+    when '36', '37', '38', '39' then 'GJ'
+    when '40', '41', '42', '43', '44' then 'MH'
+    when '45', '46', '47', '48' then 'MP'
+    when '49' then 'CT'
+    when '50', '51', '52', '53' then 'AP'
+    when '56', '57', '58', '59' then 'KA'
+    when '60', '61', '62', '63', '64' then 'TN'
+    when '67', '68', '69' then 'KL'
+    when '70', '71', '72', '73', '74' then 'WB'
+    when '75', '76', '77' then 'OR'
+    when '78' then 'AS'
+    when '79' then 'ML'
+    when '80', '81', '82', '83', '84', '85' then 'BR'
+    else nil
+    end
+
+    if abbr.present?
+      Spree::State.find_by(abbr: abbr)
+    else
+      nil
+    end
+  end
+
+  def self.detect_state(pincode: nil, state_name: nil, city_name: nil)
+    # 1. Try to find state by pincode
+    if pincode.present?
+      state_obj = state_by_pincode(pincode)
+      return state_obj if state_obj.present?
+    end
+
+    india = Spree::Country.find_by(iso: "IN") || Spree::Country.default
+
+    # 2. Try to find state by state name
+    if state_name.present?
+      state_obj = Spree::State.where(country: india).where("LOWER(name) = ? OR LOWER(abbr) = ?", state_name.to_s.downcase.strip, state_name.to_s.downcase.strip).first
+      return state_obj if state_obj.present?
+    end
+
+    # 3. Try to find state by city name
+    if city_name.present?
+      state_obj = Spree::State.where(country: india).where("LOWER(name) = ? OR LOWER(abbr) = ?", city_name.to_s.downcase.strip, city_name.to_s.downcase.strip).first
+      return state_obj if state_obj.present?
+    end
+
+    nil
+  end
 end

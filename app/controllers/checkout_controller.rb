@@ -471,11 +471,7 @@ class CheckoutController < ApplicationController
 
         india = Spree::Country.find_by(iso: "IN") || Spree::Country.default
 
-        state_obj = nil
-        if state.present?
-          state_obj = Spree::State.where(country: india).where("LOWER(name) = ? OR LOWER(abbr) = ?", state.downcase, state.downcase).first
-        end
-        # Default state if not found
+        state_obj = PricingService.detect_state(pincode: zipcode, state_name: state, city_name: city)
         state_obj ||= Spree::State.find_by(name: "Karnataka")
 
         address_params = {
