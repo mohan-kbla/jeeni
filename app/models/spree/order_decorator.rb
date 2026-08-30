@@ -119,7 +119,15 @@ module Spree
       is_karnataka = (state_name == 'karnataka')
 
       if !is_karnataka
-        is_first_shipment ? 80.0 : 0.0
+        has_free_shipping_products = order.line_items.any? do |li|
+          slug = li.product.slug.to_s.downcase
+          slug.include?('slim') || slug.include?('sugaramla')
+        end
+        if has_free_shipping_products
+          0.0
+        else
+          is_first_shipment ? 80.0 : 0.0
+        end
       else
         default_cost
       end

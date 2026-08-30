@@ -112,6 +112,7 @@
   <div id="payment-page-container" 
        style="max-width: 600px; margin: 0 auto;"
        data-is-karnataka="<%= (@order.ship_address&.state&.name.to_s.downcase.include?('karnataka') || @order.ship_address&.state_name.to_s.downcase.include?('karnataka')) ? 'true' : 'false' %>"
+       data-has-free-shipping-products="<%= @order.line_items.any? { |li| li.product.slug.to_s.downcase.include?('slim') || li.product.slug.to_s.downcase.include?('sugaramla') } ? 'true' : 'false' %>"
        data-item-total="<%= @order.item_total.to_f %>"
        data-tax-total="<%= @order.tax_total.to_f %>"
        data-adjustment-total="<%= (@order.adjustment_total - @order.promo_total).to_f %>"
@@ -520,13 +521,14 @@
       const taxTotal = container ? parseFloat(container.getAttribute('data-tax-total')) : 0;
       const promoTotal = container ? parseFloat(container.getAttribute('data-promo-total')) : 0;
       const adjustmentTotal = container ? parseFloat(container.getAttribute('data-adjustment-total')) : 0;
+      const hasFreeShippingProducts = container ? container.getAttribute('data-has-free-shipping-products') === 'true' : false;
       
       const shippingChargeEl = document.getElementById('summary-shipping-charge');
       const orderTotalEl = document.getElementById('summary-order-total');
       
       if (shippingChargeEl && orderTotalEl) {
         let shippingCost = 0;
-        if (!isKarnataka) {
+        if (!isKarnataka && !hasFreeShippingProducts) {
           shippingCost = 80;
         }
         

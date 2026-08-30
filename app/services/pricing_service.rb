@@ -9,29 +9,38 @@ class PricingService
   end
 
   def self.is_karnataka?(address, session = nil)
-    # Priority 0: Check session override first
+    # Priority 1: Check shipping address first if we have state or pincode details
+    if address.present?
+      has_state = false
+      if address.state.present?
+        has_state = true
+        state_name = address.state.name.to_s.downcase.strip
+        state_abbr = address.state.abbr.to_s.downcase.strip
+        return true if state_name == 'karnataka' || state_abbr == 'ka'
+      elsif address.state_name.present?
+        has_state = true
+        state_name = address.state_name.to_s.downcase.strip
+        return true if state_name == 'karnataka'
+      end
+
+      pincode = address.zipcode.to_s.gsub(/\D/, '').strip
+      if pincode.present?
+        return true if pincode.match?(/\A5[6-9]\d{4}\z/)
+        # If pincode is entered but it doesn't match Karnataka, and no state overrides it
+        return false
+      elsif has_state
+        # If state is set but it wasn't Karnataka, and no pincode overrides it
+        return false
+      end
+    end
+
+    # Priority 2: Fall back to session override if address is not present or doesn't have details
     sess = session || Thread.current[:visitor_session]
     if sess.present?
       return true if sess[:visitor_state].to_s.downcase == 'karnataka'
       pincode = sess[:visitor_pincode].to_s.gsub(/\D/, '').strip
       return true if pincode.match?(/\A5[6-9]\d{4}\z/)
     end
-
-    return false if address.nil?
-
-    # Priority 1: State name or abbreviation
-    if address.state.present?
-      state_name = address.state.name.to_s.downcase.strip
-      state_abbr = address.state.abbr.to_s.downcase.strip
-      return true if state_name == 'karnataka' || state_abbr == 'ka'
-    elsif address.state_name.present?
-      state_name = address.state_name.to_s.downcase.strip
-      return true if state_name == 'karnataka'
-    end
-
-    # Priority 2: Pincode lookup (Karnataka: 56xxxx to 59xxxx)
-    pincode = address.zipcode.to_s.gsub(/\D/, '').strip
-    return true if pincode.match?(/\A5[6-9]\d{4}\z/)
 
     false
   end
