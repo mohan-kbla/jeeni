@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   before_action :check_ad_traffic
   before_action :track_visit
   before_action :associate_attribution_to_order
-  before_action :set_visitor_session_thread
+  around_action :set_visitor_session_thread
   before_action :auto_detect_karnataka_location
   before_action :restrict_read_only_staff_from_storefront!
 
@@ -98,6 +98,9 @@ class ApplicationController < ActionController::Base
 
   def set_visitor_session_thread
     Thread.current[:visitor_session] = session
+    yield
+  ensure
+    Thread.current[:visitor_session] = nil
   end
 
   protected
