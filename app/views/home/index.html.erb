@@ -33,7 +33,7 @@
     background: transparent;
     padding: 6rem 2rem;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 4rem;
     max-width: 1200px;
@@ -144,9 +144,10 @@
 
   .premium-hero-floating-badge {
     position: absolute;
-    bottom: -35px;
+    top: 100%;
     left: 50%;
     transform: translateX(-50%);
+    margin-top: 1.5rem;
     background: #ffffff;
     padding: 0.85rem 1.25rem;
     border-radius: 16px;
@@ -219,9 +220,7 @@
       justify-content: center;
     }
     .premium-hero-floating-badge {
-      bottom: -30px;
-      left: 50%;
-      transform: translateX(-50%);
+      bottom: auto;
     }
   }
 
