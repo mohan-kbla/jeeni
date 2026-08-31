@@ -1,0 +1,164 @@
+<div class="page-header-flex" style="margin-bottom: 2rem;">
+  <div>
+    <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--secondary); margin: 0;">📹 Daily Company Updates</h1>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">Manage the daily photo or video updates displayed on the homepage hero section.</p>
+  </div>
+</div>
+
+<div class="admin-grid" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem;">
+  <!-- Left Side: Active Media & Form -->
+  <div style="display: flex; flex-direction: column; gap: 2rem;">
+    <!-- Active Update Card -->
+    <div class="card" style="background-color: white; padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+      <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-top: 0; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
+        <span style="color: #22c55e;">●</span> Current Active Media
+      </h3>
+      
+      <% if @active_update %>
+        <div class="active-media-container" style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #faf9f6; max-height: 250px; display: flex; align-items: center; justify-content: center; position: relative;">
+          <% if @active_update.media_type == 'image' %>
+            <img src="<%= url_for(@active_update.media) %>" style="max-width: 100%; max-height: 250px; object-fit: contain; display: block;">
+          <% elsif @active_update.media_type == 'video' %>
+            <video src="<%= url_for(@active_update.media) %>" controls style="max-width: 100%; max-height: 250px; display: block;"></video>
+          <% end %>
+        </div>
+        
+        <div style="margin-top: 1rem;">
+          <div style="font-weight: 700; color: var(--secondary); font-size: 0.95rem;"><%= @active_update.title.present? ? @active_update.title : "Untitled Update" %></div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Uploaded on: <%= @active_update.created_at.strftime("%B %d, %Y at %I:%M %p") %></div>
+          
+          <div style="display: flex; gap: 0.5rem; margin-top: 1.25rem;">
+            <%= button_to deactivate_admin_custom_daily_company_update_path(@active_update), method: :patch, class: "btn btn-outline btn-sm", style: "border-color: #cbd5e1; color: var(--text-main); font-weight: 600;", data: { confirm: "Are you sure you want to deactivate the current active media? This will hide the update section from the homepage." } do %>
+              Deactivate Media
+            <% end %>
+            <a href="/admin_custom/daily_company_updates/<%= @active_update.id %>/edit" class="btn btn-secondary btn-sm">Edit Details</a>
+          </div>
+        </div>
+      <% else %>
+        <div style="padding: 2.5rem 1rem; text-align: center; color: var(--text-muted); background: #faf9f6; border-radius: 8px; border: 1px dashed var(--border);">
+          <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">📭</span>
+          <p style="font-weight: 500; font-size: 0.9rem; margin: 0;">No active update currently selected.</p>
+          <p style="font-size: 0.78rem; margin-top: 0.25rem; color: var(--text-muted);">The Daily Company Update box is currently hidden on the homepage.</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Upload Form Card -->
+    <div class="card" style="background-color: white; padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+      <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-top: 0; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+        📤 Upload New Update
+      </h3>
+      
+      <%= form_for [:admin_custom, @new_update], html: { multipart: true } do |f| %>
+        <% if @new_update.errors.any? %>
+          <div class="alert alert-alert" style="padding: 0.75rem 1rem; font-size: 0.85rem; margin-bottom: 1.25rem;">
+            <strong>Errors occurred:</strong>
+            <ul style="margin: 0.25rem 0 0 1rem; padding: 0;">
+              <% @new_update.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+        
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <%= f.label :title, "Title / Caption (Optional)", class: "form-label", style: "font-weight: 600; font-size: 0.85rem; color: var(--text-main);" %>
+          <%= f.text_field :title, class: "form-control", placeholder: "e.g., Launch of new factory outlet", style: "padding: 0.5rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid var(--border);" %>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <%= f.label :media_type, "Media Type", class: "form-label", style: "font-weight: 600; font-size: 0.85rem; color: var(--text-main);" %>
+          <%= f.select :media_type, [['Image (JPEG, PNG, WEBP)', 'image'], ['Video (MP4, WEBM)', 'video']], {}, class: "form-control", id: "media-type-select", style: "padding: 0.5rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid var(--border); width: 100%; background: white;" %>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <%= f.label :media, "Choose File", class: "form-label", style: "font-weight: 600; font-size: 0.85rem; color: var(--text-main);" %>
+          <%= f.file_field :media, class: "form-control", required: true, accept: "image/*,video/*", id: "media-file-input", style: "padding: 0.4rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid var(--border); width: 100%; background: #fafafa;" %>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Max Size: 5MB for images, 20MB for videos.</div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem;">
+          <%= f.submit "Save Draft", class: "btn btn-outline", style: "flex: 1; font-weight: 700; border-color: #cbd5e1; color: var(--text-main);" %>
+          <%= submit_tag "Save & Make Active", name: "save_and_activate", class: "btn btn-primary", style: "flex: 1.3; font-weight: 700; background: #15803d; border-color: #15803d; color: white;" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Right Side: Previous Updates History -->
+  <div class="card" style="background-color: white; padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); height: fit-content;">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-top: 0; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+      📜 Upload History
+    </h3>
+    
+    <% if @updates.any? %>
+      <div style="overflow-x: auto;">
+        <table class="table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem;">
+          <thead>
+            <tr style="background-color: var(--bg-main); border-bottom: 2px solid var(--border);">
+              <th style="padding: 0.75rem 0.5rem; font-weight: 700; color: var(--secondary);">Preview</th>
+              <th style="padding: 0.75rem 0.5rem; font-weight: 700; color: var(--secondary);">Details</th>
+              <th style="padding: 0.75rem 0.5rem; font-weight: 700; color: var(--secondary);">Status</th>
+              <th style="padding: 0.75rem 0.5rem; font-weight: 700; color: var(--secondary); text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @updates.each do |update| %>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 0.75rem 0.5rem; vertical-align: middle;">
+                  <% if update.media.attached? %>
+                    <div style="width: 50px; height: 50px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); background: #faf9f6; display: flex; align-items: center; justify-content: center;">
+                      <% if update.media_type == 'image' %>
+                        <img src="<%= url_for(update.media) %>" style="width: 100%; height: 100%; object-fit: cover;">
+                      <% elsif update.media_type == 'video' %>
+                        <span style="font-size: 1.2rem;">🎥</span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </td>
+                <td style="padding: 0.75rem 0.5rem; vertical-align: middle; max-width: 150px;">
+                  <div style="font-weight: 600; color: var(--secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= update.title.present? ? update.title : "Untitled" %></div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;"><%= update.media_type %></div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);"><%= update.created_at.strftime("%b %d, %Y") %></div>
+                </td>
+                <td style="padding: 0.75rem 0.5rem; vertical-align: middle;">
+                  <% if update.active? %>
+                    <span class="badge badge-success" style="background-color: #d1fae5; color: #065f46; font-weight: 700; font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 999px;">Active</span>
+                  <% else %>
+                    <span class="badge badge-secondary" style="background-color: #f3f4f6; color: #4b5563; font-weight: 700; font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 999px;">Inactive</span>
+                  <% end %>
+                </td>
+                <td style="padding: 0.75rem 0.5rem; vertical-align: middle; text-align: right;">
+                  <div style="display: flex; gap: 0.25rem; justify-content: flex-end; align-items: center;">
+                    <% if update.active? %>
+                      <%= button_to "Deactivate", deactivate_admin_custom_daily_company_update_path(update), method: :patch, class: "btn btn-outline btn-sm", style: "font-size: 0.72rem; padding: 0.25rem 0.4rem; border-color: #cbd5e1; color: var(--text-main);" %>
+                    <% else %>
+                      <%= button_to "Activate", activate_admin_custom_daily_company_update_path(update), method: :patch, class: "btn btn-primary btn-sm", style: "font-size: 0.72rem; padding: 0.25rem 0.4rem; background: #15803d; border-color: #15803d; color: white;" %>
+                    <% end %>
+                    <a href="/admin_custom/daily_company_updates/<%= update.id %>/edit" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.4rem;">Edit</a>
+                    <%= button_to admin_custom_daily_company_update_path(update), method: :delete, class: "btn btn-outline btn-sm", style: "font-size: 0.72rem; padding: 0.25rem 0.4rem; color: var(--danger); border-color: #fee2e2;", data: { confirm: "Are you sure you want to delete this Daily Update history record?" } do %>
+                      Del
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div style="padding: 3rem; text-align: center; color: var(--text-muted);">
+        <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">📜</span>
+        <p style="font-weight: 500;">No updates uploaded yet.</p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  @media (max-width: 1024px) {
+    .admin-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>

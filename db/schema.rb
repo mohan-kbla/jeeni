@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_14_160000) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_31_020614) do
   create_table "action_mailbox_inbound_emails", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "status", default: 0, null: false
     t.string "message_id", null: false
@@ -94,6 +94,14 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_160000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_cro_settings_on_key", unique: true
+  end
+
+  create_table "daily_company_updates", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "title"
+    t.string "media_type", null: false
+    t.boolean "active", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "faqs", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|

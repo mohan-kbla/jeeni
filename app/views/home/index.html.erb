@@ -798,12 +798,33 @@
 
   <!-- Split Hero Section (Millet Amma Inspired) -->
   <section class="premium-hero-container">
-    <div class="premium-hero-left">
-      <span class="premium-hero-tag">🌾 Wholesome & Traditional Grains</span>
-      <h1 class="premium-hero-title">
-        Nourish Your Family With Traditional Goodness
-      </h1>
-      <p class="premium-hero-desc">
+    <div class="premium-hero-left" style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+      <% active_update = DailyCompanyUpdate.find_by(active: true) %>
+      <% if active_update && active_update.media.attached? %>
+        <!-- Label above the media box -->
+        <span class="premium-hero-tag" style="background: #e8f5e9; color: #15803d; align-self: flex-start; display: inline-flex; align-items: center; gap: 0.25rem; font-weight: 800; border: 1px solid #c8e6c9;">🌿 Jeeni Today</span>
+        
+        <!-- Media Showcase Box -->
+        <div class="daily-update-box" style="border: 2px solid #d8f3dc; border-radius: 16px; overflow: hidden; background: #ffffff; box-shadow: 0 12px 30px rgba(27, 67, 50, 0.12); margin-bottom: 1.5rem; max-width: 100%; position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;">
+          <% if active_update.media_type == 'image' %>
+            <img src="<%= url_for(active_update.media) %>" style="width: 100%; height: 100%; object-fit: cover; display: block;" alt="<%= active_update.title %>">
+          <% elsif active_update.media_type == 'video' %>
+            <video src="<%= url_for(active_update.media) %>" autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; display: block;"></video>
+          <% end %>
+        </div>
+        
+        <!-- Optional Title/Caption Below Media -->
+        <% if active_update.title.present? %>
+          <h2 style="font-family: 'Libre Baskerville', Georgia, serif; font-size: 1.35rem; font-weight: 800; color: #1b4332; margin: 0 0 1rem 0; line-height: 1.3;"><%= active_update.title %></h2>
+        <% end %>
+      <% else %>
+        <span class="premium-hero-tag">🌾 Wholesome & Traditional Grains</span>
+        <h1 class="premium-hero-title">
+          Nourish Your Family With Traditional Goodness
+        </h1>
+      <% end %>
+      
+      <p class="premium-hero-desc" style="margin-top: 0.5rem;">
         Discover Jeeni's premium, millet-based formulas crafted for daily wellness, fitness, and vitality. Healthy convenient nutrition passed down through generations.
       </p>
       <div class="premium-hero-actions">

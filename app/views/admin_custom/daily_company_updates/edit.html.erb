@@ -1,0 +1,65 @@
+<div class="page-header-flex" style="margin-bottom: 2rem;">
+  <div>
+    <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--secondary); margin: 0;">📹 Edit Daily Update Details</h1>
+    <p style="color: var(--text-muted); margin-top: 0.25rem;">Adjust the caption, type, or toggle active status of the update.</p>
+  </div>
+  <a href="/admin_custom/daily_company_updates" class="btn btn-outline">← Back to Dashboard</a>
+</div>
+
+<%= form_for [:admin_custom, @update], html: { multipart: true } do |f| %>
+  <% if @update.errors.any? %>
+    <div class="alert alert-alert" style="padding: 0.75rem 1rem; font-size: 0.85rem; margin-bottom: 1.25rem;">
+      <strong>Errors occurred:</strong>
+      <ul style="margin: 0.25rem 0 0 1rem; padding: 0;">
+        <% @update.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card" style="background-color: white; padding: 2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); margin-bottom: 2rem;">
+    <!-- Media Preview Section -->
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <label class="form-label" style="font-weight: 600; font-size: 0.88rem; color: var(--text-main); display: block; margin-bottom: 0.5rem;">File Preview</label>
+      <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #faf9f6; max-height: 300px; display: flex; align-items: center; justify-content: center; max-width: 450px;">
+        <% if @update.media.attached? %>
+          <% if @update.media_type == 'image' %>
+            <img src="<%= url_for(@update.media) %>" style="max-width: 100%; max-height: 300px; object-fit: contain; display: block;">
+          <% elsif @update.media_type == 'video' %>
+            <video src="<%= url_for(@update.media) %>" controls style="max-width: 100%; max-height: 300px; display: block;"></video>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <%= f.label :title, "Title / Caption", class: "form-label", style: "font-weight: 600; font-size: 0.88rem; color: var(--text-main);" %>
+      <%= f.text_field :title, class: "form-control", placeholder: "Enter caption", style: "padding: 0.6rem; font-size: 0.92rem; border-radius: 6px; border: 1px solid var(--border);" %>
+    </div>
+
+    <!-- Media Type -->
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <%= f.label :media_type, "Media Type", class: "form-label", style: "font-weight: 600; font-size: 0.88rem; color: var(--text-main);" %>
+      <%= f.select :media_type, [['Image (JPEG, PNG, WEBP)', 'image'], ['Video (MP4, WEBM)', 'video']], {}, class: "form-control", style: "padding: 0.6rem; font-size: 0.92rem; border-radius: 6px; border: 1px solid var(--border); width: 100%; max-width: 450px; background: white;" %>
+    </div>
+
+    <!-- Replace Media File (Optional on Edit) -->
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <%= f.label :media, "Replace Media File (Optional)", class: "form-label", style: "font-weight: 600; font-size: 0.88rem; color: var(--text-main);" %>
+      <%= f.file_field :media, class: "form-control", accept: "image/*,video/*", style: "padding: 0.5rem; font-size: 0.92rem; border-radius: 6px; border: 1px solid var(--border); width: 100%; max-width: 450px; background: #fafafa;" %>
+    </div>
+
+    <!-- Active Checkbox -->
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem;">
+      <%= f.check_box :active, id: "update-active" %>
+      <label for="update-active" style="font-weight: 600; font-size: 0.9rem; cursor: pointer; color: var(--text-main);">Make Active (Deactivates previous active update)</label>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 1rem;">
+    <%= f.submit "Update Record", class: "btn btn-primary", style: "background: #15803d; border-color: #15803d; color: white; padding: 0.6rem 1.5rem; font-weight: 700;" %>
+    <a href="/admin_custom/daily_company_updates" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-weight: 700; border-color: #cbd5e1;">Cancel</a>
+  </div>
+<% end %>

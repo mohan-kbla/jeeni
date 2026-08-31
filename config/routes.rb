@@ -137,6 +137,12 @@ Rails.application.routes.draw do
         patch :reject
       end
     end
+    resources :daily_company_updates do
+      member do
+        patch :activate
+        patch :deactivate
+      end
+    end
   end
 
   # Spree core engine mounted at root
