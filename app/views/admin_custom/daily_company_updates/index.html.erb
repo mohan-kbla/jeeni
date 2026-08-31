@@ -75,11 +75,17 @@
           <%= f.label :media, "Choose File", class: "form-label", style: "font-weight: 600; font-size: 0.85rem; color: var(--text-main);" %>
           <%= f.file_field :media, class: "form-control", required: true, accept: "image/*,video/*", id: "media-file-input", style: "padding: 0.4rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid var(--border); width: 100%; background: #fafafa;" %>
           <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Max Size: 5MB for images, 20MB for videos.</div>
+          
+          <!-- Client Validation Error -->
+          <div id="client-media-error" style="display: none; background: #fef2f2; border: 1px solid #fca5a5; color: #b91c1c; font-size: 0.825rem; padding: 0.5rem; border-radius: 6px; margin-top: 0.75rem; font-weight: 600;"></div>
+          
+          <!-- Live Preview Container -->
+          <div id="media-preview-box" style="display: none; margin-top: 1rem; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #faf9f6; max-height: 200px; align-items: center; justify-content: center; padding: 0.5rem;"></div>
         </div>
 
         <div style="display: flex; gap: 0.5rem;">
-          <%= f.submit "Save Draft", class: "btn btn-outline", style: "flex: 1; font-weight: 700; border-color: #cbd5e1; color: var(--text-main);" %>
-          <%= submit_tag "Save & Make Active", name: "save_and_activate", class: "btn btn-primary", style: "flex: 1.3; font-weight: 700; background: #15803d; border-color: #15803d; color: white;" %>
+          <%= f.submit "Save Draft", class: "btn btn-outline", id: "btn-save-draft", disabled: true, style: "flex: 1; font-weight: 700; border-color: #cbd5e1; color: var(--text-main); cursor: not-allowed; opacity: 0.65;" %>
+          <%= submit_tag "Save & Make Active", id: "btn-save-active", name: "save_and_activate", disabled: true, class: "btn btn-primary", style: "flex: 1.3; font-weight: 700; background: #15803d; border-color: #15803d; color: white; cursor: not-allowed; opacity: 0.65;" %>
         </div>
       <% end %>
     </div>
@@ -162,3 +168,130 @@
     }
   }
 </style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const fileInput = document.getElementById("media-file-input");
+    const typeSelect = document.getElementById("media-type-select");
+    const previewBox = document.getElementById("media-preview-box");
+    const errorBox = document.getElementById("client-media-error");
+    const btnSaveActive = document.getElementById("btn-save-active");
+    const btnSaveDraft = document.getElementById("btn-save-draft");
+    const form = fileInput ? fileInput.closest("form") : null;
+
+    if (!fileInput) return;
+
+    function resetPreviewAndButtons(errorMsg) {
+      previewBox.style.display = "none";
+      previewBox.innerHTML = "";
+      if (errorMsg) {
+        errorBox.innerText = errorMsg;
+        errorBox.style.display = "block";
+      } else {
+        errorBox.style.display = "none";
+      }
+      
+      btnSaveActive.disabled = true;
+      btnSaveActive.style.cursor = "not-allowed";
+      btnSaveActive.style.opacity = "0.65";
+
+      btnSaveDraft.disabled = true;
+      btnSaveDraft.style.cursor = "not-allowed";
+      btnSaveDraft.style.opacity = "0.65";
+    }
+
+    function enableButtons() {
+      errorBox.style.display = "none";
+      
+      btnSaveActive.disabled = false;
+      btnSaveActive.style.cursor = "pointer";
+      btnSaveActive.style.opacity = "1";
+
+      btnSaveDraft.disabled = false;
+      btnSaveDraft.style.cursor = "pointer";
+      btnSaveDraft.style.opacity = "1";
+    }
+
+    fileInput.addEventListener("change", function() {
+      const file = this.files[0];
+      if (!file) {
+        resetPreviewAndButtons();
+        return;
+      }
+
+      const mediaType = typeSelect.value;
+      const fileSize = file.size;
+      const fileType = file.type;
+
+      // Validate matching type
+      if (mediaType === "image") {
+        if (!fileType.startsWith("image/")) {
+          resetPreviewAndButtons("Selected file is not an image.");
+          return;
+        }
+        if (fileSize > 5 * 1024 * 1024) {
+          resetPreviewAndButtons("Image size exceeds the 5MB limit (max 5MB).");
+          return;
+        }
+      } else if (mediaType === "video") {
+        if (!fileType.startsWith("video/")) {
+          resetPreviewAndButtons("Selected file is not a video.");
+          return;
+        }
+        if (fileSize > 20 * 1024 * 1024) {
+          resetPreviewAndButtons("Video size exceeds the 20MB limit (max 20MB).");
+          return;
+        }
+      }
+
+      // If valid, show preview
+      enableButtons();
+      const fileURL = URL.createObjectURL(file);
+      previewBox.innerHTML = "";
+      previewBox.style.display = "flex";
+
+      if (mediaType === "image") {
+        const img = document.createElement("img");
+        img.src = fileURL;
+        img.style.maxWidth = "100%";
+        img.style.maxHeight = "200px";
+        img.style.objectFit = "contain";
+        img.style.display = "block";
+        previewBox.appendChild(img);
+      } else {
+        const video = document.createElement("video");
+        video.src = fileURL;
+        video.controls = true;
+        video.style.maxWidth = "100%";
+        video.style.maxHeight = "200px";
+        video.style.display = "block";
+        previewBox.appendChild(video);
+      }
+    });
+
+    typeSelect.addEventListener("change", function() {
+      // Trigger validation check again on select change
+      const event = new Event("change");
+      fileInput.dispatchEvent(event);
+    });
+
+    // Handle form loading states and double submit prevention
+    if (form) {
+      form.addEventListener("submit", function(e) {
+        // Disable both buttons to prevent double-clicks
+        btnSaveActive.disabled = true;
+        btnSaveDraft.disabled = true;
+        btnSaveActive.style.opacity = "0.65";
+        btnSaveDraft.style.opacity = "0.65";
+
+        // Find standard active element or determine which button submitted
+        const submitter = e.submitter || document.activeElement;
+        if (submitter && submitter.name === "save_and_activate") {
+          submitter.value = "Saving & Publishing...";
+        } else if (submitter && submitter.tagName === "INPUT" && submitter.value === "Save Draft") {
+          submitter.value = "Saving...";
+        }
+      });
+    }
+  });
+</script>
