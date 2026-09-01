@@ -11,6 +11,10 @@ class AdminCustom::ReportsController < ApplicationController
     @products = Spree::Product.all.order(name: :asc)
     @order_statuses = Spree::Order.complete.pluck(:state).uniq.compact
 
+    # Parse selected product IDs
+    @selected_product_ids = Array(params[:product_ids] || params[:product_id]).reject(&:blank?)
+    @selected_product_ids = [] if @selected_product_ids.include?("all")
+
     # Apply filters
     filtered_orders = apply_filters(Spree::Order.complete)
 
@@ -29,11 +33,15 @@ class AdminCustom::ReportsController < ApplicationController
 
     # 3. Product Sales Quantity (Volume)
     filtered_order_ids = filtered_orders.pluck(:id)
-    @sales_by_product = Spree::LineItem.joins(:order, :variant)
-                                       .joins("INNER JOIN spree_products ON spree_variants.product_id = spree_products.id")
-                                       .where(order_id: filtered_order_ids)
-                                       .group("spree_products.name")
-                                       .sum("spree_line_items.quantity")
+    product_sales_scope = Spree::LineItem.joins(:order, :variant)
+                                         .joins("INNER JOIN spree_products ON spree_variants.product_id = spree_products.id")
+                                         .where(order_id: filtered_order_ids)
+    if @selected_product_ids.present?
+      product_sales_scope = product_sales_scope.where(spree_variants: { product_id: @selected_product_ids })
+    end
+    @sales_by_product = product_sales_scope
+                          .group("spree_products.name")
+                          .sum("spree_line_items.quantity")
 
     # Load paginated list of records
     @orders = filtered_orders.includes(:ship_address, :bill_address, line_items: [:product, :variant]).order(completed_at: :desc).page(params[:page]).per(15)
@@ -159,9 +167,13 @@ class AdminCustom::ReportsController < ApplicationController
       relation = relation.where(id: order_ids_by_pm)
     end
 
-    # 5. Filter by Product (via subquery on order IDs)
-    if params[:product_id].present?
-      order_ids_by_prod = Spree::LineItem.joins(:variant).where(spree_variants: { product_id: params[:product_id] }).pluck(:order_id)
+    # 5. Filter by Product(s) (via subquery on order IDs)
+    product_ids = Array(params[:product_ids] || params[:product_id]).reject(&:blank?)
+    if product_ids.present? && !product_ids.include?("all")
+      order_ids_by_prod = Spree::LineItem.joins(:variant)
+                                         .where(spree_variants: { product_id: product_ids })
+                                         .pluck(:order_id)
+                                         .uniq
       relation = relation.where(id: order_ids_by_prod)
     end
 

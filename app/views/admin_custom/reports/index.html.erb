@@ -60,10 +60,43 @@
         <%= select_tag :order_status, options_for_select(@order_statuses.map { |s| [s.titleize, s] }, params[:order_status]), include_blank: "All Statuses", id: "order_status", class: "form-control", style: "width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0.35rem 0.6rem; font-size: 0.8rem; background-color: white;" %>
       </div>
 
-      <!-- Product -->
-      <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-        <label for="product_id" style="font-size: 0.75rem; font-weight: 700; color: #475569;">Product</label>
-        <%= select_tag :product_id, options_from_collection_for_select(@products, :id, :name, params[:product_id]), include_blank: "All Products", id: "product_id", class: "form-control", style: "width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0.35rem 0.6rem; font-size: 0.8rem; background-color: white;" %>
+      <!-- Product Multi-Select Checkbox Dropdown -->
+      <div style="display: flex; flex-direction: column; gap: 0.25rem; position: relative;" id="product-multiselect-wrapper">
+        <label style="font-size: 0.75rem; font-weight: 700; color: #475569;">Product(s)</label>
+        
+        <!-- Dropdown Trigger Button -->
+        <button type="button" id="product-dropdown-btn" class="form-control" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0.35rem 0.6rem; font-size: 0.8rem; background-color: white; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #334155; min-height: 31px; height: auto;">
+          <span id="product-dropdown-label" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;">
+            <% if @selected_product_ids.blank? %>
+              All Products
+            <% elsif @selected_product_ids.size == 1 %>
+              <% sel_prod = @products.find { |p| p.id.to_s == @selected_product_ids.first } %>
+              <%= sel_prod ? sel_prod.name : "1 Product Selected" %>
+            <% else %>
+              <%= "#{@selected_product_ids.size} Products Selected" %>
+            <% end %>
+          </span>
+          <span style="font-size: 0.65rem; color: #64748b; margin-left: 0.4rem;">▼</span>
+        </button>
+
+        <!-- Dropdown Menu Box -->
+        <div id="product-dropdown-menu" style="display: none; position: absolute; top: 100%; left: 0; right: 0; min-width: 240px; z-index: 200; margin-top: 4px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); max-height: 260px; overflow-y: auto; padding: 0.25rem 0;">
+          
+          <!-- All Products Option -->
+          <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.75rem; font-size: 0.8rem; font-weight: 700; color: #1e293b; cursor: pointer; border-bottom: 1px solid #e2e8f0; background: #f8fafc;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#f8fafc'">
+            <input type="checkbox" id="select-all-products" <%= 'checked' if @selected_product_ids.blank? %> style="cursor: pointer; accent-color: var(--primary);">
+            <span>All Products</span>
+          </label>
+
+          <!-- Individual Products List -->
+          <% @products.each do |product| %>
+            <% is_checked = @selected_product_ids.include?(product.id.to_s) %>
+            <label style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0.75rem; font-size: 0.8rem; color: #334155; cursor: pointer; border-bottom: 1px solid #f8fafc; transition: background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+              <input type="checkbox" name="product_ids[]" value="<%= product.id %>" class="product-checkbox" <%= 'checked' if is_checked %> data-product-name="<%= product.name %>" style="margin-top: 2px; cursor: pointer; accent-color: var(--primary);">
+              <span style="line-height: 1.3;"><%= product.name %></span>
+            </label>
+          <% end %>
+        </div>
       </div>
 
       <!-- Action Buttons -->
@@ -217,3 +250,69 @@
     </div>
   <% end %>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const dropdownBtn = document.getElementById("product-dropdown-btn");
+    const dropdownMenu = document.getElementById("product-dropdown-menu");
+    const dropdownLabel = document.getElementById("product-dropdown-label");
+    const selectAllCheckbox = document.getElementById("select-all-products");
+    const productCheckboxes = document.querySelectorAll(".product-checkbox");
+    const multiselectWrapper = document.getElementById("product-multiselect-wrapper");
+
+    if (!dropdownBtn || !dropdownMenu) return;
+
+    // Toggle dropdown open/close
+    dropdownBtn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      const isVisible = dropdownMenu.style.display === "block";
+      dropdownMenu.style.display = isVisible ? "none" : "block";
+    });
+
+    // Close when clicking outside
+    document.addEventListener("click", function(e) {
+      if (multiselectWrapper && !multiselectWrapper.contains(e.target)) {
+        dropdownMenu.style.display = "none";
+      }
+    });
+
+    // Function to update the label text based on checked boxes
+    function updateDropdownLabel() {
+      const checkedBoxes = Array.from(productCheckboxes).filter(cb => cb.checked);
+
+      if (checkedBoxes.length === 0 || checkedBoxes.length === productCheckboxes.length) {
+        dropdownLabel.innerText = "All Products";
+        if (selectAllCheckbox) selectAllCheckbox.checked = true;
+        if (checkedBoxes.length === productCheckboxes.length) {
+          productCheckboxes.forEach(cb => cb.checked = false);
+        }
+      } else if (checkedBoxes.length === 1) {
+        if (selectAllCheckbox) selectAllCheckbox.checked = false;
+        dropdownLabel.innerText = checkedBoxes[0].getAttribute("data-product-name") || "1 Product Selected";
+      } else {
+        if (selectAllCheckbox) selectAllCheckbox.checked = false;
+        dropdownLabel.innerText = `${checkedBoxes.length} Products Selected`;
+      }
+    }
+
+    // Handle "Select All" checkbox toggle
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener("change", function() {
+        if (this.checked) {
+          productCheckboxes.forEach(cb => cb.checked = false);
+        }
+        updateDropdownLabel();
+      });
+    }
+
+    // Handle individual product checkbox changes
+    productCheckboxes.forEach(cb => {
+      cb.addEventListener("change", function() {
+        if (this.checked) {
+          if (selectAllCheckbox) selectAllCheckbox.checked = false;
+        }
+        updateDropdownLabel();
+      });
+    });
+  });
+</script>
