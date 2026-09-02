@@ -13,15 +13,19 @@
   </script>
 <% end %>
 
-<% if google_analytics_id.present? && @track_purchase %>
+<% if google_tag_id.present? && @track_purchase %>
   <script>
     if (typeof gtag !== 'undefined') {
-      gtag('event', 'purchase', {
+      var googlePurchasePayload = {
         transaction_id: '<%= @order.number %>',
         value: <%= @order.total.to_f %>,
         currency: 'INR',
         items: <%= raw @order.line_items.map { |li| { item_id: li.variant.sku.presence || li.variant.id.to_s, item_name: li.variant.product.name, price: li.price.to_f, quantity: li.quantity } }.to_json %>
-      });
+      };
+      <% if google_ads_send_to_target.present? %>
+        googlePurchasePayload.send_to = '<%= google_ads_send_to_target %>';
+      <% end %>
+      gtag('event', 'purchase', googlePurchasePayload);
     }
   </script>
 <% end %>

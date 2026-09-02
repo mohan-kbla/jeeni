@@ -14,6 +14,34 @@ module ApplicationHelper
     CroSetting.get('google_analytics_id').presence || ENV['GOOGLE_ANALYTICS_ID'].presence || ''
   end
 
+  # Helper to retrieve configured Google Tag ID (defaults to GT-55KXGQZ)
+  def google_tag_id
+    CroSetting.get('google_tag_id').presence || ENV['GOOGLE_TAG_ID'].presence || CroSetting.get('google_analytics_id').presence || ENV['GOOGLE_ANALYTICS_ID'].presence || 'GT-55KXGQZ'
+  end
+
+  # Helper to retrieve configured Google Ads Conversion ID (optional, e.g. AW-XXXXXXXXX)
+  def google_ads_conversion_id
+    CroSetting.get('google_ads_conversion_id').presence || ENV['GOOGLE_ADS_CONVERSION_ID'].presence || ''
+  end
+
+  # Helper to retrieve configured Google Ads Conversion Label (optional, e.g. AbC-D_efGhIjKLmN)
+  def google_ads_conversion_label
+    CroSetting.get('google_ads_conversion_label').presence || ENV['GOOGLE_ADS_CONVERSION_LABEL'].presence || ''
+  end
+
+  # Helper to compute Google Ads conversion target for send_to (e.g. AW-XXXXXXXXX/AbC-D_efGhIjKLmN)
+  def google_ads_send_to_target
+    conv_id = google_ads_conversion_id
+    conv_label = google_ads_conversion_label
+    if conv_id.present? && conv_label.present?
+      "#{conv_id}/#{conv_label}"
+    elsif conv_id.present?
+      conv_id
+    else
+      nil
+    end
+  end
+
   # Helper to set page meta description dynamically
   def meta_description(description)
     content_for(:meta_description) { description }

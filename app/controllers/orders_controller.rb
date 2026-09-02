@@ -12,11 +12,20 @@ class OrdersController < ApplicationController
 
   def show
     # Renders order details view
-    # Track purchase if order is completed, completed in the last 15 minutes, and not already tracked in this session
-    if @order.completed? && @order.completed_at > 15.minutes.ago && !session[:purchase_tracked_orders]&.include?(@order.number)
+    # Track purchase if order is completed, not already tracked in session AND not already tracked in database public_metadata
+    already_tracked = session[:purchase_tracked_orders]&.include?(@order.number) || @order.public_metadata&.[]('purchase_tracked').present?
+    
+    if @order.completed? && !already_tracked
       @track_purchase = true
       session[:purchase_tracked_orders] ||= []
       session[:purchase_tracked_orders] << @order.number
+      
+      # Persist in public_metadata so future page refreshes across sessions/devices never re-fire purchase conversions
+      new_metadata = (@order.public_metadata || {}).merge(
+        'purchase_tracked' => true,
+        'purchase_tracked_at' => Time.current.iso8601
+      )
+      @order.update_columns(public_metadata: new_metadata)
 
       # Record order_completed funnel event
       visitor_id = cookies[:visitor_id] || @order.last_ip_address

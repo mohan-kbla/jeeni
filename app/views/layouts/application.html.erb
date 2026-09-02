@@ -46,15 +46,22 @@
     <% end %>
     <!-- End Meta Pixel Code -->
 
-    <!-- Google Analytics Tracking Code -->
-    <% if google_analytics_id.present? %>
-      <script async src="https://www.googletagmanager.com/gtag/js?id=<%= google_analytics_id %>"></script>
+    <!-- Google Tag (gtag.js) Integration -->
+    <% if google_tag_id.present? %>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=<%= google_tag_id %>"></script>
       <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', '<%= google_analytics_id %>');
-        
+
+        gtag('config', '<%= google_tag_id %>');
+        <% if google_analytics_id.present? && google_analytics_id != google_tag_id %>
+          gtag('config', '<%= google_analytics_id %>');
+        <% end %>
+        <% if google_ads_conversion_id.present? && google_ads_conversion_id != google_tag_id %>
+          gtag('config', '<%= google_ads_conversion_id %>');
+        <% end %>
+
         document.addEventListener('turbo:load', function() {
           if (typeof gtag !== 'undefined') {
             gtag('event', 'page_view', {
@@ -65,7 +72,7 @@
         });
       </script>
     <% end %>
-    <!-- End Google Analytics Code -->
+    <!-- End Google Tag -->
   </head>
 
   <body>
