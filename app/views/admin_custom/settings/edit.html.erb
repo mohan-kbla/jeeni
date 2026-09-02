@@ -33,6 +33,12 @@
     </div>
 
     <div class="form-group">
+      <label class="form-label" for="gtm_container_id">Google Tag Manager Container ID (GTM)</label>
+      <input type="text" name="gtm_container_id" id="gtm_container_id" class="form-control" value="<%= @gtm_container_id %>" placeholder="e.g., GTM-N28R82Z">
+      <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 0.25rem;">Global GTM Container ID. Default: GTM-N28R82Z</span>
+    </div>
+
+    <div class="form-group">
       <label class="form-label" for="google_ads_conversion_id">Google Ads Conversion ID (Optional)</label>
       <input type="text" name="google_ads_conversion_id" id="google_ads_conversion_id" class="form-control" value="<%= @google_ads_conversion_id %>" placeholder="e.g., AW-123456789">
       <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 0.25rem;">Specific Google Ads Account ID (begins with AW-).</span>

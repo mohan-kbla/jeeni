@@ -14,6 +14,11 @@ module ApplicationHelper
     CroSetting.get('google_analytics_id').presence || ENV['GOOGLE_ANALYTICS_ID'].presence || ''
   end
 
+  # Helper to retrieve configured Google Tag Manager Container ID (defaults to GTM-N28R82Z)
+  def gtm_container_id
+    CroSetting.get('gtm_container_id').presence || ENV['GTM_CONTAINER_ID'].presence || 'GTM-N28R82Z'
+  end
+
   # Helper to retrieve configured Google Tag ID (defaults to GT-55KXGQZ)
   def google_tag_id
     CroSetting.get('google_tag_id').presence || ENV['GOOGLE_TAG_ID'].presence || CroSetting.get('google_analytics_id').presence || ENV['GOOGLE_ANALYTICS_ID'].presence || 'GT-55KXGQZ'
