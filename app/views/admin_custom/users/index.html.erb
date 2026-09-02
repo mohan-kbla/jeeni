@@ -2,7 +2,53 @@
 
 <div style="margin-bottom: 2rem;">
   <h1 style="font-size: 2rem; font-weight: 700; color: var(--secondary);">Users & Access Control</h1>
-  <p style="color: var(--text-muted);">Manage registered user accounts and toggle administrative credentials.</p>
+  <p style="color: var(--text-muted);">Manage registered user accounts, provision staff credentials, and set role permissions.</p>
+</div>
+
+<!-- Create New User Form Card -->
+<div class="card" style="padding: 1.5rem; background-color: white; margin-bottom: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+  <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--secondary); display: flex; align-items: center; gap: 0.5rem;">
+    <span>➕</span> Provision New Admin / Staff User
+  </h3>
+
+  <%= form_for :user, url: admin_custom_users_path, method: :post do |f| %>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; align-items: flex-end;">
+      <div>
+        <label style="font-size: 0.75rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">Email Address *</label>
+        <%= f.email_field :email, required: true, placeholder: "e.g. user@example.com", class: "form-control", style: "width: 100%; border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.85rem;" %>
+      </div>
+
+      <div>
+        <label style="font-size: 0.75rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">Password *</label>
+        <%= f.password_field :password, required: true, placeholder: "Password@123", class: "form-control", style: "width: 100%; border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.85rem;" %>
+      </div>
+
+      <div>
+        <label style="font-size: 0.75rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">First Name</label>
+        <%= f.text_field :first_name, placeholder: "Navane", class: "form-control", style: "width: 100%; border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.85rem;" %>
+      </div>
+
+      <div>
+        <label style="font-size: 0.75rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">Last Name</label>
+        <%= f.text_field :last_name, placeholder: "Shivaraju", class: "form-control", style: "width: 100%; border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.85rem;" %>
+      </div>
+
+      <div>
+        <label style="font-size: 0.75rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">Role Assignment *</label>
+        <%= f.select :role_name, options_for_select([
+          ["Orders Manager (View, Edit & Update Orders)", "orders_manager"],
+          ["Read-Only Orders Staff", "read_only_orders"],
+          ["Full Administrator", "admin"]
+        ], "orders_manager"), {}, class: "form-control", style: "width: 100%; border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.85rem; background-color: white;" %>
+      </div>
+
+      <div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 8px; padding: 0.45rem 1rem; font-size: 0.85rem; font-weight: 600;">
+          Create User
+        </button>
+      </div>
+    </div>
+  <% end %>
 </div>
 
 <% if @users.any? %>
@@ -12,8 +58,9 @@
         <tr>
           <th>User ID</th>
           <th>Email Address</th>
+          <th>Name</th>
           <th>Registered Date</th>
-          <th>Roles</th>
+          <th>Role</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -22,12 +69,15 @@
           <tr>
             <td style="font-family: monospace; font-size: 0.8rem;"><%= user.id %></td>
             <td style="font-weight: 600; color: var(--secondary);"><%= user.email %></td>
+            <td style="font-size: 0.85rem;"><%= [user.first_name, user.last_name].compact.join(' ').presence || '—' %></td>
             <td><%= user.created_at.strftime("%b %d, %Y") %></td>
             <td>
               <% if user.has_spree_role?("admin") %>
                 <span class="badge badge-success">Administrator</span>
+              <% elsif user.has_spree_role?("orders_manager") %>
+                <span class="badge badge-warning" style="background-color: #d97706; color: white;">Orders Manager (Edit & Update)</span>
               <% elsif user.has_spree_role?("read_only_orders") %>
-                <span class="badge badge-warning" style="background-color: #f59e0b; color: white;">Read Only Orders</span>
+                <span class="badge badge-info" style="background-color: #3b82f6; color: white;">Read Only Orders</span>
               <% else %>
                 <span class="badge badge-info">Customer</span>
               <% end %>
@@ -36,11 +86,24 @@
               <% if user == spree_current_user %>
                 <span style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">Active Session (Self)</span>
               <% else %>
-                <%= form_tag admin_custom_user_path(user), method: :patch do %>
-                  <button type="submit" class="btn <%= user.has_spree_role?('admin') ? 'btn-outline' : 'btn-primary' %> btn-sm" style="padding: 0.35rem 0.6rem; font-size: 0.75rem;">
-                    <%= user.has_spree_role?('admin') ? 'Revoke Admin' : 'Grant Admin' %>
-                  </button>
-                <% end %>
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                  <% unless user.has_spree_role?('orders_manager') %>
+                    <%= form_tag admin_custom_user_path(user), method: :patch do %>
+                      <input type="hidden" name="role_name" value="orders_manager">
+                      <button type="submit" class="btn btn-outline btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.725rem;">
+                        Make Orders Manager
+                      </button>
+                    <% end %>
+                  <% end %>
+                  <% unless user.has_spree_role?('admin') %>
+                    <%= form_tag admin_custom_user_path(user), method: :patch do %>
+                      <input type="hidden" name="role_name" value="admin">
+                      <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.725rem;">
+                        Grant Full Admin
+                      </button>
+                    <% end %>
+                  <% end %>
+                </div>
               <% end %>
             </td>
           </tr>

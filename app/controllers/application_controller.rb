@@ -107,9 +107,37 @@ class ApplicationController < ActionController::Base
 
   # Filter to restrict access to custom admin controllers
   def authorize_admin!
-    unless spree_current_user && (spree_current_user.has_spree_role?("admin") || spree_current_user.has_spree_role?("read_only_orders"))
+    unless spree_current_user && (
+      spree_current_user.has_spree_role?("admin") || 
+      spree_current_user.has_spree_role?("read_only_orders") ||
+      spree_current_user.has_spree_role?("orders_manager")
+    )
       flash[:alert] = "You are not authorized to access this page."
       redirect_to root_path and return
+    end
+
+    # Enforce strict server-side authorization for orders_manager staff users (Full view, edit, update access on orders & reports)
+    if spree_current_user.respond_to?(:orders_manager?) && spree_current_user.orders_manager?
+      is_orders_controller = (controller_name == "orders" && params[:controller] == "admin_custom/orders")
+      is_reports_controller = (controller_name == "reports" && params[:controller] == "admin_custom/reports")
+      is_comments_controller = (controller_name == "comments" && params[:controller] == "admin_custom/comments")
+
+      if is_orders_controller || is_reports_controller || is_comments_controller
+        # Allowed full read & write access for orders and reports
+        return
+      else
+        # Block access to all other non-authorized admin pages
+        respond_to do |format|
+          format.html {
+            flash[:alert] = "403 Access Denied: You only have access to the Orders page."
+            redirect_to admin_custom_orders_path, status: :forbidden
+          }
+          format.json {
+            render json: { success: false, error: "403 Access Denied: You only have access to the Orders page." }, status: :forbidden
+          }
+        end
+        return
+      end
     end
 
     # Enforce strict server-side authorization for read-only staff users

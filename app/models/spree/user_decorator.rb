@@ -7,6 +7,9 @@ module Spree
     def read_only_orders?
       has_spree_role?("read_only_orders") && !has_spree_role?("admin")
     end
+    def orders_manager?
+      has_spree_role?("orders_manager") && !has_spree_role?("admin")
+    end
   end
 end
 

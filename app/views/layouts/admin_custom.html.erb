@@ -19,7 +19,7 @@
         </div>
         
         <ul class="admin-sidebar-links">
-          <% if spree_current_user && spree_current_user.respond_to?(:read_only_orders?) && spree_current_user.read_only_orders? %>
+          <% if spree_current_user && ((spree_current_user.respond_to?(:read_only_orders?) && spree_current_user.read_only_orders?) || (spree_current_user.respond_to?(:orders_manager?) && spree_current_user.orders_manager?)) %>
             <li class="admin-sidebar-link <%= controller_name == 'orders' ? 'active' : '' %>">
               <a href="/admin_custom/orders">🛒 Orders</a>
             </li>
@@ -82,7 +82,7 @@
               <a href="/admin_custom/payment_methods">💳 Payments</a>
             </li>
           <% end %>
-          <% unless spree_current_user && spree_current_user.respond_to?(:read_only_orders?) && spree_current_user.read_only_orders? %>
+          <% unless spree_current_user && ((spree_current_user.respond_to?(:read_only_orders?) && spree_current_user.read_only_orders?) || (spree_current_user.respond_to?(:orders_manager?) && spree_current_user.orders_manager?)) %>
             <li class="admin-sidebar-link" style="margin-top: 3rem; border-top: 1px solid #334155; padding-top: 1rem;">
               <a href="/" style="color: #60a5fa;">🏠 Shop Storefront</a>
             </li>
@@ -96,7 +96,9 @@
         <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
           <% if spree_current_user %>
             <div style="display: flex; align-items: center; gap: 1rem;">
-              <% if spree_current_user.respond_to?(:read_only_orders?) && spree_current_user.read_only_orders? %>
+              <% if spree_current_user.respond_to?(:orders_manager?) && spree_current_user.orders_manager? %>
+                <span class="badge badge-warning" style="font-size: 0.75rem; background-color: #d97706; color: white;">🛒 Orders Staff (Edit & Update)</span>
+              <% elsif spree_current_user.respond_to?(:read_only_orders?) && spree_current_user.read_only_orders? %>
                 <span class="badge badge-info" style="font-size: 0.75rem;">🔒 Read-Only Staff</span>
               <% end %>
               <span style="font-weight: 500; color: var(--secondary);"><%= spree_current_user.email %></span>

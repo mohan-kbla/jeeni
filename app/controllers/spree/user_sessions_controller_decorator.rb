@@ -43,7 +43,7 @@ module Spree::UserSessionsControllerDecorator
   def after_sign_in_redirect(user)
     if user.has_spree_role?("admin")
       main_app.admin_custom_root_path
-    elsif user.has_spree_role?("read_only_orders")
+    elsif user.has_spree_role?("read_only_orders") || user.has_spree_role?("orders_manager")
       main_app.admin_custom_orders_path
     else
       spree.account_path

@@ -122,7 +122,7 @@ Rails.application.routes.draw do
         patch :update_status
       end
     end
-    resources :users, only: [:index, :update]
+    resources :users, only: [:index, :create, :update]
     resources :inventory, only: [:index, :update]
     resources :payment_methods, only: [:index, :edit, :update]
 

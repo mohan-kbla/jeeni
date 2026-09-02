@@ -68,8 +68,8 @@ class AdminCustom::DailyCompanyUpdatesController < ApplicationController
   end
 
   def check_read_only!
-    if spree_current_user.respond_to?(:read_only_orders?) && spree_current_user.read_only_orders?
-      redirect_to admin_custom_daily_company_updates_path, alert: "Read-only users are not authorized to modify updates."
+    if (spree_current_user.respond_to?(:read_only_orders?) && spree_current_user.read_only_orders?) || (spree_current_user.respond_to?(:orders_manager?) && spree_current_user.orders_manager?)
+      redirect_to admin_custom_orders_path, alert: "Staff users are not authorized to modify daily updates."
     end
   end
 end
