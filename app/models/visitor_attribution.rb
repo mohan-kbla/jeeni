@@ -1,7 +1,19 @@
 class VisitorAttribution < ApplicationRecord
   validates :visitor_id, presence: true, uniqueness: true
 
-  # Classify traffic source based on UTMs and Referrer
+  # Constants for Attribution Source Names
+  GOOGLE_ADS = "Google Ads".freeze
+  ORGANIC_GOOGLE_SEARCH = "Organic Google Search".freeze
+  WHATSAPP = "WhatsApp".freeze
+  FACEBOOK_ADS = "Facebook Ads".freeze
+  INSTAGRAM_ADS = "Instagram Ads".freeze
+  YOUTUBE = "YouTube".freeze
+  EMAIL = "Email".freeze
+  DIRECT = "Direct".freeze
+  REFERRAL_WEBSITE = "Referral Website".freeze
+  OTHER = "Other".freeze
+
+  # Classify traffic source based on UTMs, gclid, and Referrer
   def self.classify(utm_source, utm_medium, utm_campaign, referrer, landing_page_url = nil)
     source = utm_source.to_s.downcase.strip
     medium = utm_medium.to_s.downcase.strip
@@ -9,76 +21,82 @@ class VisitorAttribution < ApplicationRecord
     ref = referrer.to_s.downcase.strip
     url = landing_page_url.to_s.downcase.strip
 
+    # Check for Google Ads auto-tagging parameter (gclid) in URL or referrer
+    is_gclid = url.include?("gclid=") || ref.include?("gclid=")
+
     # Check for Facebook Click Identifier (fbclid) in the landing page URL
     is_fb_click = url.include?("fbclid=")
 
-    # 1. Google Ads
-    if source == "google" && (medium.match?(/(cpc|ppc|paid|ad)/) || campaign.present?)
-      return "Google Ads"
+    # 1. Google Ads (Priority #1: Paid Google traffic)
+    if is_gclid
+      return GOOGLE_ADS
     elsif source.match?(/(google_ads|gads|google-ads)/)
-      return "Google Ads"
+      return GOOGLE_ADS
+    elsif (source == "google" || source == "googleads" || source == "gads") && (medium.match?(/(cpc|ppc|paid|ad)/) || campaign.present?) && medium != "organic"
+      return GOOGLE_ADS
+    elsif medium.match?(/(cpc|ppc)/) && (source.blank? || source == "google")
+      return GOOGLE_ADS
     end
 
-    # 2. Facebook Ads (prioritize Instagram if referrer/source matches, otherwise classify as Facebook Ads)
+    # 2. WhatsApp (Priority #2)
+    if source.match?(/(whatsapp|wa)/) || ref.match?(/(wa\.me|whatsapp\.com)/)
+      return WHATSAPP
+    end
+
+    # 3. Other Paid Campaigns (Priority #3: Facebook & Instagram Ads)
     if is_fb_click
       if ref.include?("instagram") || source.match?(/(instagram|ig)/)
-        return "Instagram Ads"
+        return INSTAGRAM_ADS
       else
-        return "Facebook Ads"
+        return FACEBOOK_ADS
       end
     end
 
     if source.match?(/(facebook|fb)/) && (medium.match?(/(cpc|cpm|ad|paid)/) || campaign.present?)
-      return "Facebook Ads"
+      return FACEBOOK_ADS
     elsif source.match?(/(facebook_ads|fb_ads|facebook-ads)/)
-      return "Facebook Ads"
+      return FACEBOOK_ADS
     end
 
-    # 3. Instagram Ads
     if source.match?(/(instagram|ig)/) && (medium.match?(/(cpc|cpm|ad|paid)/) || campaign.present?)
-      return "Instagram Ads"
+      return INSTAGRAM_ADS
     elsif source.match?(/(instagram_ads|ig_ads|instagram-ads)/)
-      return "Instagram Ads"
+      return INSTAGRAM_ADS
     end
 
-    # 4. WhatsApp
-    if source.match?(/(whatsapp|wa)/) || ref.match?(/(wa\.me|whatsapp\.com)/)
-      return "WhatsApp"
+    # 4. Organic Google Search (Priority #4: Organic Google traffic)
+    if (ref.match?(/(google\.com|google\.co\.in|google\.[a-z]{2,3})/) || source == "google") && !medium.match?(/(cpc|ppc|paid|ad)/)
+      return ORGANIC_GOOGLE_SEARCH
+    elsif source == "google" && medium == "organic"
+      return ORGANIC_GOOGLE_SEARCH
     end
 
-    # 5. YouTube
+    # Organic / Social fallbacks
     if source.match?(/(youtube|yt)/) || ref.match?(/(youtube\.com|youtu\.be)/)
-      return "YouTube"
+      return YOUTUBE
     end
 
-    # 6. Email
     if source == "email" || source == "newsletter" || medium.match?(/(email|newsletter)/)
-      return "Email"
+      return EMAIL
     end
 
-    # 7. Organic Google Search
-    if ref.match?(/(google\.com|google\.co\.in)/) && !medium.match?(/(cpc|ppc|paid|ad)/)
-      return "Organic Google Search"
-    end
-
-    # Organic / Referral Social media fallbacks (if no campaign parameters are present but they come from social)
     if ref.include?("instagram.com")
-      return "Instagram Ads"
+      return INSTAGRAM_ADS
     elsif ref.include?("facebook.com") || ref.include?("fb.com")
-      return "Facebook Ads"
+      return FACEBOOK_ADS
     end
 
-    # 8. Direct
+    # 5. Direct (Priority #5: No referrer, no UTMs)
     if source.blank? && ref.blank?
-      return "Direct"
+      return DIRECT
     end
 
-    # 9. Referral Website
+    # 6. Referral Website (Priority #6: Other external referrer)
     if ref.present?
-      return "Referral Website"
+      return REFERRAL_WEBSITE
     end
 
-    "Other"
+    OTHER
   end
 
   # Geolocate an IP address using ip-api.com
@@ -152,9 +170,36 @@ class VisitorAttribution < ApplicationRecord
     { device_type: device, browser: browser, operating_system: os }
   end
 
+  def gclid
+    landing_page.to_s.match(/gclid=([^&]+)/)&.captures&.first
+  end
+
+  def associate_with_order(order)
+    return if order.nil?
+    order.update_columns(
+      booking_source: booking_source || "Other",
+      utm_source: utm_source,
+      utm_medium: utm_medium,
+      utm_campaign: utm_campaign,
+      utm_term: utm_term,
+      utm_content: utm_content,
+      referrer: referrer,
+      landing_page: landing_page,
+      first_visit_at: created_at,
+      device_type: device_type,
+      browser: browser,
+      operating_system: operating_system,
+      ip_address: ip_address,
+      attribution_country: country,
+      attribution_state: state,
+      attribution_city: city
+    )
+  end
+
   private
 
   def self.local_ip?(ip)
     ip.blank? || ip == "127.0.0.1" || ip == "::1" || ip.start_with?("192.168.", "10.", "172.16.")
   end
 end
+

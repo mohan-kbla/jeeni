@@ -240,6 +240,21 @@ class ApplicationController < ActionController::Base
               end
             end rescue nil
           end
+        else
+          # Upgrade attribution if visitor lands with Google Ads (gclid) or explicit campaign parameters
+          new_source = VisitorAttribution.classify(params[:utm_source], params[:utm_medium], params[:utm_campaign], request.referer, request.original_url)
+          if (new_source == VisitorAttribution::GOOGLE_ADS || params[:gclid].present? || params[:utm_source].present?) && attribution.booking_source != new_source
+            attribution.update_columns(
+              booking_source: new_source,
+              utm_source: params[:utm_source].presence || attribution.utm_source,
+              utm_medium: params[:utm_medium].presence || attribution.utm_medium,
+              utm_campaign: params[:utm_campaign].presence || attribution.utm_campaign,
+              utm_term: params[:utm_term].presence || attribution.utm_term,
+              utm_content: params[:utm_content].presence || attribution.utm_content,
+              referrer: request.referer.presence || attribution.referrer,
+              landing_page: request.original_url
+            )
+          end
         end
       rescue => e
         Rails.logger.error "Failed to save visitor attribution: #{e.message}"
@@ -289,24 +304,7 @@ class ApplicationController < ActionController::Base
     return if attribution.nil?
 
     # Copy fields to the order
-    order.update_columns(
-      booking_source: attribution.booking_source || "Other",
-      utm_source: attribution.utm_source,
-      utm_medium: attribution.utm_medium,
-      utm_campaign: attribution.utm_campaign,
-      utm_term: attribution.utm_term,
-      utm_content: attribution.utm_content,
-      referrer: attribution.referrer,
-      landing_page: attribution.landing_page,
-      first_visit_at: attribution.created_at,
-      device_type: attribution.device_type,
-      browser: attribution.browser,
-      operating_system: attribution.operating_system,
-      ip_address: attribution.ip_address,
-      attribution_country: attribution.country,
-      attribution_state: attribution.state,
-      attribution_city: attribution.city
-    )
+    attribution.associate_with_order(order)
   end
 
   def restrict_read_only_staff_from_storefront!

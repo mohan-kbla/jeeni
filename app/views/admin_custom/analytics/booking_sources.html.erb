@@ -112,7 +112,7 @@
   <div style="background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
     <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">🍕 Bookings by Attribution Source</h3>
     <% if @bookings_by_source.any? %>
-      <%= pie_chart @bookings_by_source, donut: true, colors: ["#224229", "#b12704", "#475569", "#60a5fa", "#eab308", "#a855f7", "#ec4899", "#14b8a6", "#f97316", "#8b5cf6"] %>
+      <%= pie_chart @bookings_by_source, donut: true, colors: ["#4285F4", "#224229", "#b12704", "#475569", "#60a5fa", "#eab308", "#a855f7", "#ec4899", "#14b8a6", "#f97316", "#8b5cf6"] %>
     <% else %>
       <div style="height: 300px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">No booking data available.</div>
     <% end %>
