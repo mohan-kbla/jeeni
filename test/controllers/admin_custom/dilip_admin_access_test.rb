@@ -46,17 +46,16 @@ class AdminCustom::DilipAdminAccessTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "dilipsira222@gmail.com is denied access to analytics pages" do
+  test "dilipsira222@gmail.com is denied access to main analytics page but granted access to booking_sources" do
     post spree_create_new_session_path, params: {
       spree_user: { email: @dilip_user.email, password: "Password@123" }
     }
 
     get admin_custom_analytics_path
     assert_redirected_to admin_custom_orders_path
-    assert_equal "403 Access Denied: You do not have access to the Analytics page.", flash[:alert]
+    assert_equal "403 Access Denied: You do not have access to the main Analytics page.", flash[:alert]
 
     get admin_custom_analytics_booking_sources_path
-    assert_redirected_to admin_custom_orders_path
-    assert_equal "403 Access Denied: You do not have access to the Analytics page.", flash[:alert]
+    assert_response :success
   end
 end

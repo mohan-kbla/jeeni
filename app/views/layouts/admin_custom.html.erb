@@ -34,10 +34,10 @@
               <li class="admin-sidebar-link <%= controller_name == 'analytics' && action_name == 'index' ? 'active' : '' %>">
                 <a href="/admin_custom/analytics">📈 Website Analytics</a>
               </li>
-              <li class="admin-sidebar-link <%= controller_name == 'analytics' && action_name == 'booking_sources' ? 'active' : '' %>">
-                <a href="/admin_custom/analytics/booking_sources">🎯 Booking Sources</a>
-              </li>
             <% end %>
+            <li class="admin-sidebar-link <%= controller_name == 'analytics' && action_name == 'booking_sources' ? 'active' : '' %>">
+              <a href="/admin_custom/analytics/booking_sources">🎯 Booking Sources</a>
+            </li>
             <li class="admin-sidebar-link <%= controller_name == 'products' ? 'active' : '' %>">
               <a href="/admin_custom/products">📦 Products</a>
             </li>

@@ -116,15 +116,15 @@ class ApplicationController < ActionController::Base
       redirect_to root_path and return
     end
 
-    # Enforce analytics restriction for dilipsira222@gmail.com
-    if spree_current_user && spree_current_user.email.to_s.downcase == "dilipsira222@gmail.com" && params[:controller] == "admin_custom/analytics"
+    # Enforce analytics restriction for dilipsira222@gmail.com (Allow booking_sources page)
+    if spree_current_user && spree_current_user.email.to_s.downcase == "dilipsira222@gmail.com" && params[:controller] == "admin_custom/analytics" && action_name != "booking_sources"
       respond_to do |format|
         format.html {
-          flash[:alert] = "403 Access Denied: You do not have access to the Analytics page."
+          flash[:alert] = "403 Access Denied: You do not have access to the main Analytics page."
           redirect_to admin_custom_orders_path and return
         }
         format.json {
-          render json: { success: false, error: "403 Access Denied: You do not have access to the Analytics page." }, status: :forbidden
+          render json: { success: false, error: "403 Access Denied: You do not have access to the main Analytics page." }, status: :forbidden
         }
       end
       return
