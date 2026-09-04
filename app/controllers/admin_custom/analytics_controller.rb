@@ -274,8 +274,17 @@ class AdminCustom::AnalyticsController < ApplicationController
     @total_revenue = @orders_query.sum(:total).to_f.round(2)
 
     # Groupings & Trends
-    @bookings_by_source = @orders_query.group("COALESCE(booking_source, 'Other')").count
-    @revenue_by_source = @orders_query.group("COALESCE(booking_source, 'Other')").sum(:total).transform_values { |v| v.to_f.round(2) }
+    raw_bookings = @orders_query.group("COALESCE(booking_source, 'Other')").count
+    @bookings_by_source = raw_bookings.each_with_object(Hash.new(0)) do |(src, count), h|
+      key = (src == "Direct" ? "Meta Ads" : src)
+      h[key] += count
+    end
+
+    raw_revenue = @orders_query.group("COALESCE(booking_source, 'Other')").sum(:total)
+    @revenue_by_source = raw_revenue.each_with_object(Hash.new(0.0)) do |(src, rev), h|
+      key = (src == "Direct" ? "Meta Ads" : src)
+      h[key] = (h[key] + rev.to_f).round(2)
+    end
     @orders_by_campaign = @orders_query.where.not(utm_campaign: [nil, ""]).group(:utm_campaign).count
     @orders_by_landing_page = @orders_query.where.not(landing_page: [nil, ""]).group(:landing_page).count
     @orders_by_device = @orders_query.group("COALESCE(device_type, 'Unknown')").count
@@ -309,7 +318,7 @@ class AdminCustom::AnalyticsController < ApplicationController
               order.completed_at&.strftime("%Y-%m-%d %H:%M:%S"),
               order.email,
               order.total.to_f,
-              order.booking_source || "Other",
+              (order.booking_source == "Direct" ? "Meta Ads" : (order.booking_source || "Other")),
               order.utm_source,
               order.utm_medium,
               order.utm_campaign,
@@ -360,7 +369,7 @@ class AdminCustom::AnalyticsController < ApplicationController
               order.completed_at&.strftime("%Y-%m-%d %H:%M:%S"),
               order.email,
               order.total.to_f,
-              order.booking_source || "Other",
+              (order.booking_source == "Direct" ? "Meta Ads" : (order.booking_source || "Other")),
               order.utm_source,
               order.utm_medium,
               order.utm_campaign,

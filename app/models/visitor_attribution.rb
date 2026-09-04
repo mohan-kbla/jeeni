@@ -9,7 +9,7 @@ class VisitorAttribution < ApplicationRecord
   INSTAGRAM_ADS = "Instagram Ads".freeze
   YOUTUBE = "YouTube".freeze
   EMAIL = "Email".freeze
-  DIRECT = "Direct".freeze
+  DIRECT = "Meta Ads".freeze
   REFERRAL_WEBSITE = "Referral Website".freeze
   OTHER = "Other".freeze
 

@@ -257,28 +257,27 @@
             <td style="white-space: nowrap;"><%= order.completed_at&.strftime("%Y-%m-%d %I:%M %p") %></td>
             <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= order.email %></td>
             <td>
-              <% badge_color = case order.booking_source
-                 when 'Facebook Ads' then '#fecaca'
+              <% display_source = (order.booking_source == 'Direct' ? 'Meta Ads' : (order.booking_source || "Other")) %>
+              <% badge_color = case display_source
+                 when 'Facebook Ads', 'Meta Ads' then '#fecaca'
                  when 'Instagram Ads' then '#fbcfe8'
                  when 'Google Ads' then '#fed7aa'
                  when 'Organic Google Search' then '#fef08a'
                  when 'WhatsApp' then '#bbf7d0'
                  when 'YouTube' then '#fed7aa'
-                 when 'Direct' then '#e2e8f0'
                  else '#dcfce7'
                  end %>
-              <% badge_text_color = case order.booking_source
-                 when 'Facebook Ads' then '#991b1b'
+              <% badge_text_color = case display_source
+                 when 'Facebook Ads', 'Meta Ads' then '#991b1b'
                  when 'Instagram Ads' then '#9d174d'
                  when 'Google Ads' then '#9a3412'
                  when 'Organic Google Search' then '#854d0e'
                  when 'WhatsApp' then '#166534'
                  when 'YouTube' then '#9a3412'
-                 when 'Direct' then '#475569'
                  else '#14532d'
                  end %>
               <span class="badge" style="background-color: <%= badge_color %>; color: <%= badge_text_color %>; padding: 0.25rem 0.5rem; font-size: 0.75rem; font-weight: 600;">
-                <%= order.booking_source || "Other" %>
+                <%= display_source %>
               </span>
             </td>
             <td><%= order.utm_source.presence || "-" %></td>

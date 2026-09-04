@@ -81,7 +81,7 @@ class AdminCustom::BookingSourcesGoogleAdsTest < ActionDispatch::IntegrationTest
     assert_equal VisitorAttribution::ORGANIC_GOOGLE_SEARCH, attr_record.booking_source
   end
 
-  test "5. Direct visitor without params or referrer classifies as Direct" do
+  test "5. Direct visitor without params or referrer classifies as Meta Ads" do
     get root_path, headers: @headers
     assert_response :success
 
@@ -91,6 +91,7 @@ class AdminCustom::BookingSourcesGoogleAdsTest < ActionDispatch::IntegrationTest
     attr_record = VisitorAttribution.find_by(visitor_id: cookie_visitor_id)
     assert_not_nil attr_record
     assert_equal VisitorAttribution::DIRECT, attr_record.booking_source
+    assert_equal "Meta Ads", attr_record.booking_source
   end
 
   test "6. WhatsApp visitor classifies as WhatsApp" do
