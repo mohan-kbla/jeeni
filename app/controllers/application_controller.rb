@@ -116,6 +116,20 @@ class ApplicationController < ActionController::Base
       redirect_to root_path and return
     end
 
+    # Enforce analytics restriction for dilipsira222@gmail.com
+    if spree_current_user && spree_current_user.email.to_s.downcase == "dilipsira222@gmail.com" && params[:controller] == "admin_custom/analytics"
+      respond_to do |format|
+        format.html {
+          flash[:alert] = "403 Access Denied: You do not have access to the Analytics page."
+          redirect_to admin_custom_orders_path and return
+        }
+        format.json {
+          render json: { success: false, error: "403 Access Denied: You do not have access to the Analytics page." }, status: :forbidden
+        }
+      end
+      return
+    end
+
     # Enforce strict server-side authorization for orders_manager staff users (Full view, edit, update access on orders & reports)
     if spree_current_user.respond_to?(:orders_manager?) && spree_current_user.orders_manager?
       is_orders_controller = (controller_name == "orders" && params[:controller] == "admin_custom/orders")

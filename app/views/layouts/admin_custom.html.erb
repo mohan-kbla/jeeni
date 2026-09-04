@@ -30,12 +30,14 @@
             <li class="admin-sidebar-link <%= current_page?(admin_custom_root_path) ? 'active' : '' %>">
               <a href="/admin_custom">📊 Dashboard</a>
             </li>
-            <li class="admin-sidebar-link <%= controller_name == 'analytics' && action_name == 'index' ? 'active' : '' %>">
-              <a href="/admin_custom/analytics">📈 Website Analytics</a>
-            </li>
-            <li class="admin-sidebar-link <%= controller_name == 'analytics' && action_name == 'booking_sources' ? 'active' : '' %>">
-              <a href="/admin_custom/analytics/booking_sources">🎯 Booking Sources</a>
-            </li>
+            <% unless spree_current_user && spree_current_user.email.to_s.downcase == "dilipsira222@gmail.com" %>
+              <li class="admin-sidebar-link <%= controller_name == 'analytics' && action_name == 'index' ? 'active' : '' %>">
+                <a href="/admin_custom/analytics">📈 Website Analytics</a>
+              </li>
+              <li class="admin-sidebar-link <%= controller_name == 'analytics' && action_name == 'booking_sources' ? 'active' : '' %>">
+                <a href="/admin_custom/analytics/booking_sources">🎯 Booking Sources</a>
+              </li>
+            <% end %>
             <li class="admin-sidebar-link <%= controller_name == 'products' ? 'active' : '' %>">
               <a href="/admin_custom/products">📦 Products</a>
             </li>
