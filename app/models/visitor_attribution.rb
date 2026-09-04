@@ -21,14 +21,19 @@ class VisitorAttribution < ApplicationRecord
     ref = referrer.to_s.downcase.strip
     url = landing_page_url.to_s.downcase.strip
 
-    # Check for Google Ads auto-tagging parameter (gclid) in URL or referrer
-    is_gclid = url.include?("gclid=") || ref.include?("gclid=")
+    # Check for Google Ads signals (gclid, gad_source, gbraid, wbraid, srsltid, Google Tag Assistant)
+    is_google_ads = url.include?("gclid=") || ref.include?("gclid=") ||
+                    url.include?("gad_source=") || ref.include?("gad_source=") ||
+                    url.include?("gbraid=") || ref.include?("gbraid=") ||
+                    url.include?("wbraid=") || ref.include?("wbraid=") ||
+                    url.include?("srsltid=") || ref.include?("srsltid=") ||
+                    url.include?("gtm_debug=") || ref.include?("tagassistant.google.com")
 
     # Check for Facebook Click Identifier (fbclid) in the landing page URL
     is_fb_click = url.include?("fbclid=")
 
     # 1. Google Ads (Priority #1: Paid Google traffic)
-    if is_gclid
+    if is_google_ads
       return GOOGLE_ADS
     elsif source.match?(/(google_ads|gads|google-ads)/)
       return GOOGLE_ADS
@@ -171,7 +176,7 @@ class VisitorAttribution < ApplicationRecord
   end
 
   def gclid
-    landing_page.to_s.match(/gclid=([^&]+)/)&.captures&.first
+    landing_page.to_s.match(/(?:gclid|gad_source|gbraid|wbraid|srsltid)=([^&]+)/)&.captures&.first
   end
 
   def associate_with_order(order)

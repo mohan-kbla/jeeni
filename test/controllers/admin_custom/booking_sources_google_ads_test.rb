@@ -41,6 +41,18 @@ class AdminCustom::BookingSourcesGoogleAdsTest < ActionDispatch::IntegrationTest
     assert_equal "TEST_GCLID_12345", attr_record.gclid
   end
 
+  test "1b. gad_source and srsltid parameters classify visitor as Google Ads" do
+    get root_path, params: { gad_source: "1", srsltid: "TEST_SRSLTID_999" }, headers: @headers
+    assert_response :success
+
+    cookie_visitor_id = cookies[:visitor_id]
+    assert cookie_visitor_id.present?
+
+    attr_record = VisitorAttribution.find_by(visitor_id: cookie_visitor_id)
+    assert_not_nil attr_record
+    assert_equal VisitorAttribution::GOOGLE_ADS, attr_record.booking_source
+  end
+
   test "2. Organic google referrer without gclid classifies visitor as Organic Google Search" do
     headers = @headers.merge("HTTP_REFERER" => "https://www.google.com/search?q=jeeni+millet")
     get root_path, headers: headers
