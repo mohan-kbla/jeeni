@@ -41,7 +41,13 @@ class AdminCustom::UsersController < ApplicationController
       flash[:alert] = "Safety lock: You cannot revoke your own administrator role."
     else
       target_role_name = params[:role_name]
-      if target_role_name.present?
+      if target_role_name == "revoke" || target_role_name == "customer"
+        ["admin", "orders_manager", "read_only_orders"].each do |r|
+          r_obj = Spree::Role.find_by(name: r)
+          @user.spree_roles.delete(r_obj) if r_obj
+        end
+        flash[:notice] = "Access revoked for user #{@user.email}. User is now a standard Customer."
+      elsif target_role_name.present?
         ["admin", "orders_manager", "read_only_orders"].each do |r|
           r_obj = Spree::Role.find_by(name: r)
           @user.spree_roles.delete(r_obj) if r_obj
@@ -49,10 +55,12 @@ class AdminCustom::UsersController < ApplicationController
         assigned = Spree::Role.find_or_create_by!(name: target_role_name)
         @user.spree_roles << assigned
         flash[:notice] = "User #{@user.email} role updated to #{target_role_name.titleize}."
-      elsif @user.has_spree_role?("admin")
-        admin_role = Spree::Role.find_by(name: "admin")
-        @user.spree_roles.delete(admin_role)
-        flash[:notice] = "User #{@user.email} demoted to Customer."
+      elsif @user.has_spree_role?("admin") || @user.has_spree_role?("orders_manager") || @user.has_spree_role?("read_only_orders")
+        ["admin", "orders_manager", "read_only_orders"].each do |r|
+          r_obj = Spree::Role.find_by(name: r)
+          @user.spree_roles.delete(r_obj) if r_obj
+        end
+        flash[:notice] = "Access revoked for user #{@user.email}. User is now a standard Customer."
       else
         admin_role = Spree::Role.find_or_create_by!(name: "admin")
         @user.spree_roles << admin_role

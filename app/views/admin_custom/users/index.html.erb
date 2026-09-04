@@ -103,6 +103,14 @@
                       </button>
                     <% end %>
                   <% end %>
+                  <% if user.has_spree_role?('admin') || user.has_spree_role?('orders_manager') || user.has_spree_role?('read_only_orders') %>
+                    <%= form_tag admin_custom_user_path(user), method: :patch do %>
+                      <input type="hidden" name="role_name" value="revoke">
+                      <button type="submit" class="btn btn-outline btn-sm" onclick="return confirm('Revoke admin access for this user?');" style="padding: 0.25rem 0.5rem; font-size: 0.725rem; border-color: var(--danger); color: var(--danger);">
+                        Revoke Access
+                      </button>
+                    <% end %>
+                  <% end %>
                 </div>
               <% end %>
             </td>
