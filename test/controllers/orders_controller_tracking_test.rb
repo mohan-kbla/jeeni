@@ -86,9 +86,9 @@ class OrdersControllerTrackingTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "gtag('event', 'purchase'"
   end
 
-  test "orders show includes send_to when conversion ID and label are configured" do
-    CroSetting.set('google_ads_conversion_id', 'AW-999888777')
-    CroSetting.set('google_ads_conversion_label', 'LABEL_ABC123')
+  test "orders show includes conversion event when conversion ID and label are configured" do
+    CroSetting.set('google_ads_conversion_id', 'AW-17269273792')
+    CroSetting.set('google_ads_conversion_label', '6PGNCJfsvOwcEMDpK0pA')
 
     post spree_create_new_session_path, params: {
       spree_user: { email: @user.email, password: "password123" }
@@ -96,6 +96,11 @@ class OrdersControllerTrackingTest < ActionDispatch::IntegrationTest
 
     get order_details_path(id: @order.number)
     assert_response :success
-    assert_includes response.body, "googlePurchasePayload.send_to = 'AW-999888777/LABEL_ABC123';"
+    assert_includes response.body, "googlePurchasePayload.send_to = 'AW-17269273792/6PGNCJfsvOwcEMDpK0pA';"
+    assert_includes response.body, "gtag('event', 'conversion',"
+    assert_includes response.body, "'send_to': 'AW-17269273792/6PGNCJfsvOwcEMDpK0pA'"
+    assert_includes response.body, "'transaction_id': '#{@order.number}'"
+    assert_includes response.body, "'value': 150.0"
+    assert_includes response.body, "'currency': 'INR'"
   end
 end

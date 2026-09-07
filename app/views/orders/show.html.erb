@@ -26,6 +26,14 @@
         googlePurchasePayload.send_to = '<%= google_ads_send_to_target %>';
       <% end %>
       gtag('event', 'purchase', googlePurchasePayload);
+      <% if google_ads_send_to_target.present? %>
+        gtag('event', 'conversion', {
+          'send_to': '<%= google_ads_send_to_target %>',
+          'value': <%= @order.total.to_f %>,
+          'currency': 'INR',
+          'transaction_id': '<%= @order.number %>'
+        });
+      <% end %>
     }
   </script>
 <% end %>

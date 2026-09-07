@@ -26,12 +26,12 @@ module ApplicationHelper
 
   # Helper to retrieve configured Google Ads Conversion ID (optional, e.g. AW-XXXXXXXXX)
   def google_ads_conversion_id
-    CroSetting.get('google_ads_conversion_id').presence || ENV['GOOGLE_ADS_CONVERSION_ID'].presence || ''
+    CroSetting.get('google_ads_conversion_id').presence || ENV['GOOGLE_ADS_CONVERSION_ID'].presence || 'AW-17269273792'
   end
 
   # Helper to retrieve configured Google Ads Conversion Label (optional, e.g. AbC-D_efGhIjKLmN)
   def google_ads_conversion_label
-    CroSetting.get('google_ads_conversion_label').presence || ENV['GOOGLE_ADS_CONVERSION_LABEL'].presence || ''
+    CroSetting.get('google_ads_conversion_label').presence || ENV['GOOGLE_ADS_CONVERSION_LABEL'].presence || '6PGNCJfsvOwcEMDpK0pA'
   end
 
   # Helper to compute Google Ads conversion target for send_to (e.g. AW-XXXXXXXXX/AbC-D_efGhIjKLmN)
