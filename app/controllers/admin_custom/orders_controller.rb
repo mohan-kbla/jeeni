@@ -27,6 +27,26 @@ class AdminCustom::OrdersController < ApplicationController
                        .where("spree_addresses.phone LIKE ?", phone_query)
     end
 
+    # Filter by Order Number if specified
+    if params[:order_number].present?
+      order_num_query = "%#{params[:order_number].strip.upcase}%"
+      @orders = @orders.where("UPPER(spree_orders.number) LIKE ?", order_num_query)
+    end
+
+    # Filter by Payment Method / Status if specified
+    if params[:payment_filter].present?
+      case params[:payment_filter]
+      when 'paid', 'razorpay'
+        @orders = @orders.joins(payments: :payment_method)
+                         .where("spree_payment_methods.name LIKE '%Razorpay%' OR spree_orders.payment_state = 'paid'")
+                         .distinct
+      when 'cod'
+        @orders = @orders.joins(payments: :payment_method)
+                         .where("spree_payment_methods.name LIKE '%Cash%' OR spree_payment_methods.name LIKE '%Check%' OR spree_payment_methods.name LIKE '%COD%'")
+                         .distinct
+      end
+    end
+
     if params[:date_filter] == "today"
       @orders = @orders.where(created_at: Time.current.beginning_of_day..Time.current.end_of_day)
     elsif params[:date_filter] == "yesterday"
@@ -54,6 +74,53 @@ class AdminCustom::OrdersController < ApplicationController
     end
 
     @orders = @orders.order(completed_at: :desc).page(params[:page]).per(15)
+  end
+
+  def export_report
+    from_date_str = params[:from_date].presence
+    to_date_str = params[:to_date].presence
+
+    if params[:date_filter] == 'today'
+      from_date_str = Time.current.to_date.to_s
+      to_date_str = Time.current.to_date.to_s
+    elsif params[:date_filter] == 'yesterday'
+      from_date_str = 1.day.ago.to_date.to_s
+      to_date_str = 1.day.ago.to_date.to_s
+    end
+
+    permit_params = params.permit(:date_filter, :from_date, :to_date, :product_id, :customer_name, :phone_number, :order_number, :payment_filter)
+
+    if from_date_str.blank? || to_date_str.blank?
+      flash[:alert] = "Please select both From Date and To Date to extract the report."
+      redirect_to admin_custom_orders_path(permit_params)
+      return
+    end
+
+    exporter = OrdersReportExporter.new(from_date_str, to_date_str, order_number: params[:order_number], payment_filter: params[:payment_filter])
+
+    unless exporter.valid_range?
+      flash[:alert] = "Invalid date range. To Date cannot be earlier than From Date."
+      redirect_to admin_custom_orders_path(permit_params)
+      return
+    end
+
+    if exporter.orders.empty?
+      flash[:alert] = "No orders found for the selected date range (#{from_date_str[0..9]} to #{to_date_str[0..9]})."
+      redirect_to admin_custom_orders_path(permit_params)
+      return
+    end
+
+    ods_data = exporter.generate_ods
+    if ods_data.present?
+      filename = "jeeni_orders_report_#{from_date_str[0..9]}_to_#{to_date_str[0..9]}.ods"
+      send_data ods_data,
+                filename: filename,
+                type: 'application/vnd.oasis.opendocument.spreadsheet',
+                disposition: 'attachment'
+    else
+      flash[:alert] = "Failed to generate report file."
+      redirect_to admin_custom_orders_path(params.permit(:date_filter, :from_date, :to_date, :product_id, :customer_name, :phone_number))
+    end
   end
 
   def update_status

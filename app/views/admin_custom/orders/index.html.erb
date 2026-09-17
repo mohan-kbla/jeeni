@@ -64,6 +64,22 @@
       <input type="text" name="customer_name" value="<%= params[:customer_name] %>" placeholder="Name" class="form-control" style="width: 140px; padding: 0.35rem 0.5rem; font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border); height: auto; background-color: var(--bg-card);">
     </div>
 
+    <!-- Order ID Search -->
+    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+      <span style="font-weight: 600; color: var(--secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.25rem;">
+        🏷️ Order ID:
+      </span>
+      <input type="text" name="order_number" value="<%= params[:order_number] %>" placeholder="e.g. R210798046" class="form-control" style="width: 130px; padding: 0.35rem 0.5rem; font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border); height: auto; background-color: var(--bg-card);">
+    </div>
+
+    <!-- Payment Method Filter -->
+    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+      <span style="font-weight: 600; color: var(--secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.25rem;">
+        💳 Payment:
+      </span>
+      <%= select_tag :payment_filter, options_for_select([["All Payments", ""], ["Paid / Razorpay (Online)", "paid"], ["Cash on Delivery (COD)", "cod"]], params[:payment_filter]), class: "form-control", onchange: "this.form.submit();", style: "width: auto; padding: 0.35rem 0.5rem; font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border); height: auto; background-color: var(--bg-card);" %>
+    </div>
+
     <!-- Phone Number Search -->
     <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
       <span style="font-weight: 600; color: var(--secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.25rem;">
@@ -87,6 +103,7 @@
           <input type="datetime-local" id="to_date" name="to_date" value="<%= to_date_val %>" class="form-control" style="width: auto; padding: 0.35rem 0.5rem; font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border); height: auto; background-color: var(--bg-card);">
         </div>
         <button type="submit" class="btn btn-primary btn-sm" onclick="document.getElementById('dateFilterInput').value='custom';" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; font-weight: 600; height: auto;">Apply</button>
+        <button type="button" id="extractReportBtn" onclick="extractReport(event);" class="btn btn-success btn-sm" style="padding: 0.35rem 0.85rem; font-size: 0.8rem; font-weight: 600; height: auto; background-color: #059669; border: none; color: white; border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; transition: background-color 0.2s;">📊 Extract Report</button>
       </div>
     </div>
   </div>
@@ -100,6 +117,44 @@
       document.getElementById('to_date').value = '';
     }
     document.getElementById('filtersForm').submit();
+  }
+
+  function extractReport(event) {
+    if (event) event.preventDefault();
+    const fromDate = document.getElementById('from_date').value;
+    const toDate = document.getElementById('to_date').value;
+    const dateFilter = document.getElementById('dateFilterInput').value;
+
+    if (!fromDate && !toDate && dateFilter !== 'today' && dateFilter !== 'yesterday') {
+      alert('Please select both From Date and To Date to extract the report.');
+      return false;
+    }
+
+    if (fromDate && toDate && fromDate > toDate) {
+      alert('To Date cannot be earlier than From Date.');
+      return false;
+    }
+
+    const btn = document.getElementById('extractReportBtn');
+    const originalContent = btn ? btn.innerHTML : '📊 Extract Report';
+    if (btn) {
+      btn.innerHTML = '⏳ Generating...';
+      btn.disabled = true;
+    }
+
+    const form = document.getElementById('filtersForm');
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData);
+    
+    const exportUrl = '/admin_custom/orders/export_report?' + params.toString();
+    window.location.href = exportUrl;
+
+    setTimeout(() => {
+      if (btn) {
+        btn.innerHTML = originalContent;
+        btn.disabled = false;
+      }
+    }, 4000);
   }
 </script>
 

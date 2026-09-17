@@ -1,6 +1,9 @@
 class WhatsappConversation < ApplicationRecord
   serialize :metadata, type: Hash, coder: JSON
 
+  has_many :messages, class_name: 'WhatsappMessage', foreign_key: 'wa_id', primary_key: 'wa_id', dependent: :destroy
+  belongs_to :spree_order, class_name: 'Spree::Order', optional: true
+
   validates :wa_id, presence: true, uniqueness: true
   validates :phone_number, presence: true
   validates :state, presence: true

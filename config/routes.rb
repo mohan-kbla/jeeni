@@ -121,7 +121,11 @@ Rails.application.routes.draw do
       member do
         patch :update_status
       end
+      collection do
+        get :export_report
+      end
     end
+    resources :whatsapp, only: [:index, :show]
     resources :users, only: [:index, :create, :update]
     resources :inventory, only: [:index, :update]
     resources :payment_methods, only: [:index, :edit, :update]
